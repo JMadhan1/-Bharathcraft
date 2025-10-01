@@ -11,6 +11,7 @@ import routes.products
 import routes.orders
 import routes.chat
 import routes.admin
+import routes.logistics
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -47,6 +48,7 @@ app.register_blueprint(routes.products.bp)
 app.register_blueprint(routes.orders.bp)
 app.register_blueprint(routes.chat.bp)
 app.register_blueprint(routes.admin.bp)
+app.register_blueprint(routes.logistics.bp)
 
 @app.route('/')
 def index():
