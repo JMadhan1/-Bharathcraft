@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buyer Dashboard - Bharatcraft</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">🎨 Bharatcraft</h1>
+            <nav class="nav">
+                <span id="userName"></span>
+                <button class="btn btn-secondary" onclick="logout()">Logout</button>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container dashboard">
+        <div class="dashboard-header">
+            <h2>Buyer Dashboard</h2>
+            <p>Discover authentic handicrafts from Indian artisans</p>
+        </div>
+
+        <div class="product-grid" id="productsGrid"></div>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+    <script src="/static/js/buyer.js"></script>
+</body>
+</html>

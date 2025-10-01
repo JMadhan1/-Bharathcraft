@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bharatcraft - Connecting Artisans with Global Markets</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">🎨 Bharatcraft</h1>
+            <nav class="nav">
+                <select id="languageSelector" class="language-selector">
+                    <option value="en">English</option>
+                    <option value="hi">हिंदी</option>
+                    <option value="te">తెలుగు</option>
+                    <option value="ta">தமிழ்</option>
+                    <option value="kn">ಕನ್ನಡ</option>
+                    <option value="ml">മലയാളം</option>
+                    <option value="bn">বাংলা</option>
+                    <option value="gu">ગુજરાતી</option>
+                    <option value="mr">मराठी</option>
+                    <option value="pa">ਪੰਜਾਬੀ</option>
+                    <option value="od">ଓଡ଼ିଆ</option>
+                    <option value="as">অসমীয়া</option>
+                    <option value="es">Español</option>
+                </select>
+                <button class="btn btn-secondary" onclick="showLogin()">Login</button>
+                <button class="btn btn-primary" onclick="showRegister()">Get Started</button>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h2 class="hero-title" data-i18n="hero.title">Empowering Indian Artisans, Connecting Global Buyers</h2>
+            <p class="hero-subtitle" data-i18n="hero.subtitle">Direct trade platform that increases artisan earnings by 3-5x through AI-powered tools and eliminating middlemen</p>
+            
+            <div class="hero-actions">
+                <div class="portal-card">
+                    <h3>🧵 For Artisans</h3>
+                    <p>Sell your crafts directly to global buyers</p>
+                    <button class="btn btn-primary" onclick="registerAs('artisan')">Join as Artisan</button>
+                </div>
+                <div class="portal-card">
+                    <h3>🛍️ For Buyers</h3>
+                    <p>Source authentic handicrafts from Indian artisans</p>
+                    <button class="btn btn-primary" onclick="registerAs('buyer')">Join as Buyer</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="container">
+            <h2>Why Bharatcraft?</h2>
+            <div class="features-grid">
+                <div class="feature">
+                    <h3>🤖 AI Quality Assessment</h3>
+                    <p>Automated product quality grading using computer vision</p>
+                </div>
+                <div class="feature">
+                    <h3>🌍 Multi-Language Support</h3>
+                    <p>Communicate in your language with AI-powered translation</p>
+                </div>
+                <div class="feature">
+                    <h3>💬 Real-Time Negotiation</h3>
+                    <p>Direct chat between artisans and buyers with cultural context</p>
+                </div>
+                <div class="feature">
+                    <h3>📦 Smart Logistics</h3>
+                    <p>Consolidated shipping and export documentation</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="map-section">
+        <div class="container">
+            <h2>Artisan Clusters Across India</h2>
+            <div id="clusterMap" style="height: 400px; width: 100%;"></div>
+        </div>
+    </section>
+
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="/static/js/main.js"></script>
+</body>
+</html>
