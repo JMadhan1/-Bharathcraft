@@ -29,6 +29,61 @@
                 <button class="btn btn-primary" onclick="showUploadProduct()">Upload New Product</button>
                 <div id="myProducts"></div>
             </div>
+        </div>
+    </div>
+
+    <!-- Product Upload Modal -->
+    <div id="uploadModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Upload New Product</h3>
+                <span class="close" onclick="closeUploadModal()">&times;</span>
+            </div>
+            <form id="productUploadForm" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="title">Product Title *</label>
+                    <input type="text" id="title" name="title" required>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description *</label>
+                    <textarea id="description" name="description" rows="4" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="craft_type">Craft Type</label>
+                    <select id="craft_type" name="craft_type">
+                        <option value="pottery">Pottery</option>
+                        <option value="textiles">Textiles</option>
+                        <option value="jewelry">Jewelry</option>
+                        <option value="woodwork">Woodwork</option>
+                        <option value="metalwork">Metalwork</option>
+                        <option value="painting">Painting</option>
+                        <option value="sculpture">Sculpture</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="price">Price (INR) *</label>
+                    <input type="number" id="price" name="price" min="0" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="stock_quantity">Stock Quantity</label>
+                    <input type="number" id="stock_quantity" name="stock_quantity" min="1" value="1">
+                </div>
+                <div class="form-group">
+                    <label for="production_time_days">Production Time (Days)</label>
+                    <input type="number" id="production_time_days" name="production_time_days" min="1" value="7">
+                </div>
+                <div class="form-group">
+                    <label for="images">Product Images *</label>
+                    <input type="file" id="images" name="images" multiple accept="image/*" required>
+                    <small>Select multiple images (PNG, JPG, JPEG, GIF, WEBP)</small>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeUploadModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Upload Product</button>
+                </div>
+            </form>
+        </div>
             <div class="card">
                 <h3>Recent Orders</h3>
                 <div id="recentOrders"></div>
