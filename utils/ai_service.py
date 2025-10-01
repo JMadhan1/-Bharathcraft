@@ -47,6 +47,16 @@ def translate_text(text, target_language):
     try:
         language_map = {
             'hi': 'Hindi',
+            'te': 'Telugu',
+            'ta': 'Tamil',
+            'kn': 'Kannada',
+            'ml': 'Malayalam',
+            'bn': 'Bengali',
+            'gu': 'Gujarati',
+            'mr': 'Marathi',
+            'pa': 'Punjabi',
+            'od': 'Odia',
+            'as': 'Assamese',
             'es': 'Spanish',
             'fr': 'French',
             'de': 'German',
