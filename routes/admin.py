@@ -2,17 +2,21 @@ from flask import Blueprint, request, jsonify, g
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from models import User, ArtisanProfile, BuyerProfile, Product, Order, Cluster
 from sqlalchemy import func
+from functools import wraps
 
 bp = Blueprint('admin', __name__, url_prefix='/api/admin')
 
 def admin_required(fn):
+    @wraps(fn)
     @jwt_required()
     def wrapper(*args, **kwargs):
-        identity = get_jwt_identity()
-        if identity['role'] != 'admin':
+        from flask_jwt_extended import get_jwt
+        user_id = int(get_jwt_identity())
+        claims = get_jwt()
+        role = claims.get('role')
+        if role != 'admin':
             return jsonify({'error': 'Admin access required'}), 403
         return fn(*args, **kwargs)
-    wrapper.__name__ = fn.__name__
     return wrapper
 
 @bp.route('/stats', methods=['GET'])

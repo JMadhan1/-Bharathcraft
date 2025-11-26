@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, g
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from models import Order, OrderItem, OrderMilestone, Product, BuyerProfile, OrderStatus
+from models import Order, OrderItem, OrderMilestone, Product, BuyerProfile, ArtisanProfile, OrderStatus
 from datetime import datetime
 import stripe
 import os
@@ -12,12 +12,16 @@ stripe.api_key = os.getenv('STRIPE_SECRET_KEY', '')
 @bp.route('/', methods=['POST'])
 @jwt_required()
 def create_order():
-    identity = get_jwt_identity()
+    from flask_jwt_extended import get_jwt
     
-    if identity['role'] != 'buyer':
+    user_id = int(get_jwt_identity())
+    claims = get_jwt()
+    role = claims.get('role')
+    
+    if role != 'buyer':
         return jsonify({'error': 'Only buyers can create orders'}), 403
     
-    buyer = g.db.query(BuyerProfile).filter_by(user_id=identity['id']).first()
+    buyer = g.db.query(BuyerProfile).filter_by(user_id=user_id).first()
     if not buyer:
         return jsonify({'error': 'Buyer profile not found'}), 404
     
@@ -91,16 +95,20 @@ def create_order():
 @bp.route('/', methods=['GET'])
 @jwt_required()
 def get_orders():
-    identity = get_jwt_identity()
+    from flask_jwt_extended import get_jwt
     
-    if identity['role'] == 'buyer':
-        buyer = g.db.query(BuyerProfile).filter_by(user_id=identity['id']).first()
+    user_id = int(get_jwt_identity())
+    claims = get_jwt()
+    role = claims.get('role')
+    
+    if role == 'buyer':
+        buyer = g.db.query(BuyerProfile).filter_by(user_id=user_id).first()
         if not buyer:
             return jsonify({'error': 'Buyer profile not found'}), 404
         orders = g.db.query(Order).filter_by(buyer_id=buyer.id).all()
-    elif identity['role'] == 'artisan':
+    elif role == 'artisan':
         orders = g.db.query(Order).join(OrderItem).join(Product).join(ArtisanProfile).filter(
-            ArtisanProfile.user_id == identity['id']
+            ArtisanProfile.user_id == user_id
         ).distinct().all()
     else:
         orders = g.db.query(Order).all()
@@ -150,7 +158,7 @@ def get_order(order_id):
 @bp.route('/<int:order_id>/status', methods=['PUT'])
 @jwt_required()
 def update_order_status(order_id):
-    identity = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     data = request.json
     
     if 'status' not in data:
@@ -190,16 +198,20 @@ def update_order_status(order_id):
 @bp.route('/<int:order_id>/payment', methods=['POST'])
 @jwt_required()
 def create_payment_intent(order_id):
-    identity = get_jwt_identity()
+    from flask_jwt_extended import get_jwt
     
-    if identity['role'] != 'buyer':
+    user_id = int(get_jwt_identity())
+    claims = get_jwt()
+    role = claims.get('role')
+    
+    if role != 'buyer':
         return jsonify({'error': 'Only buyers can make payments'}), 403
     
     order = g.db.query(Order).filter_by(id=order_id).first()
     if not order:
         return jsonify({'error': 'Order not found'}), 404
     
-    if order.buyer.user_id != identity['id']:
+    if order.buyer.user_id != user_id:
         return jsonify({'error': 'Unauthorized'}), 403
     
     if stripe.api_key:

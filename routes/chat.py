@@ -7,7 +7,7 @@ bp = Blueprint('chat', __name__, url_prefix='/api/chat')
 @bp.route('/messages', methods=['GET'])
 @jwt_required()
 def get_messages():
-    identity = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     
     other_user_id = request.args.get('user_id', type=int)
     
@@ -15,12 +15,12 @@ def get_messages():
         return jsonify({'error': 'user_id parameter required'}), 400
     
     messages = g.db.query(Message).filter(
-        ((Message.sender_id == identity['id']) & (Message.receiver_id == other_user_id)) |
-        ((Message.sender_id == other_user_id) & (Message.receiver_id == identity['id']))
+        ((Message.sender_id == user_id) & (Message.receiver_id == other_user_id)) |
+        ((Message.sender_id == other_user_id) & (Message.receiver_id == user_id))
     ).order_by(Message.created_at).all()
     
     for msg in messages:
-        if msg.receiver_id == identity['id'] and not msg.is_read:
+        if msg.receiver_id == user_id and not msg.is_read:
             msg.is_read = True
     
     g.db.commit()
@@ -39,10 +39,10 @@ def get_messages():
 @bp.route('/conversations', methods=['GET'])
 @jwt_required()
 def get_conversations():
-    identity = get_jwt_identity()
+    current_user_id = int(get_jwt_identity())
     
-    sent = g.db.query(Message.receiver_id).filter(Message.sender_id == identity['id']).distinct()
-    received = g.db.query(Message.sender_id).filter(Message.receiver_id == identity['id']).distinct()
+    sent = g.db.query(Message.receiver_id).filter(Message.sender_id == current_user_id).distinct()
+    received = g.db.query(Message.sender_id).filter(Message.receiver_id == current_user_id).distinct()
     
     user_ids = set([u[0] for u in sent] + [u[0] for u in received])
     
@@ -51,13 +51,13 @@ def get_conversations():
         user = g.db.query(User).filter_by(id=user_id).first()
         if user:
             last_message = g.db.query(Message).filter(
-                ((Message.sender_id == identity['id']) & (Message.receiver_id == user_id)) |
-                ((Message.sender_id == user_id) & (Message.receiver_id == identity['id']))
+                ((Message.sender_id == current_user_id) & (Message.receiver_id == user_id)) |
+                ((Message.sender_id == user_id) & (Message.receiver_id == current_user_id))
             ).order_by(Message.created_at.desc()).first()
             
             unread_count = g.db.query(Message).filter(
                 Message.sender_id == user_id,
-                Message.receiver_id == identity['id'],
+                Message.receiver_id == current_user_id,
                 Message.is_read == False
             ).count()
             

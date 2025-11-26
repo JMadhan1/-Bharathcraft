@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
 from flask_cors import CORS
 from flask_socketio import SocketIO
 from flask_jwt_extended import JWTManager
@@ -12,6 +12,7 @@ import routes.orders
 import routes.chat
 import routes.admin
 import routes.logistics
+import routes.impact
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -19,12 +20,42 @@ load_dotenv()
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SESSION_SECRET', 'dev-secret-key-change-in-production')
 app.config['JWT_SECRET_KEY'] = os.getenv('SESSION_SECRET', 'dev-secret-key-change-in-production')
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///bharatcraft.db')
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
+app.config['JWT_IDENTITY_CLAIM'] = 'sub'
+app.config['JWT_TOKEN_LOCATION'] = ['headers']
+app.config['JWT_HEADER_NAME'] = 'Authorization'
+app.config['JWT_HEADER_TYPE'] = 'Bearer'
 
 CORS(app, resources={r"/*": {"origins": "*"}})
 jwt = JWTManager(app)
+
+# JWT Error Handlers
+@jwt.expired_token_loader
+def expired_token_callback(jwt_header, jwt_payload):
+    return jsonify({'error': 'Token has expired', 'message': 'Please log in again'}), 401
+
+@jwt.invalid_token_loader
+def invalid_token_callback(error):
+    print(f"JWT Invalid Token Error: {error}")
+    return jsonify({
+        'error': 'Invalid token',
+        'message': 'Please log in again to get a new token',
+        'details': str(error)
+    }), 422
+
+@jwt.unauthorized_loader
+def unauthorized_callback(error):
+    return jsonify({
+        'error': 'Missing authorization header',
+        'message': 'Please include Authorization header with Bearer token'
+    }), 401
+
+@jwt.revoked_token_loader
+def revoked_token_callback(jwt_header, jwt_payload):
+    return jsonify({'error': 'Token has been revoked', 'message': 'Please log in again'}), 401
+
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
 
 engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
@@ -49,6 +80,7 @@ app.register_blueprint(routes.orders.bp)
 app.register_blueprint(routes.chat.bp)
 app.register_blueprint(routes.admin.bp)
 app.register_blueprint(routes.logistics.bp)
+app.register_blueprint(routes.impact.bp)
 
 @app.route('/')
 def index():
@@ -71,4 +103,14 @@ register_socketio_events(socketio)
 
 if __name__ == '__main__':
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-    socketio.run(app, host='0.0.0.0', port=5000, debug=True)
+    
+    # Get port from environment variable (Render sets this)
+    port = int(os.getenv('PORT', 5000))
+    
+    # Use 0.0.0.0 for production, 127.0.0.1 for local development
+    host = os.getenv('HOST', '127.0.0.1')
+    
+    # Disable debug in production
+    debug = os.getenv('FLASK_ENV', 'development') == 'development'
+    
+    socketio.run(app, host=host, port=port, debug=debug)

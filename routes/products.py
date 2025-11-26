@@ -17,70 +17,104 @@ def allowed_file(filename):
 @bp.route('/', methods=['POST'])
 @jwt_required()
 def create_product():
-    identity = get_jwt_identity()
+    try:
+        from flask_jwt_extended import get_jwt
+        
+        user_id = int(get_jwt_identity())
+        claims = get_jwt()
+        role = claims.get('role')
+        
+        if role != 'artisan':
+            return jsonify({'error': 'Only artisans can create products'}), 403
+        
+        artisan = g.db.query(ArtisanProfile).filter_by(user_id=user_id).first()
+        if not artisan:
+            return jsonify({'error': 'Artisan profile not found'}), 404
+        
+        data = request.form
+        files = request.files.getlist('images')
+        
+        if not all(k in data for k in ['title', 'description', 'price']):
+            return jsonify({'error': 'Missing required fields: title, description, or price'}), 400
+        
+        # Ensure upload directory exists
+        upload_dir = 'static/uploads'
+        if not os.path.exists(upload_dir):
+            os.makedirs(upload_dir, exist_ok=True)
+        
+        image_paths = []
+        for file in files:
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                filepath = os.path.join(upload_dir, f"{user_id}_{filename}")
+                file.save(filepath)
+                
+                # Resize image
+                try:
+                    img = Image.open(filepath)
+                    img.thumbnail((1200, 1200))
+                    img.save(filepath, optimize=True, quality=85)
+                except Exception as img_error:
+                    print(f"Image processing error: {img_error}")
+                
+                image_paths.append(filepath)
+        
+        if not image_paths:
+            return jsonify({'error': 'At least one valid image is required'}), 400
+        
+        # AI quality assessment
+        ai_score = None
+        try:
+            if image_paths:
+                ai_score = assess_quality(image_paths[0])
+        except Exception as ai_error:
+            print(f"AI quality assessment error: {ai_error}")
+            ai_score = 0.75  # Default score if AI fails
+        
+        # Determine quality grade
+        quality_grade = QualityGrade.STANDARD
+        if ai_score and ai_score >= 0.8:
+            quality_grade = QualityGrade.PREMIUM
+        elif ai_score and ai_score < 0.5:
+            quality_grade = QualityGrade.BASIC
+        
+        # Create product
+        product = Product(
+            artisan_id=artisan.id,
+            title=data['title'],
+            description=data['description'],
+            craft_type=data.get('craft_type', artisan.craft_type),
+            price=float(data['price']),
+            quality_grade=quality_grade,
+            ai_quality_score=ai_score,
+            images=json.dumps(image_paths),
+            stock_quantity=int(data.get('stock_quantity', 1)),
+            production_time_days=int(data.get('production_time_days', 7))
+        )
+        
+        g.db.add(product)
+        g.db.commit()
+        
+        return jsonify({
+            'message': 'Product created successfully',
+            'product': {
+                'id': product.id,
+                'title': product.title,
+                'price': product.price,
+                'quality_grade': product.quality_grade.value,
+                'ai_quality_score': product.ai_quality_score
+            }
+        }), 201
     
-    if identity['role'] != 'artisan':
-        return jsonify({'error': 'Only artisans can create products'}), 403
-    
-    artisan = g.db.query(ArtisanProfile).filter_by(user_id=identity['id']).first()
-    if not artisan:
-        return jsonify({'error': 'Artisan profile not found'}), 404
-    
-    data = request.form
-    files = request.files.getlist('images')
-    
-    if not all(k in data for k in ['title', 'description', 'price']):
-        return jsonify({'error': 'Missing required fields'}), 400
-    
-    image_paths = []
-    for file in files:
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            filepath = os.path.join('static/uploads', f"{identity['id']}_{filename}")
-            file.save(filepath)
-            
-            img = Image.open(filepath)
-            img.thumbnail((1200, 1200))
-            img.save(filepath, optimize=True, quality=85)
-            
-            image_paths.append(filepath)
-    
-    ai_score = None
-    if image_paths:
-        ai_score = assess_quality(image_paths[0])
-    
-    quality_grade = QualityGrade.STANDARD
-    if ai_score and ai_score >= 0.8:
-        quality_grade = QualityGrade.PREMIUM
-    elif ai_score and ai_score < 0.5:
-        quality_grade = QualityGrade.BASIC
-    
-    product = Product(
-        artisan_id=artisan.id,
-        title=data['title'],
-        description=data['description'],
-        craft_type=data.get('craft_type', artisan.craft_type),
-        price=float(data['price']),
-        quality_grade=quality_grade,
-        ai_quality_score=ai_score,
-        images=json.dumps(image_paths),
-        stock_quantity=int(data.get('stock_quantity', 1)),
-        production_time_days=int(data.get('production_time_days', 7))
-    )
-    
-    g.db.add(product)
-    g.db.commit()
-    
-    return jsonify({
-        'message': 'Product created successfully',
-        'product': {
-            'id': product.id,
-            'title': product.title,
-            'price': product.price,
-            'quality_grade': product.quality_grade.value,
-            'ai_quality_score': product.ai_quality_score
-        }
-    }), 201
+    except ValueError as ve:
+        g.db.rollback()
+        return jsonify({'error': f'Invalid data format: {str(ve)}'}), 400
+    except Exception as e:
+        g.db.rollback()
+        print(f"Error creating product: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': f'Error creating product: {str(e)}'}), 500
 
 @bp.route('/', methods=['GET'])
 def get_products():
@@ -160,9 +194,13 @@ def get_product(product_id):
 @bp.route('/<int:product_id>', methods=['PUT'])
 @jwt_required()
 def update_product(product_id):
-    identity = get_jwt_identity()
+    from flask_jwt_extended import get_jwt
     
-    if identity['role'] != 'artisan':
+    user_id = int(get_jwt_identity())
+    claims = get_jwt()
+    role = claims.get('role')
+    
+    if role != 'artisan':
         return jsonify({'error': 'Only artisans can update products'}), 403
     
     product = g.db.query(Product).filter_by(id=product_id).first()
@@ -170,7 +208,7 @@ def update_product(product_id):
     if not product:
         return jsonify({'error': 'Product not found'}), 404
     
-    if product.artisan.user_id != identity['id']:
+    if product.artisan.user_id != user_id:
         return jsonify({'error': 'Unauthorized'}), 403
     
     data = request.json
@@ -193,12 +231,16 @@ def update_product(product_id):
 @bp.route('/my-products', methods=['GET'])
 @jwt_required()
 def get_my_products():
-    identity = get_jwt_identity()
+    from flask_jwt_extended import get_jwt
     
-    if identity['role'] != 'artisan':
+    user_id = int(get_jwt_identity())
+    claims = get_jwt()
+    role = claims.get('role')
+    
+    if role != 'artisan':
         return jsonify({'error': 'Only artisans can view their products'}), 403
     
-    artisan = g.db.query(ArtisanProfile).filter_by(user_id=identity['id']).first()
+    artisan = g.db.query(ArtisanProfile).filter_by(user_id=user_id).first()
     if not artisan:
         return jsonify({'error': 'Artisan profile not found'}), 404
     
@@ -207,9 +249,14 @@ def get_my_products():
     return jsonify([{
         'id': p.id,
         'title': p.title,
+        'description': p.description,
         'price': p.price,
         'quality_grade': p.quality_grade.value if p.quality_grade else None,
+        'ai_quality_score': p.ai_quality_score,
         'stock_quantity': p.stock_quantity,
         'is_available': p.is_available,
+        'images': json.loads(p.images) if p.images else [],
+        'craft_type': p.craft_type,
+        'production_time_days': p.production_time_days,
         'created_at': p.created_at.isoformat()
     } for p in products]), 200

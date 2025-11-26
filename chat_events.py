@@ -6,7 +6,9 @@ from sqlalchemy.orm import sessionmaker
 import os
 from utils.ai_service import translate_text
 
-engine = create_engine(os.getenv('DATABASE_URL'))
+# Get DATABASE_URL with a default fallback
+database_url = os.getenv('DATABASE_URL', 'sqlite:///bharatcraft.db')
+engine = create_engine(database_url)
 Session = sessionmaker(bind=engine)
 
 def register_socketio_events(socketio):

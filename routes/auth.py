@@ -5,6 +5,19 @@ import bcrypt
 
 bp = Blueprint('auth', __name__, url_prefix='/api/auth')
 
+def create_user_token(user):
+    """Helper function to create JWT token for a user"""
+    if not user or not user.id:
+        raise ValueError("Invalid user object")
+    
+    # Ensure identity is a string
+    user_id_str = str(user.id)
+    
+    return create_access_token(
+        identity=user_id_str,
+        additional_claims={'role': user.role.value}
+    )
+
 @bp.route('/register', methods=['POST'])
 def register():
     data = request.json
@@ -54,7 +67,10 @@ def register():
     
     g.db.commit()
     
-    access_token = create_access_token(identity={'id': user.id, 'role': user.role.value})
+    try:
+        access_token = create_user_token(user)
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 500
     
     return jsonify({
         'message': 'Registration successful',
@@ -79,7 +95,13 @@ def login():
     if not user or not bcrypt.checkpw(data['password'].encode('utf-8'), user.password_hash.encode('utf-8')):
         return jsonify({'error': 'Invalid credentials'}), 401
     
-    access_token = create_access_token(identity={'id': user.id, 'role': user.role.value})
+    if not user.is_active:
+        return jsonify({'error': 'Account is inactive'}), 403
+    
+    try:
+        access_token = create_user_token(user)
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 500
     
     return jsonify({
         'access_token': access_token,
@@ -95,8 +117,12 @@ def login():
 @bp.route('/profile', methods=['GET'])
 @jwt_required()
 def get_profile():
-    identity = get_jwt_identity()
-    user = g.db.query(User).filter_by(id=identity['id']).first()
+    from flask_jwt_extended import get_jwt
+    
+    user_id = int(get_jwt_identity())
+    claims = get_jwt()
+    
+    user = g.db.query(User).filter_by(id=user_id).first()
     
     if not user:
         return jsonify({'error': 'User not found'}), 404
@@ -137,10 +163,10 @@ def get_profile():
 @bp.route('/profile', methods=['PUT'])
 @jwt_required()
 def update_profile():
-    identity = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     data = request.json
     
-    user = g.db.query(User).filter_by(id=identity['id']).first()
+    user = g.db.query(User).filter_by(id=user_id).first()
     if not user:
         return jsonify({'error': 'User not found'}), 404
     

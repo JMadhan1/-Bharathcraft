@@ -96,7 +96,7 @@ function showLogin() {
             <button type="submit" class="btn btn-primary">Login</button>
         </form>
     `;
-    document.getElementById('authModal').style.display = 'block';
+    document.getElementById('authModal').classList.add('active');
 }
 
 function showRegister() {
@@ -131,7 +131,7 @@ function showRegister() {
             <button type="submit" class="btn btn-primary">Register</button>
         </form>
     `;
-    document.getElementById('authModal').style.display = 'block';
+    document.getElementById('authModal').classList.add('active');
 }
 
 function registerAs(role) {
@@ -142,7 +142,7 @@ function registerAs(role) {
 }
 
 function closeModal() {
-    document.getElementById('authModal').style.display = 'none';
+    document.getElementById('authModal').classList.remove('active');
 }
 
 async function handleLogin(event) {

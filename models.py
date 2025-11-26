@@ -109,6 +109,9 @@ class Product(Base):
     stock_quantity = Column(Integer, default=1)
     production_time_days = Column(Integer)
     is_available = Column(Boolean, default=True)
+    gi_tag = Column(String(255))  # Geographical Indication tag
+    esg_certified = Column(Boolean, default=True)  # ESG compliance
+    carbon_footprint = Column(Float)  # Estimated carbon footprint in kg
     created_at = Column(DateTime, default=datetime.utcnow)
     
     artisan = relationship("ArtisanProfile", back_populates="products")

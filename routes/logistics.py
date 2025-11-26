@@ -42,17 +42,21 @@ def calculate_shipping():
 @bp.route('/export-docs/<int:order_id>', methods=['POST'])
 @jwt_required()
 def generate_export_docs(order_id):
-    identity = get_jwt_identity()
+    from flask_jwt_extended import get_jwt
+    
+    user_id = int(get_jwt_identity())
+    claims = get_jwt()
+    role = claims.get('role')
     
     order = g.db.query(Order).filter_by(id=order_id).first()
     if not order:
         return jsonify({'error': 'Order not found'}), 404
     
-    if identity['role'] == 'buyer' and order.buyer.user_id != identity['id']:
+    if role == 'buyer' and order.buyer.user_id != user_id:
         return jsonify({'error': 'Unauthorized access to this order'}), 403
     
-    if identity['role'] == 'artisan':
-        artisan_order = any(item.product.artisan.user_id == identity['id'] for item in order.order_items)
+    if role == 'artisan':
+        artisan_order = any(item.product.artisan.user_id == user_id for item in order.order_items)
         if not artisan_order:
             return jsonify({'error': 'Unauthorized access to this order'}), 403
     
@@ -108,17 +112,21 @@ def generate_export_docs(order_id):
 @bp.route('/export-docs/<int:order_id>', methods=['GET'])
 @jwt_required()
 def get_export_docs(order_id):
-    identity = get_jwt_identity()
+    from flask_jwt_extended import get_jwt
+    
+    user_id = int(get_jwt_identity())
+    claims = get_jwt()
+    role = claims.get('role')
     
     order = g.db.query(Order).filter_by(id=order_id).first()
     if not order:
         return jsonify({'error': 'Order not found'}), 404
     
-    if identity['role'] == 'buyer' and order.buyer.user_id != identity['id']:
+    if role == 'buyer' and order.buyer.user_id != user_id:
         return jsonify({'error': 'Unauthorized access to this order'}), 403
     
-    if identity['role'] == 'artisan':
-        artisan_order = any(item.product.artisan.user_id == identity['id'] for item in order.order_items)
+    if role == 'artisan':
+        artisan_order = any(item.product.artisan.user_id == user_id for item in order.order_items)
         if not artisan_order:
             return jsonify({'error': 'Unauthorized access to this order'}), 403
     
