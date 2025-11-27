@@ -3,20 +3,35 @@ AI Service with Google Gemini Support
 Provides quality assessment and translation using Gemini AI
 """
 import os
-import google.generativeai as genai
-from openai import OpenAI
+
+# Conditional imports
+try:
+    import google.generativeai as genai
+    GEMINI_AVAILABLE = True
+except ImportError:
+    GEMINI_AVAILABLE = False
+    genai = None
+
+try:
+    from openai import OpenAI
+    OPENAI_AVAILABLE = True
+except ImportError:
+    OPENAI_AVAILABLE = False
+    OpenAI = None
 
 # Configure AI providers
 AI_PROVIDER = os.getenv('AI_PROVIDER', 'gemini').lower()
 
 # Gemini configuration
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', '')
-if GEMINI_API_KEY:
+if GEMINI_AVAILABLE and GEMINI_API_KEY:
     genai.configure(api_key=GEMINI_API_KEY)
+elif not GEMINI_AVAILABLE:
+    print("[WARNING] google-generativeai not installed. Install with: pip install google-generativeai")
 
 # OpenAI configuration (fallback)
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', '')
-openai_client = OpenAI(api_key=OPENAI_API_KEY) if OPENAI_API_KEY else None
+openai_client = OpenAI(api_key=OPENAI_API_KEY) if OPENAI_AVAILABLE and OPENAI_API_KEY else None
 
 
 def assess_quality_gemini(image_path):
@@ -26,12 +41,16 @@ def assess_quality_gemini(image_path):
         return 0.75
     
     try:
+        if not GEMINI_AVAILABLE:
+            print("Warning: google-generativeai not installed, using default score")
+            return 0.75
+        
         # Upload image to Gemini
         from PIL import Image
         img = Image.open(image_path)
         
-        # Use Gemini Pro Vision model
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        # Use Gemini Flash model with vision capability
+        model = genai.GenerativeModel('gemini-2.5-flash')
         
         prompt = """Assess the quality of this handicraft product on a scale of 0.0 to 1.0.
 
@@ -145,7 +164,10 @@ def translate_text_gemini(text, target_language):
         
         target_lang_name = language_map.get(target_language, 'English')
         
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        if not GEMINI_AVAILABLE:
+            return text  # Return original if Gemini not available
+        
+        model = genai.GenerativeModel('gemini-2.5-flash')
         
         prompt = f"""You are a professional translator specializing in handicraft and artisan product descriptions.
 
@@ -239,8 +261,8 @@ Context: {negotiation_context}
 Provide brief, practical cultural context tips (2-3 sentences) to help both parties understand each other better."""
 
     try:
-        if GEMINI_API_KEY and AI_PROVIDER == 'gemini':
-            model = genai.GenerativeModel('gemini-1.5-flash')
+        if GEMINI_AVAILABLE and GEMINI_API_KEY and AI_PROVIDER == 'gemini':
+            model = genai.GenerativeModel('gemini-2.5-flash')
             response = model.generate_content(prompt)
             return response.text.strip()
         elif OPENAI_API_KEY and openai_client:
@@ -258,6 +280,70 @@ Provide brief, practical cultural context tips (2-3 sentences) to help both part
     except Exception as e:
         print(f"Cultural context error: {e}")
         return "Be respectful and professional in your communication."
+
+
+def get_gemini_response(prompt):
+    """
+    General purpose Gemini/OpenAI API call
+    Used for AI assistant, tutorials, translations, chat, etc.
+    """
+    try:
+        if GEMINI_AVAILABLE and GEMINI_API_KEY and (AI_PROVIDER == 'gemini' or not OPENAI_API_KEY):
+            print(f"[Gemini] Calling API with prompt length: {len(prompt)}")
+            model = genai.GenerativeModel('gemini-2.5-flash')
+            
+            # Add safety settings to prevent blocking
+            safety_settings = [
+                {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
+                {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE"},
+                {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE"},
+                {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
+            ]
+            
+            response = model.generate_content(
+                prompt,
+                safety_settings=safety_settings,
+                generation_config={
+                    'temperature': 0.7,
+                    'top_p': 1,
+                    'top_k': 40,
+                    'max_output_tokens': 1024,
+                }
+            )
+            
+            if response and response.text:
+                print(f"[Gemini] Response received, length: {len(response.text)}")
+                return response.text.strip()
+            else:
+                print(f"[Gemini] Empty response or blocked. Prompt feedback: {response.prompt_feedback if hasattr(response, 'prompt_feedback') else 'N/A'}")
+                return "I couldn't generate a response. Please try rephrasing your question."
+                
+        elif OPENAI_API_KEY and openai_client and OPENAI_AVAILABLE:
+            print(f"[OpenAI] Calling API with prompt length: {len(prompt)}")
+            response = openai_client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "user", "content": prompt}
+                ],
+                max_tokens=1000
+            )
+            result = response.choices[0].message.content.strip()
+            print(f"[OpenAI] Response received, length: {len(result)}")
+            return result
+        else:
+            if not GEMINI_AVAILABLE and AI_PROVIDER == 'gemini':
+                error_msg = "Gemini not available. Install with: pip install google-generativeai"
+                print(f"[AI Service] {error_msg}")
+                return f"AI service is currently unavailable. {error_msg}"
+            else:
+                print("[AI Service] No API key configured")
+                return "AI service is currently unavailable. Please configure an API key."
+            
+    except Exception as e:
+        print(f"[ERROR] AI response error: {type(e).__name__}: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return f"I'm having trouble right now. Error: {str(e)[:100]}"
 
 
 # Print configuration on module load

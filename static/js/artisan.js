@@ -21,6 +21,10 @@
     };
 
     document.addEventListener('DOMContentLoaded', function () {
+        // Show loading state
+        document.getElementById('myProducts').innerHTML = '<p>Loading products...</p>';
+        
+        // Load products
         loadMyProducts();
 
         document.getElementById('productUploadForm').addEventListener('submit', async function (e) {
@@ -34,11 +38,8 @@
         const formData = new FormData(form);
 
         try {
-            const response = await fetch('/api/products/', {
+            const response = await authenticatedFetch('/api/products/', {
                 method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${authToken}`
-                },
                 body: formData
             });
 
@@ -49,15 +50,6 @@
                 window.closeUploadModal();
                 loadMyProducts();
             } else {
-                // Handle invalid token errors (401, 422)
-                if (response.status === 422 || response.status === 401) {
-                    alert('Your session has expired or is invalid. Please log in again.');
-                    localStorage.removeItem('authToken');
-                    localStorage.removeItem('userData');
-                    window.location.href = '/';
-                    return;
-                }
-                
                 // Show detailed error message
                 const errorMsg = result.error || result.message || 'Unknown error';
                 alert('Error uploading product: ' + errorMsg);
@@ -71,34 +63,48 @@
 
     async function loadMyProducts() {
         try {
-            const response = await fetch('/api/products/my-products', {
-                headers: {
-                    'Authorization': `Bearer ${authToken}`
-                }
+            const response = await authenticatedFetch('/api/products/my-products', {
+                method: 'GET'
             });
 
-            const data = await response.json();
+            // Handle invalid token errors FIRST (401, 422)
+            if (response.status === 422 || response.status === 401) {
+                console.error('Invalid token detected - clearing storage and redirecting...');
+                localStorage.clear();
+                sessionStorage.clear();
+                window.location.href = '/?expired=1';
+                return;
+            }
+
+            let data;
+            try {
+                data = await response.json();
+            } catch (jsonError) {
+                console.error('Failed to parse JSON response:', jsonError);
+                document.getElementById('myProducts').innerHTML = '<p>Error: Invalid response from server. Please refresh the page.</p>';
+                return;
+            }
 
             // Check if response is successful and data is an array
             if (!response.ok) {
                 console.error('Error loading products:', data);
-                
-                // Handle invalid token errors (401, 422)
-                if (response.status === 422 || response.status === 401) {
-                    alert('Your session has expired or is invalid. Please log in again.');
-                    localStorage.removeItem('authToken');
-                    localStorage.removeItem('userData');
-                    window.location.href = '/';
-                    return;
-                }
-                
-                document.getElementById('myProducts').innerHTML = '<p>Error loading products: ' + (data.error || 'Unknown error') + '</p>';
+                document.getElementById('myProducts').innerHTML = `
+                    <div style="padding: 20px; background: #FEE; border: 1px solid #F88; border-radius: 8px; color: #C33;">
+                        <strong>⚠️ Error loading products:</strong><br>
+                        ${data.error || data.message || 'Unknown error'}
+                    </div>
+                `;
                 return;
             }
 
             if (!Array.isArray(data)) {
-                console.error('Invalid response format:', data);
-                document.getElementById('myProducts').innerHTML = '<p>Error: Invalid response from server</p>';
+                console.error('Invalid response format - expected array, got:', typeof data, data);
+                document.getElementById('myProducts').innerHTML = `
+                    <div style="padding: 20px; background: #FEE; border: 1px solid #F88; border-radius: 8px; color: #C33;">
+                        <strong>⚠️ Invalid response from server</strong><br>
+                        Please refresh the page or contact support if the issue persists.
+                    </div>
+                `;
                 return;
             }
 
@@ -147,6 +153,14 @@
             document.getElementById('myProducts').innerHTML = '<p>Error loading products.</p>';
         }
     }
+
+    // Switch to simple dashboard
+    window.switchToSimpleMode = function() {
+        if (confirm('Switch to Simple Dashboard?\n\n✓ Voice-enabled in 12 Indian languages\n✓ Easy photo upload\n✓ Perfect for first-time users\n\nस्विच करें सरल डैशबोर्ड पर?\n\n✓ आवाज सहायता\n✓ आसान उपयोग')) {
+            localStorage.setItem('artisanDashboardMode', 'simple');
+            window.location.href = '/artisan/dashboard-simple';
+        }
+    };
 
     // Expose logout globally (used in header)
     window.logout = function () {

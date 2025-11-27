@@ -88,6 +88,21 @@ body {
     background: #003D6B;
 }
 
+.btn-info {
+    background: linear-gradient(90deg, #1E3A8A 0%, #3B82F6 100%);
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-info:hover {
+    background: linear-gradient(90deg, #1E40AF 0%, #2563EB 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3);
+}
+
 .hero {
     background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
     color: var(--white);

@@ -1,0 +1,83 @@
+{
+  "greeting": "Hello",
+  "welcome": "Welcome",
+  "logout": "Logout",
+  "listen": "Listen",
+  "cards": {
+    "upload": {
+      "primary": "Take Photo",
+      "secondary": "Upload Product",
+      "subtitle": "Take photo of your craft",
+      "voice": "Tap here to take a photo of your craft. Taking a photo is easy."
+    },
+    "products": {
+      "primary": "My Products",
+      "secondary": "View Items",
+      "subtitle": "View your products",
+      "voice": "All your products will appear here. You can see how many have been sold."
+    },
+    "orders": {
+      "primary": "Orders",
+      "secondary": "New Orders",
+      "subtitle": "View new orders",
+      "voice": "Your new orders will appear here. You'll know when someone makes a purchase."
+    },
+    "earnings": {
+      "primary": "Earnings",
+      "secondary": "Your Money",
+      "subtitle": "Your earnings",
+      "voice": "Your earnings are displayed here. How much money you'll receive."
+    },
+    "messages": {
+      "primary": "Messages",
+      "secondary": "Chat",
+      "subtitle": "Chat with buyers",
+      "voice": "Chat with buyers. If you have any questions, ask here."
+    },
+    "help": {
+      "primary": "Learn",
+      "secondary": "Tutorial",
+      "subtitle": "Watch video",
+      "voice": "Learn by watching videos. We'll show you how to use it."
+    }
+  },
+  "upload": {
+    "title": "Take Photo of Your Craft",
+    "photoPrompt": "Tap here to take photo",
+    "photoPromptEn": "Camera will open",
+    "next": "Next",
+    "back": "Back",
+    "priceLabel": "Price (₹)",
+    "descriptionLabel": "Tell about your craft",
+    "descriptionOptional": "(Optional - Speak or Type)",
+    "speak": "Speak",
+    "typeHere": "Or type here...",
+    "submit": "Upload",
+    "uploading": "Uploading...",
+    "uploadingEn": "Please wait",
+    "success": "Success!",
+    "successMessage": "Your product has been uploaded",
+    "voiceInstruction": "First take a photo. Then tell the price. That's it!",
+    "priceInstruction": "How much do you want to sell for? Tap the buttons below to select a price."
+  },
+  "alerts": {
+    "noOrders": "You have no orders yet.",
+    "noOrdersEn": "Check back later",
+    "earningsPrefix": "Your earnings: ₹",
+    "earningsEn": "Total money earned",
+    "noMessages": "No messages yet.",
+    "noMessagesEn": "Check back later",
+    "tutorialSoon": "Video tutorial coming soon!",
+    "tutorialSoonEn": "We're working on it",
+    "thankYou": "Thank you! See you again।",
+    "sessionExpired": "Sorry, we couldn't hear you.",
+    "voiceNotSupported": "Sorry, this feature doesn't work on your phone.",
+    "uploadProblem": "Upload problem. Try again.",
+    "photoRequired": "Please take a photo",
+    "priceRequired": "Please enter a price"
+  },
+  "voiceGreeting": "Hello {name}. Welcome to Bharatcraft.",
+  "voiceUploadSuccess": "Excellent! Your product has been uploaded। Buyers can now see it.",
+  "voiceTutorial": "We'll add video tutorials soon. For now, tap the Take Photo button and upload your first product."
+}
+

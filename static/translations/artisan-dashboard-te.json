@@ -1,0 +1,83 @@
+{
+  "greeting": "నమస్కారం",
+  "welcome": "మీకు స్వాగతం",
+  "logout": "లాగౌట్",
+  "listen": "వినండి",
+  "cards": {
+    "upload": {
+      "primary": "ఫోటో తీయండి",
+      "secondary": "Take Photo",
+      "subtitle": "మీ పనిని ఫోటో తీయండి",
+      "voice": "మీ పనిని ఫోటో తీయడానికి ఇక్కడ నొక్కండి। ఫోటో తీయడం చాలా సులభం।"
+    },
+    "products": {
+      "primary": "నా ఉత్పత్తులు",
+      "secondary": "My Products",
+      "subtitle": "మీ ఉత్పత్తులను చూడండి",
+      "voice": "మీ అన్ని ఉత్పత్తులు ఇక్కడ కనిపిస్తాయి। ఎన్ని అమ్ముడయ్యాయో మీరు చూడవచ్చు।"
+    },
+    "orders": {
+      "primary": "ఆర్డర్లు",
+      "secondary": "Orders",
+      "subtitle": "కొత్త ఆర్డర్లను చూడండి",
+      "voice": "ఇక్కడ మీ కొత్త ఆర్డర్లు కనిపిస్తాయి। ఎవరైనా కొనుగోలు చేసినప్పుడు మీకు తెలుస్తుంది।"
+    },
+    "earnings": {
+      "primary": "సంపాదన",
+      "secondary": "Earnings",
+      "subtitle": "మీ సంపాదన",
+      "voice": "ఇక్కడ మీ సంపాదన కనిపిస్తుంది। మీకు ఎంత డబ్బు వస్తుంది।"
+    },
+    "messages": {
+      "primary": "సందేశాలు",
+      "secondary": "Messages",
+      "subtitle": "కొనుగోలుదారులతో మాట్లాడండి",
+      "voice": "కొనుగోలుదారులతో మాట్లాడండి। మీకు ఏమైనా ప్రశ్నలు ఉంటే ఇక్కడ అడగండి।"
+    },
+    "help": {
+      "primary": "నేర్చుకోండి",
+      "secondary": "Learn",
+      "subtitle": "వీడియో చూడండి",
+      "voice": "వీడియో చూసి నేర్చుకోండి। ఎలా ఉపయోగించాలో మేము మీకు చూపిస్తాము।"
+    }
+  },
+  "upload": {
+    "title": "మీ పనిని ఫోటో తీయండి",
+    "photoPrompt": "ఫోటో తీయడానికి ఇక్కడ నొక్కండి",
+    "photoPromptEn": "Tap here to take photo",
+    "next": "ముందుకు వెళ్ళండి",
+    "back": "వెనక్కి",
+    "priceLabel": "ధర (₹)",
+    "descriptionLabel": "మీ పని గురించి చెప్పండి",
+    "descriptionOptional": "(Optional - Speak or Type)",
+    "speak": "మాట్లాడండి",
+    "typeHere": "లేదా ఇక్కడ టైప్ చేయండి...",
+    "submit": "అప్లోడ్ చేయండి",
+    "uploading": "అప్లోడ్ అవుతోంది...",
+    "uploadingEn": "Uploading...",
+    "success": "విజయవంతం!",
+    "successMessage": "మీ ఉత్పత్తి అప్లోడ్ అయింది",
+    "voiceInstruction": "మొదట ఫోటో తీయండి। తర్వాత ధర చెప్పండి। అంతే!",
+    "priceInstruction": "మీరు ఎంత ధరకు అమ్మాలనుకుంటున్నారు? క్రింది బటన్లను నొక్కి ధరను ఎంచుకోండి।"
+  },
+  "alerts": {
+    "noOrders": "మీకు ఇంకా ఆర్డర్లు లేవు।",
+    "noOrdersEn": "You have no orders yet",
+    "earningsPrefix": "మీ సంపాదన: ₹",
+    "earningsEn": "Your earnings: ₹",
+    "noMessages": "ఇంకా సందేశాలు లేవు।",
+    "noMessagesEn": "No messages yet",
+    "tutorialSoon": "వీడియో ట్యుటోరియల్ త్వరలో వస్తోంది!",
+    "tutorialSoonEn": "Video tutorial coming soon!",
+    "thankYou": "ధన్యవాదాలు! మళ్లీ కలుద్దాం।",
+    "sessionExpired": "క్షమించండి, మేము మీ వాయిస్ వినలేకపోయాము।",
+    "voiceNotSupported": "క్షమించండి, ఈ ఫీచర్ మీ ఫోన్‌లో పని చేయదు।",
+    "uploadProblem": "అప్లోడ్‌లో సమస్య। మళ్లీ ప్రయత్నించండి।",
+    "photoRequired": "దయచేసి ఫోటో తీయండి",
+    "priceRequired": "దయచేసి ధర చెప్పండి"
+  },
+  "voiceGreeting": "నమస్కారం {name}। భరత్‌క్రాఫ్ట్‌కు స్వాగతం।",
+  "voiceUploadSuccess": "చాలా బాగుంది! మీ ఉత్పత్తి అప్లోడ్ అయింది। ఇప్పుడు కొనుగోలుదారులు దీన్ని చూడవచ్చు।",
+  "voiceTutorial": "మేము త్వరలో వీడియో ట్యుటోరియల్‌ను జోడిస్తాము। ఇప్పుడు, ఫోటో తీయండి బటన్‌ను నొక్కండి మరియు మీ మొదటి ఉత్పత్తిని అప్లోడ్ చేయండి।"
+}
+

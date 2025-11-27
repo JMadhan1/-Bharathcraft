@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bharatcraft - Artisan Dashboard</title>
+    <link rel="stylesheet" href="/static/css/artisan-simple.css">
+    <link rel="stylesheet" href="/static/css/ai-features.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Top Bar with Voice Support -->
+    <header class="simple-header">
+        <div class="logo">
+            <img src="/static/logo.png" alt="Bharatcraft" onerror="this.style.display='none'">
+            <span>Bharatcraft</span>
+        </div>
+        <div class="user-info">
+            <select id="languageSelector" class="language-selector" onchange="changeLanguage(this.value)">
+                <option value="hi">हिंदी</option>
+                <option value="te">తెలుగు</option>
+                <option value="ta">தமிழ்</option>
+                <option value="kn">ಕನ್ನಡ</option>
+                <option value="ml">മലയാളം</option>
+                <option value="bn">বাংলা</option>
+                <option value="gu">ગુજરાતી</option>
+                <option value="mr">मराठी</option>
+                <option value="pa">ਪੰਜਾਬੀ</option>
+                <option value="od">ଓଡ଼ିଆ</option>
+                <option value="as">অসমীয়া</option>
+                <option value="en">English</option>
+            </select>
+            <button class="mode-switch-btn" onclick="switchToAdvancedMode()" title="Switch to Advanced Dashboard">
+                <i class="fas fa-cog"></i>
+                <span>Advanced</span>
+            </button>
+            <button class="voice-btn" onclick="startVoiceHelp()">
+                <i class="fas fa-volume-up"></i>
+                <span class="voice-text" id="listenText">सुनें</span>
+            </button>
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Dashboard - Large Visual Cards -->
+    <main class="dashboard-container">
+        <!-- Greeting with Voice -->
+        <div class="greeting-card">
+            <div class="greeting-icon">
+                <i class="fas fa-hand-sparkles"></i>
+            </div>
+            <h1 id="userName" data-voice="आपका स्वागत है">नमस्ते!</h1>
+            <button class="voice-help-btn" onclick="playVoice('greeting')">
+                <i class="fas fa-volume-up"></i> सुनें
+            </button>
+        </div>
+
+        <!-- Big Action Cards - Icon First, Minimal Text -->
+        <div class="action-cards">
+            
+            <!-- Card 1: Upload Product (Simplified) -->
+            <div class="big-card upload-card" data-card="upload" onclick="showSimpleUpload()">
+                <div class="card-icon">
+                    <i class="fas fa-camera"></i>
+                </div>
+                <div class="card-title">
+                    <span class="card-primary">फोटो खींचें</span>
+                    <span class="card-secondary">Take Photo</span>
+                </div>
+                <div class="card-subtitle">
+                    <span class="card-subtitle-text">अपने काम की फोटो लें</span>
+                </div>
+                <button class="voice-btn-small" onclick="playVoice('upload'); event.stopPropagation();">
+                    <i class="fas fa-volume-up"></i>
+                </button>
+            </div>
+
+            <!-- Card 2: My Products -->
+            <div class="big-card products-card" data-card="products" onclick="showMyProducts()">
+                <div class="card-icon">
+                    <i class="fas fa-box-open"></i>
+                </div>
+                <div class="card-badge">
+                    <span id="productCount">0</span>
+                </div>
+                <div class="card-title">
+                    <span class="card-primary">मेरा सामान</span>
+                    <span class="card-secondary">My Products</span>
+                </div>
+                <div class="card-subtitle">
+                    <span class="card-subtitle-text">आपके उत्पाद देखें</span>
+                </div>
+                <button class="voice-btn-small" onclick="playVoice('products'); event.stopPropagation();">
+                    <i class="fas fa-volume-up"></i>
+                </button>
+            </div>
+
+            <!-- Card 3: Orders (with notification) -->
+            <div class="big-card orders-card" data-card="orders" onclick="showOrders()">
+                <div class="card-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <div class="card-badge notification-badge">
+                    <span id="orderCount">0</span>
+                </div>
+                <div class="card-title">
+                    <span class="card-primary">ऑर्डर</span>
+                    <span class="card-secondary">Orders</span>
+                </div>
+                <div class="card-subtitle">
+                    <span class="card-subtitle-text">नए ऑर्डर देखें</span>
+                </div>
+                <button class="voice-btn-small" onclick="playVoice('orders'); event.stopPropagation();">
+                    <i class="fas fa-volume-up"></i>
+                </button>
+            </div>
+
+            <!-- Card 4: Earnings (Visual Money) -->
+            <div class="big-card earnings-card" data-card="earnings" onclick="showEarnings()">
+                <div class="card-icon">
+                    <i class="fas fa-coins"></i>
+                </div>
+                <div class="card-title">
+                    <span class="card-primary">कमाई</span>
+                    <span class="card-secondary">Earnings</span>
+                </div>
+                <div class="earnings-amount">
+                    <span>₹</span><span id="totalEarnings">0</span>
+                </div>
+                <div class="card-subtitle">
+                    <span class="card-subtitle-text">आपकी कमाई</span>
+                </div>
+                <button class="voice-btn-small" onclick="playVoice('earnings'); event.stopPropagation();">
+                    <i class="fas fa-volume-up"></i>
+                </button>
+            </div>
+
+            <!-- Card 5: Messages/Chat -->
+            <div class="big-card messages-card" data-card="messages" onclick="showMessages()">
+                <div class="card-icon">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <div class="card-badge notification-badge">
+                    <span id="messageCount">0</span>
+                </div>
+                <div class="card-title">
+                    <span class="card-primary">संदेश</span>
+                    <span class="card-secondary">Messages</span>
+                </div>
+                <div class="card-subtitle">
+                    <span class="card-subtitle-text">खरीदार से बात करें</span>
+                </div>
+                <button class="voice-btn-small" onclick="playVoice('messages'); event.stopPropagation();">
+                    <i class="fas fa-volume-up"></i>
+                </button>
+            </div>
+
+            <!-- Card 6: Help/Tutorial -->
+            <div class="big-card help-card" data-card="help" onclick="showVideoTutorial()">
+                <div class="card-icon">
+                    <i class="fas fa-play-circle"></i>
+                </div>
+                <div class="card-title">
+                    <span class="card-primary">सीखें</span>
+                    <span class="card-secondary">Learn</span>
+                </div>
+                <div class="card-subtitle">
+                    <span class="card-subtitle-text">वीडियो देखें</span>
+                </div>
+                <button class="voice-btn-small" onclick="playVoice('help'); event.stopPropagation();">
+                    <i class="fas fa-volume-up"></i>
+                </button>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Simplified Upload Modal - Photo First -->
+    <div id="uploadModal" class="modal">
+        <div class="modal-content simple-upload">
+            <button class="close-btn" onclick="closeUploadModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <h2>
+                <span class="hindi">अपने काम की फोटो लें</span>
+                <button class="voice-btn-inline" onclick="playVoice('upload-instruction')">
+                    <i class="fas fa-volume-up"></i>
+                </button>
+            </h2>
+
+            <form id="simpleUploadForm">
+                <!-- Step 1: Photo (BIG) -->
+                <div class="upload-step active" id="step1">
+                    <div class="photo-upload-area" onclick="document.getElementById('photoInput').click()">
+                        <i class="fas fa-camera-retro"></i>
+                        <p class="hindi">फोटो लेने के लिए यहाँ दबाएं</p>
+                        <p class="english">Tap here to take photo</p>
+                        <input type="file" id="photoInput" name="images" accept="image/*" capture="environment" multiple style="display: none;" onchange="showPhotoPreview(this)">
+                    </div>
+                    <div id="photoPreview" class="photo-preview"></div>
+                    <button type="button" class="big-next-btn" onclick="nextStep(2)" style="display: none;" id="photoNextBtn">
+                        <span class="hindi">आगे बढ़ें</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+
+                <!-- Step 2: Price (Numbers Only, Big Buttons) -->
+                <div class="upload-step" id="step2">
+                    <label>
+                        <span class="hindi">कीमत (₹)</span>
+                        <button type="button" class="voice-btn-inline" onclick="playVoice('price-instruction')">
+                            <i class="fas fa-volume-up"></i>
+                        </button>
+                    </label>
+                    <div class="number-pad">
+                        <input type="number" id="priceInput" name="price" inputmode="numeric" pattern="[0-9]*" placeholder="100" required>
+                        <div class="quick-price-buttons">
+                            <button type="button" onclick="setPrice(50)">₹50</button>
+                            <button type="button" onclick="setPrice(100)">₹100</button>
+                            <button type="button" onclick="setPrice(200)">₹200</button>
+                            <button type="button" onclick="setPrice(500)">₹500</button>
+                            <button type="button" onclick="setPrice(1000)">₹1000</button>
+                            <button type="button" onclick="setPrice(2000)">₹2000</button>
+                        </div>
+                    </div>
+                    <div class="step-buttons">
+                        <button type="button" class="back-btn" onclick="prevStep(1)">
+                            <i class="fas fa-arrow-left"></i> <span class="hindi">पीछे</span>
+                        </button>
+                        <button type="button" class="big-next-btn" onclick="nextStep(3)">
+                            <span class="hindi">आगे</span> <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Voice Description (Optional) -->
+                <div class="upload-step" id="step3">
+                    <label>
+                        <span class="hindi">अपने काम के बारे में बताएं</span>
+                        <span class="english">(Optional - Speak or Type)</span>
+                    </label>
+                    <button type="button" class="voice-record-btn" onclick="startVoiceDescription()">
+                        <i class="fas fa-microphone"></i>
+                        <span class="hindi">बोलें</span>
+                    </button>
+                    <textarea id="descriptionInput" name="description" rows="3" placeholder="या यहाँ लिखें..."></textarea>
+                    <input type="hidden" name="title" id="titleInput">
+                    <div class="step-buttons">
+                        <button type="button" class="back-btn" onclick="prevStep(2)">
+                            <i class="fas fa-arrow-left"></i> <span class="hindi">पीछे</span>
+                        </button>
+                        <button type="submit" class="big-submit-btn">
+                            <i class="fas fa-check-circle"></i>
+                            <span class="hindi">अपलोड करें</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Loading State -->
+            <div id="uploadingState" class="uploading-state" style="display: none;">
+                <div class="spinner"></div>
+                <p class="hindi">अपलोड हो रहा है...</p>
+                <p class="english">Uploading...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Animation -->
+    <div id="successAnimation" class="success-animation" style="display: none;">
+        <div class="success-checkmark">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <h2 class="hindi">सफल!</h2>
+        <p class="hindi">आपका उत्पाद अपलोड हो गया</p>
+    </div>
+
+    <script src="/static/js/artisan-simple-multilingual.js"></script>
+</body>
+</html>
+

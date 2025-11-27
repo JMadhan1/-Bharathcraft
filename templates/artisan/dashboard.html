@@ -7,6 +7,10 @@
     <title>Artisan Dashboard - Bharatcraft</title>
     <link rel="stylesheet" href="/static/css/main.css">
     <link rel="stylesheet" href="/static/css/product-cards.css">
+    <link rel="stylesheet" href="/static/css/chat.css">
+    <link rel="stylesheet" href="/static/css/chat-enhanced.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <header class="header">
@@ -14,6 +18,9 @@
             <h1 class="logo">🎨 Bharatcraft</h1>
             <nav class="nav">
                 <span id="userName"></span>
+                <button class="btn btn-info" onclick="switchToSimpleMode()" title="Switch to Simple Dashboard (Voice-enabled, Easy to use)">
+                    <i class="fas fa-mobile-alt"></i> Simple Mode
+                </button>
                 <button class="btn btn-secondary" onclick="logout()">Logout</button>
             </nav>
         </div>
@@ -96,7 +103,10 @@
         </div>
     </div>
 
+    <script src="/static/js/auth-helper.js"></script>
     <script src="/static/js/main.js"></script>
+    <script src="/static/js/chat.js"></script>
+    <script src="/static/js/chat-enhanced.js"></script>
     <script src="/static/js/artisan.js"></script>
 </body>
 </html>

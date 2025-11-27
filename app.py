@@ -13,6 +13,11 @@ import routes.chat
 import routes.admin
 import routes.logistics
 import routes.impact
+import routes.ai_assistant
+import routes.negotiation
+import routes.translation
+import routes.export_docs
+import routes.cluster_pooling
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -81,6 +86,11 @@ app.register_blueprint(routes.chat.bp)
 app.register_blueprint(routes.admin.bp)
 app.register_blueprint(routes.logistics.bp)
 app.register_blueprint(routes.impact.bp)
+app.register_blueprint(routes.ai_assistant.bp)
+app.register_blueprint(routes.negotiation.bp)
+app.register_blueprint(routes.translation.bp)
+app.register_blueprint(routes.export_docs.bp)
+app.register_blueprint(routes.cluster_pooling.bp)
 
 @app.route('/')
 def index():
@@ -90,9 +100,15 @@ def index():
 def artisan_portal():
     return render_template('artisan/dashboard.html')
 
+@app.route('/artisan/dashboard-simple')
+@app.route('/artisan/dashboard-simple.html')
+def artisan_portal_simple():
+    return render_template('artisan/dashboard-simple.html')
+
 @app.route('/buyer')
+@app.route('/buyer/dashboard')
 def buyer_portal():
-    return render_template('buyer/dashboard.html')
+    return render_template('buyer/dashboard-modern.html')
 
 @app.route('/admin')
 def admin_portal():

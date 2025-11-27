@@ -1,0 +1,83 @@
+{
+  "greeting": "नमस्ते",
+  "welcome": "आपका स्वागत है",
+  "logout": "लॉगआउट",
+  "listen": "सुनें",
+  "cards": {
+    "upload": {
+      "primary": "फोटो खींचें",
+      "secondary": "Take Photo",
+      "subtitle": "अपने काम की फोटो लें",
+      "voice": "अपने काम की फोटो लेने के लिए यहां दबाएं। फोटो लेना आसान है।"
+    },
+    "products": {
+      "primary": "मेरा सामान",
+      "secondary": "My Products",
+      "subtitle": "आपके उत्पाद देखें",
+      "voice": "आपके सभी उत्पाद यहां दिखाई देंगे। आप देख सकते हैं कि कितने बेचे गए।"
+    },
+    "orders": {
+      "primary": "ऑर्डर",
+      "secondary": "Orders",
+      "subtitle": "नए ऑर्डर देखें",
+      "voice": "यहां आपके नए ऑर्डर दिखाई देंगे। जब कोई खरीदता है तो आपको पता चल जाएगा।"
+    },
+    "earnings": {
+      "primary": "कमाई",
+      "secondary": "Earnings",
+      "subtitle": "आपकी कमाई",
+      "voice": "यहां आपकी कमाई दिखाई देती है। आपको कितना पैसा मिलेगा।"
+    },
+    "messages": {
+      "primary": "संदेश",
+      "secondary": "Messages",
+      "subtitle": "खरीदार से बात करें",
+      "voice": "खरीदार से बात करें। अगर आपको कोई सवाल है तो यहां पूछें।"
+    },
+    "help": {
+      "primary": "सीखें",
+      "secondary": "Learn",
+      "subtitle": "वीडियो देखें",
+      "voice": "वीडियो देखकर सीखें। हम आपको दिखाएंगे कैसे यूज करना है।"
+    }
+  },
+  "upload": {
+    "title": "अपने काम की फोटो लें",
+    "photoPrompt": "फोटो लेने के लिए यहाँ दबाएं",
+    "photoPromptEn": "Tap here to take photo",
+    "next": "आगे बढ़ें",
+    "back": "पीछे",
+    "priceLabel": "कीमत (₹)",
+    "descriptionLabel": "अपने काम के बारे में बताएं",
+    "descriptionOptional": "(Optional - Speak or Type)",
+    "speak": "बोलें",
+    "typeHere": "या यहाँ लिखें...",
+    "submit": "अपलोड करें",
+    "uploading": "अपलोड हो रहा है...",
+    "uploadingEn": "Uploading...",
+    "success": "सफल!",
+    "successMessage": "आपका उत्पाद अपलोड हो गया",
+    "voiceInstruction": "पहले फोटो लें। फिर कीमत बताएं। बस इतना ही!",
+    "priceInstruction": "आप कितने में बेचना चाहते हैं? नीचे के बटन दबाकर कीमत चुनें।"
+  },
+  "alerts": {
+    "noOrders": "आपके पास अभी कोई ऑर्डर नहीं है।",
+    "noOrdersEn": "You have no orders yet",
+    "earningsPrefix": "आपकी कमाई: ₹",
+    "earningsEn": "Your earnings: ₹",
+    "noMessages": "अभी कोई संदेश नहीं है।",
+    "noMessagesEn": "No messages yet",
+    "tutorialSoon": "वीडियो ट्यूटोरियल जल्द आ रहा है!",
+    "tutorialSoonEn": "Video tutorial coming soon!",
+    "thankYou": "धन्यवाद! फिर मिलेंगे।",
+    "sessionExpired": "माफ़ करें, हम आपकी आवाज़ नहीं सुन पाए।",
+    "voiceNotSupported": "माफ़ करें, यह फीचर आपके फोन में काम नहीं करता।",
+    "uploadProblem": "अपलोड में समस्या। फिर से कोशिश करें।",
+    "photoRequired": "कृपया फोटो लें",
+    "priceRequired": "कृपया कीमत बताएं"
+  },
+  "voiceGreeting": "नमस्ते {name}। भरतक्राफ्ट में आपका स्वागत है।",
+  "voiceUploadSuccess": "बहुत बढ़िया! आपका उत्पाद अपलोड हो गया। अब खरीदार इसे देख सकते हैं।",
+  "voiceTutorial": "हम जल्द ही वीडियो ट्यूटोरियल जोड़ेंगे। अभी के लिए, फोटो लें बटन दबाएं और अपना पहला उत्पाद अपलोड करें।"
+}
+

@@ -1,0 +1,343 @@
+/* ============================================
+   AI FEATURES STYLING
+   For Messages (Chat Assistant) and Learn (Tutorials)
+   ============================================ */
+
+/* === AI MODAL === */
+.ai-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    animation: fadeIn 0.3s ease;
+}
+
+.ai-modal-content {
+    background: white;
+    border-radius: 24px;
+    max-width: 800px;
+    width: 100%;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.3);
+}
+
+.ai-modal-header {
+    padding: 1.5rem 2rem;
+    border-bottom: 2px solid #E7DFD5;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ai-modal-header h2 {
+    font-size: 1.5rem;
+    color: #1F2937;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0;
+}
+
+.ai-close-btn {
+    background: #EF4444;
+    border: none;
+    color: white;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    font-size: 1.25rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.ai-close-btn:hover {
+    transform: scale(1.1);
+    background: #DC2626;
+}
+
+/* === AI CHAT CONTAINER === */
+.ai-chat-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 2rem;
+    background: #FFF8F0;
+}
+
+.ai-chat-welcome {
+    text-align: center;
+    padding: 2rem;
+}
+
+.ai-chat-welcome p {
+    font-size: 1.25rem;
+    color: #1F2937;
+    margin: 1rem 0 2rem;
+}
+
+.ai-quick-questions {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.ai-quick-btn {
+    padding: 1rem 1.5rem;
+    background: white;
+    border: 2px solid #FF6B35;
+    color: #1F2937;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: left;
+}
+
+.ai-quick-btn:hover {
+    background: #FF6B35;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.ai-messages {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.ai-message {
+    display: flex;
+    gap: 0.75rem;
+    animation: fadeInUp 0.3s ease;
+}
+
+.user-message {
+    justify-content: flex-end;
+}
+
+.bot-message {
+    justify-content: flex-start;
+}
+
+.ai-message-content {
+    max-width: 70%;
+    padding: 1rem 1.5rem;
+    border-radius: 16px;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.user-message .ai-message-content {
+    background: #FF6B35;
+    color: white;
+}
+
+.bot-message .ai-message-content {
+    background: white;
+    color: #1F2937;
+    border: 2px solid #E7DFD5;
+}
+
+.error-message .ai-message-content {
+    background: #FEE;
+    border-color: #F88;
+    color: #C33;
+}
+
+.bot-message button {
+    background: #FF6B35;
+    border: none;
+    color: white;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.bot-message button:hover {
+    transform: scale(1.1);
+}
+
+/* === AI INPUT === */
+.ai-input-container {
+    padding: 1.5rem 2rem;
+    border-top: 2px solid #E7DFD5;
+    display: flex;
+    gap: 1rem;
+}
+
+.ai-input-container input {
+    flex: 1;
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    border: 2px solid #E7DFD5;
+    border-radius: 50px;
+    outline: none;
+}
+
+.ai-input-container input:focus {
+    border-color: #FF6B35;
+}
+
+.ai-send-btn, .ai-mic-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.125rem;
+}
+
+.ai-send-btn {
+    background: #FF6B35;
+    color: white;
+}
+
+.ai-send-btn:hover {
+    background: #E5562E;
+    transform: scale(1.1);
+}
+
+.ai-mic-btn {
+    background: #059669;
+    color: white;
+}
+
+.ai-mic-btn:hover {
+    background: #047857;
+    transform: scale(1.1);
+}
+
+/* === LEARNING CENTER === */
+.ai-learning-container {
+    display: flex;
+    height: 600px;
+}
+
+.learning-topics {
+    width: 250px;
+    border-right: 2px solid #E7DFD5;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    overflow-y: auto;
+    background: #FFF8F0;
+}
+
+.learning-topic-btn {
+    padding: 1rem 1.5rem;
+    background: white;
+    border: 2px solid #E7DFD5;
+    color: #1F2937;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-align: left;
+}
+
+.learning-topic-btn:hover {
+    background: #FF6B35;
+    color: white;
+    border-color: #FF6B35;
+    transform: translateX(4px);
+}
+
+.learning-topic-btn i {
+    font-size: 1.25rem;
+}
+
+.learning-content {
+    flex: 1;
+    padding: 2rem;
+    overflow-y: auto;
+    background: #FFF8F0;
+}
+
+.learning-welcome, .loading-tutorial, .tutorial-error {
+    text-align: center;
+    padding: 3rem 2rem;
+}
+
+.learning-welcome p, .loading-tutorial p, .tutorial-error p {
+    font-size: 1.25rem;
+    color: #1F2937;
+    margin-top: 1rem;
+}
+
+.tutorial-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+}
+
+.tutorial-text {
+    font-size: 1.125rem;
+    line-height: 1.8;
+    color: #1F2937;
+    margin-bottom: 2rem;
+}
+
+.tutorial-voice-btn {
+    background: #FF6B35;
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0 auto;
+    transition: all 0.3s ease;
+}
+
+.tutorial-voice-btn:hover {
+    background: #E5562E;
+    transform: translateY(-2px);
+}
+
+/* === RESPONSIVE AI MODAL === */
+@media (max-width: 768px) {
+    .ai-learning-container {
+        flex-direction: column;
+        height: auto;
+    }
+    
+    .learning-topics {
+        width: 100%;
+        border-right: none;
+        border-bottom: 2px solid #E7DFD5;
+        flex-direction: row;
+        overflow-x: auto;
+    }
+    
+    .ai-message-content {
+        max-width: 85%;
+    }
+}
+

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discover Authentic Indian Crafts - Bharatcraft</title>
+    <link rel="stylesheet" href="/static/css/buyer-modern.css">
+    <link rel="stylesheet" href="/static/css/chat.css">
+    <link rel="stylesheet" href="/static/css/chat-enhanced.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="modern-header">
+        <div class="header-container">
+            <div class="logo-section">
+                <img src="/static/logo.png" alt="Bharatcraft" onerror="this.style.display='none'">
+                <h1>Bharatcraft</h1>
+            </div>
+            
+            <div class="search-bar-header">
+                <i class="fas fa-search"></i>
+                <input type="text" id="headerSearch" placeholder="Search for handicrafts, artisans, regions..." onkeyup="quickSearch(this.value)">
+            </div>
+            
+            <nav class="header-nav">
+                <button class="icon-btn" onclick="showWishlist()" title="Wishlist">
+                    <i class="fas fa-heart"></i>
+                    <span class="badge" id="wishlistCount">0</span>
+                </button>
+                <button class="icon-btn" onclick="showCart()" title="Cart">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="badge" id="cartCount">0</span>
+                </button>
+                <div class="user-menu">
+                    <button class="user-btn" onclick="toggleUserMenu()">
+                        <i class="fas fa-user-circle"></i>
+                        <span id="userName">Buyer</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="user-dropdown" id="userDropdown">
+                        <a href="#" onclick="showOrders()"><i class="fas fa-box"></i> My Orders</a>
+                        <a href="#" onclick="showProfile()"><i class="fas fa-user"></i> Profile</a>
+                        <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-buyer">
+        <div class="hero-content">
+            <h2>Discover Authentic Indian Handicrafts</h2>
+            <p>Directly from skilled artisans across India</p>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <i class="fas fa-users"></i>
+                    <span class="stat-number" id="totalArtisans">7,523</span>
+                    <span class="stat-label">Artisans</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-box-open"></i>
+                    <span class="stat-number" id="totalProducts">1,247</span>
+                    <span class="stat-label">Products</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-certificate"></i>
+                    <span class="stat-number">100%</span>
+                    <span class="stat-label">Authentic</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="dashboard-container">
+        <!-- Sidebar Filters -->
+        <aside class="filters-sidebar">
+            <div class="filter-header">
+                <h3><i class="fas fa-filter"></i> Filters</h3>
+                <button class="btn-text" onclick="clearFilters()">Clear All</button>
+            </div>
+
+            <!-- Category Filter -->
+            <div class="filter-section">
+                <h4>Category</h4>
+                <div class="filter-options">
+                    <label class="filter-checkbox">
+                        <input type="checkbox" value="pottery" onchange="applyFilters()">
+                        <span>🏺 Pottery</span>
+                    </label>
+                    <label class="filter-checkbox">
+                        <input type="checkbox" value="textiles" onchange="applyFilters()">
+                        <span>🧵 Textiles</span>
+                    </label>
+                    <label class="filter-checkbox">
+                        <input type="checkbox" value="jewelry" onchange="applyFilters()">
+                        <span>💎 Jewelry</span>
+                    </label>
+                    <label class="filter-checkbox">
+                        <input type="checkbox" value="woodwork" onchange="applyFilters()">
+                        <span>🪵 Woodwork</span>
+                    </label>
+                    <label class="filter-checkbox">
+                        <input type="checkbox" value="metalwork" onchange="applyFilters()">
+                        <span>🔨 Metalwork</span>
+                    </label>
+                    <label class="filter-checkbox">
+                        <input type="checkbox" value="painting" onchange="applyFilters()">
+                        <span>🎨 Painting</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Price Range -->
+            <div class="filter-section">
+                <h4>Price Range (₹)</h4>
+                <div class="price-inputs">
+                    <input type="number" id="minPrice" placeholder="Min" onchange="applyFilters()">
+                    <span>to</span>
+                    <input type="number" id="maxPrice" placeholder="Max" onchange="applyFilters()">
+                </div>
+                <div class="price-range-slider">
+                    <input type="range" id="priceRange" min="0" max="10000" value="10000" oninput="updatePriceRange(this.value)">
+                    <span id="priceRangeValue">Up to ₹10,000</span>
+                </div>
+            </div>
+
+            <!-- Quality Filter -->
+            <div class="filter-section">
+                <h4>Quality Grade</h4>
+                <div class="filter-options">
+                    <label class="filter-checkbox">
+                        <input type="checkbox" value="premium" onchange="applyFilters()">
+                        <span>⭐ Premium</span>
+                    </label>
+                    <label class="filter-checkbox">
+                        <input type="checkbox" value="standard" onchange="applyFilters()">
+                        <span>✓ Standard</span>
+                    </label>
+                    <label class="filter-checkbox">
+                        <input type="checkbox" value="basic" onchange="applyFilters()">
+                        <span>• Basic</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Region Filter -->
+            <div class="filter-section">
+                <h4>Region</h4>
+                <select class="region-select" onchange="applyFilters()">
+                    <option value="">All Regions</option>
+                    <option value="rajasthan">Rajasthan</option>
+                    <option value="gujarat">Gujarat</option>
+                    <option value="kashmir">Kashmir</option>
+                    <option value="bengal">West Bengal</option>
+                    <option value="tamil-nadu">Tamil Nadu</option>
+                    <option value="kerala">Kerala</option>
+                </select>
+            </div>
+
+            <!-- AI-Powered Features -->
+            <div class="filter-section ai-features">
+                <h4><i class="fas fa-robot"></i> AI-Powered</h4>
+                <button class="ai-feature-btn" onclick="showAIRecommendations()">
+                    <i class="fas fa-magic"></i>
+                    <span>Get Personalized Recommendations</span>
+                </button>
+                <button class="ai-feature-btn" onclick="visualSearch()">
+                    <i class="fas fa-camera"></i>
+                    <span>Search by Image</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Products Section -->
+        <main class="products-section">
+            <!-- Sort & View Options -->
+            <div class="products-toolbar">
+                <div class="results-info">
+                    <span id="resultsCount">Loading products...</span>
+                </div>
+                <div class="view-options">
+                    <label>Sort by:</label>
+                    <select id="sortSelect" onchange="sortProducts(this.value)">
+                        <option value="featured">Featured</option>
+                        <option value="price-low">Price: Low to High</option>
+                        <option value="price-high">Price: High to Low</option>
+                        <option value="newest">Newest First</option>
+                        <option value="rating">Highest Rated</option>
+                    </select>
+                    <div class="view-toggle">
+                        <button class="view-btn active" onclick="setView('grid')" title="Grid View">
+                            <i class="fas fa-th-large"></i>
+                        </button>
+                        <button class="view-btn" onclick="setView('list')" title="List View">
+                            <i class="fas fa-list"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products Grid -->
+            <div class="products-grid" id="productsGrid">
+                <!-- Products will be loaded here dynamically -->
+            </div>
+
+            <!-- Load More -->
+            <div class="load-more-container">
+                <button class="btn-load-more" onclick="loadMoreProducts()">
+                    <i class="fas fa-plus-circle"></i> Load More Products
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Product Quick View Modal -->
+    <div id="quickViewModal" class="modal">
+        <div class="modal-content product-quick-view">
+            <button class="modal-close" onclick="closeQuickView()">
+                <i class="fas fa-times"></i>
+            </button>
+            <div id="quickViewContent">
+                <!-- Quick view content loaded dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Wishlist Modal -->
+    <div id="wishlistModal" class="modal">
+        <div class="modal-content wishlist-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-heart"></i> My Wishlist</h3>
+                <button class="modal-close" onclick="closeWishlist()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="wishlistItems">
+                <!-- Wishlist items loaded dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Modal -->
+    <div id="cartModal" class="modal">
+        <div class="modal-content cart-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-shopping-cart"></i> Shopping Cart</h3>
+                <button class="modal-close" onclick="closeCart()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="cartItems">
+                <!-- Cart items loaded dynamically -->
+            </div>
+            <div class="cart-footer">
+                <div class="cart-total">
+                    <span>Total:</span>
+                    <span class="total-amount" id="cartTotal">₹0</span>
+                </div>
+                <button class="btn-checkout" onclick="proceedToCheckout()">
+                    <i class="fas fa-credit-card"></i> Proceed to Checkout
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/auth-helper.js"></script>
+    <script src="/static/js/chat.js"></script>
+    <script src="/static/js/chat-enhanced.js"></script>
+    <script src="/static/js/buyer-modern.js"></script>
+</body>
+</html>
+

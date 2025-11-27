@@ -1,6 +1,130 @@
 {
+  "header": {
+    "logo": "Bharatcraft",
+    "login": "Login",
+    "getStarted": "Get Started"
+  },
   "hero": {
-    "title": "Empowering Indian Artisans, Connecting Global Buyers",
+    "badge": "Ideas for India: INNOVATION CHALLENGE",
+    "subBadge": "Economic Resilience",
+    "title": "Empowering 7 Million Indian Artisans",
+    "connecting": "Connecting Global Buyers",
     "subtitle": "Direct trade platform that increases artisan earnings by 3-5x through AI-powered tools and eliminating middlemen"
+  },
+  "metrics": {
+    "income": {
+      "value": "4x",
+      "label": "Income Increase",
+      "description": "From ₹15,000 to ₹60,000 monthly"
+    },
+    "cost": {
+      "value": "70%",
+      "label": "Cost Reduction",
+      "description": "Through AI-powered cluster logistics"
+    },
+    "ai": {
+      "value": "98.5%",
+      "label": "AI Accuracy",
+      "description": "Quality assessment by Gemini AI"
+    },
+    "languages": {
+      "value": "15+",
+      "label": "Languages",
+      "description": "Real-time multilingual translation"
+    }
+  },
+  "portals": {
+    "artisan": {
+      "title": "For Artisans",
+      "description": "Sell your GI-tagged crafts directly to global buyers with AI-powered quality certification",
+      "badge1": "GI Tagged",
+      "badge2": "AI Certified",
+      "button": "Register as Artisan"
+    },
+    "buyer": {
+      "title": "For Buyers",
+      "description": "Source authentic Indian handicrafts with verified quality and ESG compliance",
+      "badge1": "ESG Compliant",
+      "badge2": "Fair Trade",
+      "button": "Register as Buyer"
+    }
+  },
+  "featureHighlight": {
+    "title": "AI-Powered Cultural Negotiation Engine",
+    "description": "Our Gemini AI engine doesn't just translate - it understands cultural context. When a German buyer requests a price reduction, we suggest appropriate counter-offers in the artisan's regional language, dramatically increasing deal closure rates.",
+    "result": "Result: 3x higher negotiation success rate compared to generic translation tools"
+  },
+  "features": {
+    "title": "Platform Features",
+    "quality": {
+      "title": "AI Quality Grading",
+      "description": "Gemini AI analyzes craftsmanship, materials, and finishing quality with 98.5% accuracy. Automatic export compliance checking for 50+ countries with Premium, Standard, and Economy grade classification."
+    },
+    "translation": {
+      "title": "Multilingual Translation",
+      "description": "Real-time translation with cultural context for 15+ languages including Hindi, Telugu, Tamil, Kannada, Malayalam, Bengali, Gujarati, Marathi, Punjabi, Odia, and Assamese."
+    },
+    "logistics": {
+      "title": "Cluster Logistics Optimization",
+      "description": "AI-powered logistics pooling aggregates orders from artisan clusters for consolidated shipping, achieving 60-75% cost reduction on international deliveries."
+    },
+    "documentation": {
+      "title": "Export Documentation Automation",
+      "description": "Automatically generates commercial invoices, packing lists, certificates of origin, and country-specific customs forms for seamless international trade."
+    },
+    "payment": {
+      "title": "Secure Payment Processing",
+      "description": "Integrated with Stripe and Razorpay for international payments. Smart escrow system ensures artisans receive payment upon shipment confirmation."
+    },
+    "gi": {
+      "title": "GI Tag Authentication",
+      "description": "Verify Geographical Indication products including Kanjivaram silk, Kashmir Pashmina, Jaipur block prints, Channapatna toys, and 400+ registered Indian handicrafts."
+    }
+  },
+  "howItWorks": {
+    "title": "How It Works",
+    "step1": {
+      "title": "Artisan Uploads Product",
+      "description": "Upload photos via web or WhatsApp. AI generates professional listings in 15 languages."
+    },
+    "step2": {
+      "title": "AI Quality Assessment",
+      "description": "GPT-4 Vision checks quality against international standards. Assigns Premium/Standard/Economy grade."
+    },
+    "step3": {
+      "title": "Global Discovery",
+      "description": "Buyers worldwide discover authentic products with verified quality certificates and GI tags."
+    },
+    "step4": {
+      "title": "Cultural Negotiation",
+      "description": "Real-time chat with context-aware translation. AI suggests culturally appropriate offers."
+    },
+    "step5": {
+      "title": "Order & Payment",
+      "description": "Secure checkout. Auto-generated export docs. Smart escrow releases payment on delivery."
+    },
+    "step6": {
+      "title": "Pooled Shipping",
+      "description": "Orders from nearby artisans consolidated into bulk shipments. Track globally."
+    }
+  },
+  "stats": {
+    "title": "Real Impact",
+    "artisans": {
+      "value": "7M",
+      "label": "Artisans in India"
+    },
+    "exports": {
+      "value": "₹3.5B",
+      "label": "Annual Handicraft Exports"
+    },
+    "currentShare": {
+      "value": "12-18%",
+      "label": "Current Artisan Share"
+    },
+    "withBharatcraft": {
+      "value": "70-75%",
+      "label": "With Bharatcraft"
+    }
   }
 }
