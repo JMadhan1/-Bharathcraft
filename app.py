@@ -61,7 +61,7 @@ def unauthorized_callback(error):
 def revoked_token_callback(jwt_header, jwt_payload):
     return jsonify({'error': 'Token has been revoked', 'message': 'Please log in again'}), 401
 
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
 
 engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
 Base.metadata.create_all(engine)
