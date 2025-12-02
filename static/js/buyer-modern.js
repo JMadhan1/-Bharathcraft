@@ -3,7 +3,7 @@
  * Attractive, functional interface for global buyers
  */
 
-(function() {
+(function () {
     'use strict';
 
     const authToken = localStorage.getItem('authToken');
@@ -20,7 +20,7 @@
     let cart = JSON.parse(localStorage.getItem('cart') || '[]');
 
     // Initialize
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('userName').textContent = userData.full_name || 'Buyer';
         updateWishlistCount();
         updateCartCount();
@@ -59,7 +59,7 @@
     // Display Products
     function displayProducts(products) {
         const grid = document.getElementById('productsGrid');
-        
+
         if (products.length === 0) {
             grid.innerHTML = `
                 <div style="grid-column: 1/-1; text-align: center; padding: 3rem;">
@@ -81,21 +81,30 @@
         const isWishlisted = wishlist.includes(product.id);
         const images = product.images || [];
         const imageSrc = images.length > 0 ? `/${images[0]}` : '/static/uploads/placeholder.jpg';
-        const qualityColor = product.quality_grade === 'PREMIUM' ? '#F59E0B' : 
-                             product.quality_grade === 'STANDARD' ? '#3B82F6' : '#6B7280';
-        
+        const qualityColor = product.quality_grade === 'PREMIUM' ? '#F59E0B' :
+            product.quality_grade === 'STANDARD' ? '#3B82F6' : '#6B7280';
+
+        const currencySymbol = getCurrencySymbol(product.currency || 'INR');
+        const displayPrice = product.display_price || product.price;
+
+        // Check stock
+        const isOutOfStock = product.stock_quantity <= 0;
+        const blurStyle = isOutOfStock ? 'filter: grayscale(100%) blur(2px); opacity: 0.7;' : '';
+        const overlay = isOutOfStock ? '<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.7); color: white; padding: 0.5rem 1rem; border-radius: 4px; font-weight: bold; z-index: 10;">SOLD OUT</div>' : '';
+
         return `
-            <div class="product-card" data-product-id="${product.id}">
-                <div class="product-image-container">
-                    <img src="${imageSrc}" alt="${product.title}" class="product-image" onerror="this.src='/static/uploads/placeholder.jpg'">
+            <div class="product-card" data-product-id="${product.id}" style="${isOutOfStock ? 'pointer-events: none;' : ''}">
+                <div class="product-image-container" style="position: relative;">
+                    <img src="${imageSrc}" alt="${product.title}" class="product-image" onerror="this.src='/static/uploads/placeholder.jpg'" style="${blurStyle}">
+                    ${overlay}
                     <div class="product-badges">
                         ${product.quality_grade === 'PREMIUM' ? '<span class="badge-tag badge-premium">⭐ Premium</span>' : ''}
                     </div>
-                    <button class="product-wishlist-btn ${isWishlisted ? 'active' : ''}" onclick="toggleWishlist(${product.id}); event.stopPropagation();">
+                    <button class="product-wishlist-btn ${isWishlisted ? 'active' : ''}" onclick="toggleWishlist(${product.id}); event.stopPropagation();" ${isOutOfStock ? 'disabled' : ''}>
                         <i class="fas fa-heart"></i>
                     </button>
                 </div>
-                <div class="product-details">
+                <div class="product-details" style="${isOutOfStock ? 'opacity: 0.6;' : ''}">
                     <h3 class="product-title">${product.title}</h3>
                     <div class="product-artisan">
                         <i class="fas fa-user"></i>
@@ -107,13 +116,16 @@
                         </div>
                         <span class="rating-count">(${Math.floor(Math.random() * 50) + 10})</span>
                     </div>
-                    <div class="product-price">₹${product.price.toLocaleString()}</div>
+                    <div class="product-price">${currencySymbol}${displayPrice.toLocaleString()}</div>
                     <div class="product-actions">
-                        <button class="btn-add-cart" onclick="addToCart(${product.id}); event.stopPropagation();">
+                        <button class="btn-add-cart" onclick="addToCart(${product.id}); event.stopPropagation();" ${isOutOfStock ? 'disabled' : ''}>
                             <i class="fas fa-cart-plus"></i> Add to Cart
                         </button>
+                        <button class="btn-buy-now" onclick="window.location.href='/checkout/${product.id}'; event.stopPropagation();" style="background: #10B981; color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 600; margin-left: 0.5rem;" ${isOutOfStock ? 'disabled' : ''}>
+                            <i class="fas fa-bolt"></i> Buy Now
+                        </button>
                         <button class="btn-contact-seller" onclick="openChatWithSeller(${product.artisan?.id || 0}, '${(product.artisan?.name || 'Artisan').replace(/'/g, "\\'")}', ${product.id}); event.stopPropagation();" title="Contact Seller">
-                            <i class="fas fa-comments"></i> Contact Seller
+                            <i class="fas fa-comments"></i>
                         </button>
                         <button class="btn-quick-view" onclick="showQuickView(${product.id}); event.stopPropagation();">
                             <i class="fas fa-eye"></i>
@@ -124,19 +136,30 @@
         `;
     }
 
+    function getCurrencySymbol(currency) {
+        const symbols = {
+            'INR': '₹',
+            'USD': '$',
+            'GBP': '£',
+            'EUR': '€',
+            'JPY': '¥'
+        };
+        return symbols[currency] || currency + ' ';
+    }
+
     // Update Results Count
     function updateResultsCount() {
-        document.getElementById('resultsCount').textContent = 
+        document.getElementById('resultsCount').textContent =
             `Showing ${filteredProducts.length} of ${allProducts.length} products`;
     }
 
     // Apply Filters
-    window.applyFilters = function() {
+    window.applyFilters = function () {
         filteredProducts = allProducts.filter(product => {
             // Category filter
             const categoryCheckboxes = document.querySelectorAll('.filter-options input[value]:checked');
             const selectedCategories = Array.from(categoryCheckboxes).map(cb => cb.value);
-            if (selectedCategories.length > 0 && !selectedCategories.some(cat => 
+            if (selectedCategories.length > 0 && !selectedCategories.some(cat =>
                 product.craft_type?.toLowerCase().includes(cat.toLowerCase()))) {
                 return false;
             }
@@ -163,22 +186,22 @@
     };
 
     // Clear Filters
-    window.clearFilters = function() {
+    window.clearFilters = function () {
         document.querySelectorAll('.filter-options input[type="checkbox"]').forEach(cb => cb.checked = false);
         document.getElementById('minPrice').value = '';
         document.getElementById('maxPrice').value = '';
         document.getElementById('priceRange').value = 10000;
         document.getElementById('priceRangeValue').textContent = 'Up to ₹10,000';
         document.querySelector('.region-select').value = '';
-        
+
         filteredProducts = [...allProducts];
         displayProducts(filteredProducts);
         updateResultsCount();
     };
 
     // Sort Products
-    window.sortProducts = function(sortBy) {
-        switch(sortBy) {
+    window.sortProducts = function (sortBy) {
+        switch (sortBy) {
             case 'price-low':
                 filteredProducts.sort((a, b) => a.price - b.price);
                 break;
@@ -198,19 +221,19 @@
     };
 
     // Update Price Range
-    window.updatePriceRange = function(value) {
+    window.updatePriceRange = function (value) {
         document.getElementById('priceRangeValue').textContent = `Up to ₹${parseInt(value).toLocaleString()}`;
         document.getElementById('maxPrice').value = value;
         applyFilters();
     };
 
     // Quick Search
-    window.quickSearch = function(query) {
+    window.quickSearch = function (query) {
         if (!query.trim()) {
             filteredProducts = [...allProducts];
         } else {
             const lowerQuery = query.toLowerCase();
-            filteredProducts = allProducts.filter(product => 
+            filteredProducts = allProducts.filter(product =>
                 product.title.toLowerCase().includes(lowerQuery) ||
                 product.description?.toLowerCase().includes(lowerQuery) ||
                 product.craft_type?.toLowerCase().includes(lowerQuery) ||
@@ -222,7 +245,7 @@
     };
 
     // Wishlist Functions
-    window.toggleWishlist = function(productId) {
+    window.toggleWishlist = function (productId) {
         const index = wishlist.indexOf(productId);
         if (index > -1) {
             wishlist.splice(index, 1);
@@ -238,13 +261,13 @@
         document.getElementById('wishlistCount').textContent = wishlist.length;
     }
 
-    window.showWishlist = function() {
+    window.showWishlist = function () {
         const modal = document.getElementById('wishlistModal');
         modal.classList.add('active');
-        
+
         const wishlistedProducts = allProducts.filter(p => wishlist.includes(p.id));
         const wishlistItems = document.getElementById('wishlistItems');
-        
+
         if (wishlistedProducts.length === 0) {
             wishlistItems.innerHTML = `
                 <div style="text-align: center; padding: 3rem;">
@@ -268,12 +291,12 @@
         }
     };
 
-    window.closeWishlist = function() {
+    window.closeWishlist = function () {
         document.getElementById('wishlistModal').classList.remove('active');
     };
 
     // Cart Functions
-    window.addToCart = function(productId) {
+    window.addToCart = function (productId) {
         const product = allProducts.find(p => p.id === productId);
         if (!product) return;
 
@@ -283,10 +306,10 @@
         } else {
             cart.push({ ...product, quantity: 1 });
         }
-        
+
         localStorage.setItem('cart', JSON.stringify(cart));
         updateCartCount();
-        
+
         // Show feedback
         alert(`✓ ${product.title} added to cart!`);
     };
@@ -296,12 +319,12 @@
         document.getElementById('cartCount').textContent = totalItems;
     }
 
-    window.showCart = function() {
+    window.showCart = function () {
         const modal = document.getElementById('cartModal');
         modal.classList.add('active');
-        
+
         const cartItems = document.getElementById('cartItems');
-        
+
         if (cart.length === 0) {
             cartItems.innerHTML = `
                 <div style="text-align: center; padding: 3rem;">
@@ -323,24 +346,24 @@
                     </button>
                 </div>
             `).join('');
-            
+
             const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
             document.getElementById('cartTotal').textContent = `₹${total.toLocaleString()}`;
         }
     };
 
-    window.closeCart = function() {
+    window.closeCart = function () {
         document.getElementById('cartModal').classList.remove('active');
     };
 
-    window.removeFromCart = function(productId) {
+    window.removeFromCart = function (productId) {
         cart = cart.filter(item => item.id !== productId);
         localStorage.setItem('cart', JSON.stringify(cart));
         updateCartCount();
         showCart(); // Refresh cart view
     };
 
-    window.proceedToCheckout = function() {
+    window.proceedToCheckout = function () {
         if (cart.length === 0) {
             alert('Your cart is empty!');
             return;
@@ -349,13 +372,16 @@
     };
 
     // Quick View
-    window.showQuickView = function(productId) {
+    window.showQuickView = function (productId) {
         const product = allProducts.find(p => p.id === productId);
         if (!product) return;
 
         const modal = document.getElementById('quickViewModal');
         const content = document.getElementById('quickViewContent');
-        
+
+        const currencySymbol = getCurrencySymbol(product.currency || 'INR');
+        const displayPrice = product.display_price || product.price;
+
         content.innerHTML = `
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; padding: 2rem;">
                 <div>
@@ -364,35 +390,38 @@
                 <div>
                     <h2>${product.title}</h2>
                     <p style="color: var(--gray-500); margin: 1rem 0;">${product.description || 'Authentic handcrafted product'}</p>
-                    <div style="font-size: 2rem; color: var(--primary); font-weight: 900; margin: 1rem 0;">₹${product.price.toLocaleString()}</div>
+                    <div style="font-size: 2rem; color: var(--primary); font-weight: 900; margin: 1rem 0;">${currencySymbol}${displayPrice.toLocaleString()}</div>
                     <p><strong>Craft Type:</strong> ${product.craft_type}</p>
                     <p><strong>Quality:</strong> ${product.quality_grade}</p>
                     <p><strong>Production Time:</strong> ${product.production_time_days} days</p>
-                    <button onclick="addToCart(${product.id}); closeQuickView();" style="width: 100%; padding: 1rem; background: var(--primary); color: white; border: none; border-radius: 12px; font-size: 1.125rem; font-weight: 700; cursor: pointer; margin-top: 2rem;">
+                    <button onclick="addToCart(${product.id}); closeQuickView();" style="width: 48%; padding: 1rem; background: var(--primary); color: white; border: none; border-radius: 12px; font-size: 1.125rem; font-weight: 700; cursor: pointer; margin-top: 2rem;">
                         <i class="fas fa-cart-plus"></i> Add to Cart
+                    </button>
+                    <button onclick="window.location.href='/checkout/${product.id}';" style="width: 48%; padding: 1rem; background: #10B981; color: white; border: none; border-radius: 12px; font-size: 1.125rem; font-weight: 700; cursor: pointer; margin-top: 2rem; margin-left: 2%;">
+                        <i class="fas fa-bolt"></i> Buy Now
                     </button>
                 </div>
             </div>
         `;
-        
+
         modal.classList.add('active');
     };
 
-    window.closeQuickView = function() {
+    window.closeQuickView = function () {
         document.getElementById('quickViewModal').classList.remove('active');
     };
 
     // User Menu
-    window.toggleUserMenu = function() {
+    window.toggleUserMenu = function () {
         document.getElementById('userDropdown').classList.toggle('active');
     };
 
     // AI Features
-    window.showAIRecommendations = async function() {
+    window.showAIRecommendations = async function () {
         try {
             // Show loading state
             const modal = createModal('AI Recommendations', '<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Generating personalized recommendations...</div>');
-            
+
             const response = await authenticatedFetch('/api/ai/recommendations', {
                 method: 'POST',
                 headers: {
@@ -428,42 +457,45 @@
                 </div>
                 <h3 style="margin-bottom: 1rem;">Recommended for You (${data.count} products)</h3>
                 <div class="recommendations-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; max-height: 500px; overflow-y: auto;">
-                    ${data.recommendations.map(product => `
+                    ${data.recommendations.map(product => {
+            const currencySymbol = getCurrencySymbol(product.currency || 'INR');
+            const displayPrice = product.display_price || product.price;
+            return `
                         <div class="recommendation-card" onclick="window.location.href='#product-${product.id}'" style="cursor: pointer; border: 1px solid #E5E7EB; border-radius: 8px; overflow: hidden; transition: transform 0.2s;">
                             <img src="/${product.images[0] || 'static/uploads/placeholder.jpg'}" 
                                  style="width: 100%; height: 150px; object-fit: cover;"
                                  onerror="this.src='/static/uploads/placeholder.jpg'">
                             <div style="padding: 0.75rem;">
                                 <h4 style="font-size: 0.9rem; margin: 0 0 0.5rem 0; color: #1F2937;">${product.title}</h4>
-                                <p style="font-size: 1.25rem; font-weight: 700; color: var(--primary); margin: 0;">₹${product.price.toLocaleString()}</p>
+                                <p style="font-size: 1.25rem; font-weight: 700; color: var(--primary); margin: 0;">${currencySymbol}${displayPrice.toLocaleString()}</p>
                                 <span style="font-size: 0.75rem; color: #6B7280;">${product.craft_type}</span>
                             </div>
                         </div>
-                    `).join('')}
+                    `}).join('')}
                 </div>
                 <button onclick="this.closest('.modal').remove()" style="margin-top: 1rem; width: 100%; padding: 0.75rem; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">Close</button>
             </div>
         `;
     }
 
-    window.visualSearch = function() {
+    window.visualSearch = function () {
         // Create file input
         const input = document.createElement('input');
         input.type = 'file';
         input.accept = 'image/*';
         input.style.display = 'none';
-        
-        input.onchange = async function(e) {
+
+        input.onchange = async function (e) {
             const file = e.target.files[0];
             if (!file) return;
-            
+
             // Show loading modal
             const modal = createModal('Visual Search', '<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Analyzing image and finding similar products...</div>');
-            
+
             // Create form data
             const formData = new FormData();
             formData.append('image', file);
-            
+
             try {
                 const response = await authenticatedFetch('/api/ai/visual-search', {
                     method: 'POST',
@@ -493,7 +525,7 @@
                 `;
             }
         };
-        
+
         document.body.appendChild(input);
         input.click();
         document.body.removeChild(input);
@@ -513,18 +545,21 @@
                 </div>
                 <h3 style="margin-bottom: 1rem;">Similar Products Found (${data.count})</h3>
                 <div class="search-results-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; max-height: 500px; overflow-y: auto;">
-                    ${data.matches.map(product => `
+                    ${data.matches.map(product => {
+            const currencySymbol = getCurrencySymbol(product.currency || 'INR');
+            const displayPrice = product.display_price || product.price;
+            return `
                         <div class="result-card" onclick="window.location.href='#product-${product.id}'" style="cursor: pointer; border: 1px solid #E5E7EB; border-radius: 8px; overflow: hidden; transition: transform 0.2s;">
                             <img src="/${product.images[0] || 'static/uploads/placeholder.jpg'}" 
                                  style="width: 100%; height: 150px; object-fit: cover;"
                                  onerror="this.src='/static/uploads/placeholder.jpg'">
                             <div style="padding: 0.75rem;">
                                 <h4 style="font-size: 0.9rem; margin: 0 0 0.5rem 0; color: #1F2937;">${product.title}</h4>
-                                <p style="font-size: 1.25rem; font-weight: 700; color: var(--primary); margin: 0;">₹${product.price.toLocaleString()}</p>
+                                <p style="font-size: 1.25rem; font-weight: 700; color: var(--primary); margin: 0;">${currencySymbol}${displayPrice.toLocaleString()}</p>
                                 <span style="font-size: 0.75rem; color: #6B7280;">${product.craft_type}</span>
                             </div>
                         </div>
-                    `).join('')}
+                    `}).join('')}
                 </div>
                 <button onclick="this.closest('.modal').remove()" style="margin-top: 1rem; width: 100%; padding: 0.75rem; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">Close</button>
             </div>
@@ -550,10 +585,10 @@
     }
 
     // View Toggle
-    window.setView = function(viewType) {
+    window.setView = function (viewType) {
         document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
         event.target.closest('.view-btn').classList.add('active');
-        
+
         const grid = document.getElementById('productsGrid');
         if (viewType === 'list') {
             grid.style.gridTemplateColumns = '1fr';
@@ -563,27 +598,27 @@
     };
 
     // Load More
-    window.loadMoreProducts = function() {
+    window.loadMoreProducts = function () {
         alert('Load more products feature - for pagination');
     };
 
     // Other Functions
-    window.showOrders = function() {
+    window.showOrders = function () {
         alert('My Orders page coming soon!');
     };
 
-    window.showProfile = function() {
+    window.showProfile = function () {
         alert('Profile page coming soon!');
     };
 
-    window.logout = function() {
+    window.logout = function () {
         localStorage.removeItem('authToken');
         localStorage.removeItem('userData');
         window.location.href = '/';
     };
 
     // Close modals on outside click
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         if (e.target.classList.contains('modal')) {
             e.target.classList.remove('active');
         }

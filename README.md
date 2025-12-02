@@ -32,7 +32,7 @@ A direct trade platform that increases artisan earnings by 3-5x through AI-power
 - **Database:** PostgreSQL (production), SQLite (development)
 - **Real-Time:** Flask-SocketIO with eventlet
 - **Authentication:** JWT (Flask-JWT-Extended)
-- **AI/ML:** OpenAI API for translations and quality assessment
+- **AI/ML:** Google Gemini API for translations, quality assessment, and cultural context
 - **Payments:** Stripe integration
 - **Maps:** Leaflet.js for cluster visualization
 - **Deployment:** Render (with auto-deploy from GitHub)
@@ -78,7 +78,9 @@ HOST=127.0.0.1
 FLASK_ENV=development
 
 # Optional API keys
-OPENAI_API_KEY=your-openai-key
+# AI Configuration
+AI_PROVIDER=gemini
+GEMINI_API_KEY=your-gemini-api-key
 STRIPE_SECRET_KEY=your-stripe-secret-key
 STRIPE_PUBLISHABLE_KEY=your-stripe-publishable-key
 ```
@@ -149,7 +151,8 @@ bharatcraft/
 | `HOST` | Server host (0.0.0.0 for production) | No |
 | `PORT` | Server port (set by Render) | No |
 | `FLASK_ENV` | Environment (development/production) | No |
-| `OPENAI_API_KEY` | OpenAI API key for AI features | No |
+| `GEMINI_API_KEY` | Google Gemini API key for AI features | No |
+| `AI_PROVIDER` | AI provider selection ('gemini' or 'openai') | No |
 | `STRIPE_SECRET_KEY` | Stripe secret key | No |
 | `STRIPE_PUBLISHABLE_KEY` | Stripe publishable key | No |
 

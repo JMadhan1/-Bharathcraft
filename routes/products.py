@@ -118,6 +118,22 @@ def create_product():
 
 @bp.route('/', methods=['GET'])
 def get_products():
+    from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity
+    from models import BuyerProfile, User
+    from utils.currency import convert_price
+    
+    # Check for logged in user (optional)
+    target_currency = 'INR'
+    try:
+        verify_jwt_in_request(optional=True)
+        user_id = get_jwt_identity()
+        if user_id:
+            user = g.db.query(User).get(int(user_id))
+            if user and user.role.value == 'buyer' and user.buyer_profile:
+                target_currency = user.buyer_profile.currency or 'USD'
+    except Exception:
+        pass
+
     filters = {}
     
     if request.args.get('craft_type'):
@@ -134,25 +150,32 @@ def get_products():
     
     products = query.all()
     
-    return jsonify([{
-        'id': p.id,
-        'title': p.title,
-        'description': p.description,
-        'craft_type': p.craft_type,
-        'price': p.price,
-        'currency': p.currency,
-        'quality_grade': p.quality_grade.value if p.quality_grade else None,
-        'ai_quality_score': p.ai_quality_score,
-        'images': json.loads(p.images) if p.images else [],
-        'stock_quantity': p.stock_quantity,
-        'production_time_days': p.production_time_days,
-        'artisan': {
-            'id': p.artisan.id,
-            'name': p.artisan.user.full_name,
-            'craft_type': p.artisan.craft_type,
-            'quality_rating': p.artisan.quality_rating
-        }
-    } for p in products]), 200
+    results = []
+    for p in products:
+        converted_price = convert_price(p.price, target_currency)
+        results.append({
+            'id': p.id,
+            'title': p.title,
+            'description': p.description,
+            'craft_type': p.craft_type,
+            'price': p.price, # Original INR price
+            'display_price': converted_price,
+            'currency': target_currency,
+            'original_currency': p.currency,
+            'quality_grade': p.quality_grade.value if p.quality_grade else None,
+            'ai_quality_score': p.ai_quality_score,
+            'images': json.loads(p.images) if p.images else [],
+            'stock_quantity': p.stock_quantity,
+            'production_time_days': p.production_time_days,
+            'artisan': {
+                'id': p.artisan.id,
+                'name': p.artisan.user.full_name,
+                'craft_type': p.artisan.craft_type,
+                'quality_rating': p.artisan.quality_rating
+            }
+        })
+    
+    return jsonify(results), 200
 
 @bp.route('/<int:product_id>', methods=['GET'])
 def get_product(product_id):

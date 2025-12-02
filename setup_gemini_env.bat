@@ -21,7 +21,7 @@ echo # AI Provider Selection ^(choose: 'openai' or 'gemini'^)
 echo AI_PROVIDER=gemini
 echo.
 echo # Google Gemini API Key
-echo GEMINI_API_KEY=AIzaSyDVXU_PCAoMfE_b7Y9YIpORcWr77rpQ_Nw
+echo GEMINI_API_KEY=AIzaSyDW_RcKJj7EWk11vPln6Ur0Q2k8qfaL43I
 echo.
 echo # OpenAI API Key ^(optional - for fallback^)
 echo OPENAI_API_KEY=

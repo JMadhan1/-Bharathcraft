@@ -1,6 +1,6 @@
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,19 +12,23 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body>
     <header class="header">
         <div class="container">
             <h1 class="logo">🎨 Bharatcraft</h1>
             <nav class="nav">
                 <span id="userName"></span>
-                <button class="btn btn-info" onclick="switchToSimpleMode()" title="Switch to Simple Dashboard (Voice-enabled, Easy to use)">
+                <button class="btn btn-info" onclick="switchToSimpleMode()"
+                    title="Switch to Simple Dashboard (Voice-enabled, Easy to use)">
                     <i class="fas fa-mobile-alt"></i> Simple Mode
                 </button>
                 <button class="btn btn-secondary" onclick="logout()">Logout</button>
             </nav>
         </div>
     </header>
+
+    <div id="notification-container" style="position: fixed; top: 20px; right: 20px; z-index: 1000;"></div>
 
     <div class="container dashboard">
         <div class="dashboard-header">
@@ -107,6 +111,9 @@
     <script src="/static/js/main.js"></script>
     <script src="/static/js/chat.js"></script>
     <script src="/static/js/chat-enhanced.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script src="/static/js/artisan-voice.js"></script>
     <script src="/static/js/artisan.js"></script>
 </body>
+
 </html>

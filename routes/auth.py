@@ -58,10 +58,16 @@ def register():
         )
         g.db.add(profile)
     else:
+        from utils.currency import get_currency_for_country
+        country = data.get('country', '')
+        currency = get_currency_for_country(country)
+        
         profile = BuyerProfile(
             user_id=user.id,
             company_name=data.get('company_name', ''),
-            company_address=data.get('company_address', '')
+            company_address=data.get('company_address', ''),
+            country=country,
+            currency=currency
         )
         g.db.add(profile)
     
@@ -154,6 +160,8 @@ def get_profile():
         profile_data['buyer'] = {
             'company_name': profile.company_name,
             'company_address': profile.company_address,
+            'country': profile.country,
+            'currency': profile.currency,
             'total_purchases': profile.total_purchases,
             'total_orders': profile.total_orders
         }

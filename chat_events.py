@@ -56,14 +56,28 @@ def register_socketio_events(socketio):
             
             room = f"chat_{min(sender_id, receiver_id)}_{max(sender_id, receiver_id)}"
             
+            sender = session.query(User).filter_by(id=sender_id).first()
+            sender_name = sender.full_name if sender else "Unknown"
+
             emit('new_message', {
                 'id': message.id,
                 'sender_id': message.sender_id,
+                'sender_name': sender_name,
                 'receiver_id': message.receiver_id,
                 'content': message.content,
                 'translated_content': message.translated_content,
                 'created_at': message.created_at.isoformat()
             }, room=room)
+
+            # Emit notification to receiver's personal room
+            emit('notification', {
+                'id': message.id,
+                'sender_id': message.sender_id,
+                'sender_name': sender_name,
+                'content': message.content,
+                'translated_content': message.translated_content,
+                'type': 'message'
+            }, room=f"user_{receiver_id}")
             
         except Exception as e:
             print(f"Error handling message: {e}")

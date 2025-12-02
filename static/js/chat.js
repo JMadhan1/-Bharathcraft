@@ -3,12 +3,12 @@
  * Real-time translation with business context
  */
 
-(function() {
+(function () {
     'use strict';
 
     const authToken = localStorage.getItem('authToken');
     const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-    
+
     let currentConversation = null;
     let currentLanguage = userData.role === 'artisan' ? 'hi' : 'en';
     let isTyping = false;
@@ -23,12 +23,39 @@
 
         // Create chat UI
         createChatUI();
-        
+
         // Load conversation history
         loadConversation();
-        
-        // Start checking for new messages
+
+        // Start checking for new messages (fallback)
         startMessagePolling();
+
+        // Initialize Socket.IO for real-time updates
+        if (window.io) {
+            const socket = io();
+            const room = `chat_${Math.min(userData.id, recipientId)}_${Math.max(userData.id, recipientId)}`;
+            socket.emit('join', { room: room });
+
+            socket.on('new_message', (data) => {
+                // Only append if it belongs to current conversation
+                if ((data.sender_id === userData.id && data.receiver_id === recipientId) ||
+                    (data.sender_id === recipientId && data.receiver_id === userData.id)) {
+
+                    const isSent = data.sender_id === userData.id;
+                    const messageHTML = createMessageHTML({
+                        message: isSent ? data.content : (data.translated_content || data.content),
+                        timestamp: data.created_at,
+                        ai_context: {} // New messages via socket might not have full AI context yet
+                    }, isSent);
+
+                    const messagesContainer = document.getElementById('chatMessages');
+                    if (messagesContainer) {
+                        messagesContainer.insertAdjacentHTML('beforeend', messageHTML);
+                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    }
+                }
+            });
+        }
     }
 
     // Create Chat UI HTML
@@ -122,7 +149,7 @@
     // Display Messages
     function displayMessages(messages) {
         const messagesContainer = document.getElementById('chatMessages');
-        
+
         if (messages.length === 0) {
             displayEmptyState();
             return;
@@ -143,9 +170,9 @@
     // Create Message HTML
     function createMessageHTML(message, isSent) {
         const aiContext = message.ai_context || {};
-        const time = new Date(message.timestamp).toLocaleTimeString('en-US', { 
-            hour: '2-digit', 
-            minute: '2-digit' 
+        const time = new Date(message.timestamp).toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit'
         });
 
         let html = `
@@ -192,7 +219,7 @@
                             Quick Replies:
                         </div>
                 `;
-                
+
                 aiContext.suggested_responses.forEach((reply, index) => {
                     html += `
                         <button class="smart-reply-btn" onclick="sendSmartReply('${reply.replace(/'/g, "\\'")}')">
@@ -200,7 +227,7 @@
                         </button>
                     `;
                 });
-                
+
                 html += `</div>`;
             }
         }
@@ -236,7 +263,7 @@
     }
 
     // Send Message
-    window.sendChatMessage = async function() {
+    window.sendChatMessage = async function () {
         const input = document.getElementById('chatInput');
         const message = input.value.trim();
 
@@ -280,29 +307,29 @@
     };
 
     // Send Smart Reply
-    window.sendSmartReply = function(reply) {
+    window.sendSmartReply = function (reply) {
         const input = document.getElementById('chatInput');
         input.value = reply;
         sendChatMessage();
     };
 
     // Handle Enter Key
-    window.handleChatKeyPress = function(event) {
+    window.handleChatKeyPress = function (event) {
         if (event.key === 'Enter') {
             sendChatMessage();
         }
     };
 
     // Switch Language
-    window.switchChatLanguage = function(lang) {
+    window.switchChatLanguage = function (lang) {
         currentLanguage = lang;
-        
+
         // Update button states
         document.querySelectorAll('.lang-btn').forEach(btn => {
             btn.classList.remove('active');
         });
         event.target.classList.add('active');
-        
+
         // Update placeholder
         const placeholders = {
             'en': 'Type your message...',
@@ -313,7 +340,7 @@
     };
 
     // Voice Input
-    window.startVoiceInput = function() {
+    window.startVoiceInput = function () {
         if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
             alert('Voice input is not supported in your browser.');
             return;
@@ -321,30 +348,30 @@
 
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         const recognition = new SpeechRecognition();
-        
+
         const langMap = {
             'en': 'en-US',
             'hi': 'hi-IN',
             'te': 'te-IN'
         };
-        
+
         recognition.lang = langMap[currentLanguage] || 'en-US';
         recognition.continuous = false;
 
         const voiceBtn = event.target.closest('.voice-btn');
         voiceBtn.classList.add('recording');
 
-        recognition.onresult = function(event) {
+        recognition.onresult = function (event) {
             const transcript = event.results[0][0].transcript;
             document.getElementById('chatInput').value = transcript;
         };
 
-        recognition.onerror = function(event) {
+        recognition.onerror = function (event) {
             console.error('Speech recognition error:', event.error);
             alert('Voice input failed. Please try again.');
         };
 
-        recognition.onend = function() {
+        recognition.onend = function () {
             voiceBtn.classList.remove('recording');
         };
 
@@ -389,7 +416,7 @@
     }
 
     // Toggle Chat
-    window.toggleChat = function() {
+    window.toggleChat = function () {
         const chatContainer = document.getElementById('chatContainer');
         if (chatContainer) {
             chatContainer.classList.toggle('hidden');
@@ -402,7 +429,7 @@
     };
 
     // Toggle Minimize
-    window.toggleChatMinimize = function() {
+    window.toggleChatMinimize = function () {
         const chatContainer = document.getElementById('chatContainer');
         if (chatContainer) {
             chatContainer.classList.toggle('minimized');
@@ -410,7 +437,7 @@
     };
 
     // Open Chat (called from dashboard)
-    window.openChat = function(recipientId, recipientName) {
+    window.openChat = function (recipientId, recipientName) {
         initChat(recipientId, recipientName);
     };
 

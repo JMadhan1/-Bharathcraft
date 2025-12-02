@@ -71,6 +71,8 @@ class BuyerProfile(Base):
     user_id = Column(Integer, ForeignKey('users.id'), unique=True, nullable=False)
     company_name = Column(String(255))
     company_address = Column(Text)
+    country = Column(String(100))
+    currency = Column(String(10), default='USD')
     tax_id = Column(String(100))
     preferences = Column(Text)
     total_purchases = Column(Float, default=0.0)
@@ -185,3 +187,37 @@ class ExportDocument(Base):
     document_data = Column(Text)
     generated_at = Column(DateTime, default=datetime.utcnow)
     file_path = Column(String(500))
+
+class Transaction(Base):
+    __tablename__ = 'transactions'
+    
+    id = Column(Integer, primary_key=True)
+    order_id = Column(Integer, ForeignKey('orders.id'), nullable=False)
+    buyer_id = Column(Integer, ForeignKey('buyer_profiles.id'), nullable=False)
+    artisan_id = Column(Integer, ForeignKey('artisan_profiles.id'), nullable=False)
+    
+    # Buyer side
+    buyer_amount = Column(Float, nullable=False)
+    buyer_currency = Column(String(10), nullable=False)
+    
+    # Artisan side
+    artisan_amount = Column(Float, nullable=False)
+    artisan_currency = Column(String(10), default='INR')
+    
+    # Fees and Rates
+    platform_fee = Column(Float, nullable=False)
+    exchange_rate = Column(Float, nullable=False)
+    
+    # Shipping
+    shipping_cost = Column(Float, default=0.0)
+    shipping_option = Column(String(50))
+    
+    status = Column(String(50), default='pending')
+    payment_method = Column(String(50))
+    payment_id = Column(String(255))
+    
+    created_at = Column(DateTime, default=datetime.utcnow)
+    
+    order = relationship("Order")
+    buyer = relationship("BuyerProfile")
+    artisan = relationship("ArtisanProfile")

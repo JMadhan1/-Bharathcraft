@@ -1,4 +1,8 @@
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
 from flask import Flask, render_template, jsonify
 from flask_cors import CORS
 from flask_socketio import SocketIO
@@ -18,9 +22,8 @@ import routes.negotiation
 import routes.translation
 import routes.export_docs
 import routes.cluster_pooling
-from dotenv import load_dotenv
+import routes.checkout
 
-load_dotenv()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SESSION_SECRET', 'dev-secret-key-change-in-production')
@@ -91,6 +94,7 @@ app.register_blueprint(routes.negotiation.bp)
 app.register_blueprint(routes.translation.bp)
 app.register_blueprint(routes.export_docs.bp)
 app.register_blueprint(routes.cluster_pooling.bp)
+app.register_blueprint(routes.checkout.bp)
 
 @app.route('/')
 def index():

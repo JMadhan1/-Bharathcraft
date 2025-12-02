@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Bharatcraft</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .checkout-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .checkout-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .product-summary {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .product-image {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--gray-700);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            font-family: inherit;
+        }
+
+        .shipping-options {
+            display: grid;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .shipping-option {
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .shipping-option.selected {
+            border-color: var(--primary);
+            background-color: #FFF7ED;
+        }
+
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .summary-table td {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        .summary-table tr:last-child td {
+            border-bottom: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            padding-top: 1rem;
+        }
+
+        .pay-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 1.5rem;
+        }
+
+        .pay-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .artisan-info-box {
+            background: #F3F4F6;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--gray-600);
+        }
+
+        .conversion-info {
+            font-size: 0.85rem;
+            color: var(--gray-500);
+            margin-top: 0.25rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <div class="container">
+            <h1 class="logo" onclick="window.location.href='/'" style="cursor:pointer">🪔 Bharatcraft</h1>
+        </div>
+    </header>
+
+    <div class="checkout-container">
+        <!-- Left Column -->
+        <div class="checkout-main">
+            <!-- Product Details -->
+            <div class="card">
+                <h2 class="section-title"><i class="fas fa-shopping-bag"></i> Product Details</h2>
+                <div class="product-summary">
+                    <img src="/{{ images[0] if images else 'static/uploads/placeholder.jpg' }}"
+                        alt="{{ product.title }}" class="product-image"
+                        onerror="this.src='/static/uploads/placeholder.jpg'">
+                    <div>
+                        <h3>{{ product.title }}</h3>
+                        <p style="color: var(--gray-600);">by {{ artisan.user.full_name }}</p>
+                        <p class="badge-tag">{{ product.craft_type }}</p>
+                        <div style="margin-top: 10px;">
+                            <label for="quantityInput" style="font-weight: 500; margin-right: 10px;">Quantity:</label>
+                            <input type="number" id="quantityInput" value="1" min="1" max="{{ product.stock_quantity }}"
+                                style="width: 60px; padding: 5px; border-radius: 5px; border: 1px solid #ccc;"
+                                onchange="updateQuantity()">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Currency Selection -->
+            <div class="card">
+                <h2 class="section-title">1️⃣ Select Your Currency</h2>
+                <div class="form-group">
+                    <select id="currencySelector" class="form-control" onchange="updateCurrency()">
+                        <option value="USD">🇺🇸 USD - US Dollar</option>
+                        <option value="EUR">🇪🇺 EUR - Euro</option>
+                        <option value="GBP">🇬🇧 GBP - British Pound</option>
+                        <option value="AED">🇦🇪 AED - UAE Dirham</option>
+                        <option value="AUD">🇦🇺 AUD - Australian Dollar</option>
+                        <option value="CAD">🇨🇦 CAD - Canadian Dollar</option>
+                        <option value="INR">🇮🇳 INR - Indian Rupee</option>
+                    </select>
+                    <div class="conversion-info" id="conversionRateDisplay">
+                        Loading exchange rates...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shipping Calculator -->
+            <div class="card">
+                <h2 class="section-title">2️⃣ Shipping Details</h2>
+                <div class="form-group">
+                    <label>Destination Country</label>
+                    <select id="destCountry" class="form-control" onchange="calculateShipping()">
+                        <option value="US">🇺🇸 United States</option>
+                        <option value="GB">🇬🇧 United Kingdom</option>
+                        <option value="AE">🇦🇪 UAE</option>
+                        <option value="AU">🇦🇺 Australia</option>
+                        <option value="DE">🇩🇪 Germany</option>
+                        <option value="CA">🇨🇦 Canada</option>
+                        <option value="IN">🇮🇳 India</option>
+                    </select>
+                </div>
+
+                <div id="shippingResults" style="display:none;">
+                    <h4>Select Shipping Option:</h4>
+                    <div class="shipping-options">
+                        <div class="shipping-option" onclick="selectShipping('standard')" id="option-standard">
+                            <div>
+                                <strong>📦 Standard Shipping</strong>
+                                <div style="font-size: 0.9rem; color: var(--gray-600);" id="date-standard">15-20 days
+                                </div>
+                            </div>
+                            <div class="option-price" id="price-standard">...</div>
+                        </div>
+
+                        <div class="shipping-option" onclick="selectShipping('express')" id="option-express">
+                            <div>
+                                <strong>⚡ Express Shipping</strong>
+                                <div style="font-size: 0.9rem; color: var(--gray-600);" id="date-express">7-10 days
+                                </div>
+                            </div>
+                            <div class="option-price" id="price-express">...</div>
+                        </div>
+                    </div>
+
+                    <div class="artisan-info-box" style="margin-top: 1rem;">
+                        <h5>Cost Breakdown:</h5>
+                        <ul style="list-style: none; padding: 0; margin-top: 0.5rem;" id="shippingBreakdown">
+                            <!-- Populated by JS -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column - Summary -->
+        <div class="checkout-sidebar">
+            <div class="card" style="position: sticky; top: 2rem;">
+                <h2 class="section-title">3️⃣ Order Summary</h2>
+                <table class="summary-table">
+                    <tr>
+                        <td>Product Price</td>
+                        <td id="summaryProductPrice">...</td>
+                    </tr>
+                    <tr>
+                        <td>Platform Fee (8%)</td>
+                        <td id="summaryPlatformFee">...</td>
+                    </tr>
+                    <tr>
+                        <td>Shipping</td>
+                        <td id="summaryShipping">...</td>
+                    </tr>
+                    <tr class="total">
+                        <td>Total Amount</td>
+                        <td id="summaryTotal">...</td>
+                    </tr>
+                </table>
+
+                <div class="artisan-info-box">
+                    <i class="fas fa-info-circle"></i> Artisan receives: <strong id="artisanReceives">₹...</strong> INR
+                </div>
+
+                <button class="pay-btn" onclick="processPayment()" id="payBtn">
+                    Place Order
+                </button>
+
+                <p style="text-align: center; margin-top: 1rem; font-size: 0.8rem; color: var(--gray-500);">
+                    <i class="fas fa-lock"></i> Secure Payment by Stripe
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden inputs for JS -->
+    <input type="hidden" id="basePriceINR" value="{{ product.price }}">
+    <input type="hidden" id="productWeight" value="0.5"> <!-- Placeholder -->
+    <input type="hidden" id="productCategory" value="{{ product.craft_type }}">
+    <input type="hidden" id="productId" value="{{ product.id }}">
+
+    <script src="/static/js/checkout.js"></script>
+</body>
+
+</html>
