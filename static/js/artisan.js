@@ -23,9 +23,10 @@
     document.addEventListener('DOMContentLoaded', function () {
         // Show loading state
         document.getElementById('myProducts').innerHTML = '<p>Loading products...</p>';
-        
-        // Load products
+
+        // Load products and orders
         loadMyProducts();
+        loadMyOrders();
 
         document.getElementById('productUploadForm').addEventListener('submit', async function (e) {
             e.preventDefault();
@@ -114,15 +115,15 @@
             } else {
                 container.innerHTML = data.map(product => {
                     // Get first image or use placeholder
-                    const imageUrl = (product.images && product.images.length > 0) 
-                        ? '/' + product.images[0] 
+                    const imageUrl = (product.images && product.images.length > 0)
+                        ? '/' + product.images[0]
                         : '/static/uploads/placeholder.jpg';
-                    
+
                     // Format quality score
-                    const qualityScore = product.ai_quality_score 
-                        ? (product.ai_quality_score * 100).toFixed(0) + '%' 
+                    const qualityScore = product.ai_quality_score
+                        ? (product.ai_quality_score * 100).toFixed(0) + '%'
                         : 'N/A';
-                    
+
                     return `
                         <div class="product-item" style="display: flex; gap: 15px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 15px;">
                             <div style="flex-shrink: 0;">
@@ -155,10 +156,127 @@
     }
 
     // Switch to simple dashboard
-    window.switchToSimpleMode = function() {
+    window.switchToSimpleMode = function () {
         if (confirm('Switch to Simple Dashboard?\n\n✓ Voice-enabled in 12 Indian languages\n✓ Easy photo upload\n✓ Perfect for first-time users\n\nस्विच करें सरल डैशबोर्ड पर?\n\n✓ आवाज सहायता\n✓ आसान उपयोग')) {
             localStorage.setItem('artisanDashboardMode', 'simple');
             window.location.href = '/artisan/dashboard-simple';
+        }
+    };
+
+    // Load artisan's orders
+    async function loadMyOrders() {
+        try {
+            const response = await authenticatedFetch('/api/orders/', {
+                method: 'GET'
+            });
+
+            if (!response.ok) {
+                console.error('Error loading orders');
+                return;
+            }
+
+            const orders = await response.json();
+            const ordersContainer = document.getElementById('recentOrders');
+
+            if (!ordersContainer) {
+                console.log('Orders container not found in DOM');
+                return;
+            }
+
+            if (orders.length === 0) {
+                ordersContainer.innerHTML = '<p>No orders yet.</p>';
+                return;
+            }
+
+            // Separate pending and other orders
+            const pendingOrders = orders.filter(o => o.status === 'pending');
+            const otherOrders = orders.filter(o => o.status !== 'pending');
+
+            let html = '';
+
+            // Show pending orders first (need approval)
+            if (pendingOrders.length > 0) {
+                html += '<h3 style="color: #ff9800; margin-top: 0;">⏳ Pending Approval (' + pendingOrders.length + ')</h3>';
+                html += pendingOrders.map(order => `
+                    <div class="order-item" style="background: #fff3e0; padding: 15px; border-radius: 8px; border-left: 4px solid #ff9800; margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; align-items: start;">
+                            <div>
+                                <h4 style="margin: 0 0 10px 0;">Order #${order.id}</h4>
+                                <p style="margin: 5px 0;"><strong>Amount:</strong> ${order.currency} ${order.total_amount.toFixed(2)}</p>
+                                <p style="margin: 5px 0;"><strong>Items:</strong> ${order.items_count}</p>
+                                <p style="margin: 5px 0;"><strong>Payment:</strong> <span style="color: #ff9800;">${order.payment_status}</span></p>
+                                <p style="margin: 5px 0; font-size: 12px; color: #666;">Created: ${new Date(order.created_at).toLocaleString()}</p>
+                            </div>
+                            <button onclick="approveOrder(${order.id})" 
+                                    style="background: #4CAF50; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">
+                                ✓ Approve Order
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Show other orders
+            if (otherOrders.length > 0) {
+                html += '<h3 style="margin-top: 20px;">📦 All Orders (' + otherOrders.length + ')</h3>';
+                html += otherOrders.map(order => {
+                    const statusColors = {
+                        'confirmed': '#2196F3',
+                        'in_production': '#FF9800',
+                        'shipped': '#9C27B0',
+                        'delivered': '#4CAF50',
+                        'completed': '#4CAF50',
+                        'cancelled': '#F44336'
+                    };
+                    const statusColor = statusColors[order.status] || '#666';
+
+                    return `
+                        <div class="order-item" style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 15px;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <div>
+                                    <h4 style="margin: 0 0 10px 0;">Order #${order.id}</h4>
+                                    <p style="margin: 5px 0;"><strong>Amount:</strong> ${order.currency} ${order.total_amount.toFixed(2)}</p>
+                                    <p style="margin: 5px 0;"><strong>Status:</strong> <span style="color: ${statusColor}; font-weight: bold;">${order.status.replace('_', ' ').toUpperCase()}</span></p>
+                                    <p style="margin: 5px 0;"><strong>Payment:</strong> ${order.payment_status}</p>
+                                    <p style="margin: 5px 0; font-size: 12px; color: #666;">Created: ${new Date(order.created_at).toLocaleString()}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            ordersContainer.innerHTML = html;
+        } catch (error) {
+            console.error('Error loading orders:', error);
+        }
+    }
+
+    // Approve an order
+    window.approveOrder = async function (orderId) {
+        if (!confirm('Approve this order? The buyer will be notified and can proceed with payment.')) {
+            return;
+        }
+
+        try {
+            const response = await authenticatedFetch(`/checkout/api/approve-order/${orderId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                alert('Order approved successfully! Buyer has been notified.');
+                loadMyOrders(); // Reload orders
+            } else {
+                alert('Error approving order: ' + (data.error || 'Unknown error'));
+            }
+        } catch (error) {
+            console.error('Error approving order:', error);
+            alert('Error approving order. Please try again.');
         }
     };
 
