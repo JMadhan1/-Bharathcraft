@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notification Demo - Artisan Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .demo-container {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            max-width: 900px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #1F2937;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #6B7280;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            color: #374151;
+            font-size: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: #667eea;
+        }
+
+        /* Order Notification */
+        .notification-toast {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            padding: 16px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            animation: slideIn 0.3s ease-out;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .notification-toast:hover {
+            transform: translateX(-5px);
+        }
+
+        .notification-toast .icon {
+            flex-shrink: 0;
+            margin-right: 12px;
+            font-size: 24px;
+        }
+
+        .notification-toast .content {
+            flex-grow: 1;
+        }
+
+        .notification-toast h4 {
+            margin: 0 0 4px 0;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .notification-toast p {
+            margin: 0;
+            font-size: 13px;
+            opacity: 0.95;
+        }
+
+        .notification-toast .amount {
+            margin: 4px 0 0 0;
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .notification-toast .close-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        /* Message Notification */
+        .message-notification {
+            background: white;
+            border-left: 4px solid #10B981;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 16px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            display: flex;
+            align-items: flex-start;
+            animation: slideIn 0.3s ease-out;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .message-notification:hover {
+            transform: translateX(-5px);
+        }
+
+        .message-notification .icon {
+            flex-shrink: 0;
+            margin-right: 12px;
+            font-size: 20px;
+        }
+
+        .message-notification .content {
+            flex-grow: 1;
+        }
+
+        .message-notification h4 {
+            margin: 0 0 4px 0;
+            color: #1F2937;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .message-notification p {
+            margin: 0;
+            color: #4B5563;
+            font-size: 13px;
+        }
+
+        .message-notification .close-btn {
+            background: none;
+            border: none;
+            color: #9CA3AF;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        /* Simple Mode Visual */
+        .simple-notification {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            animation: slideInRight 0.5s ease-out;
+        }
+
+        .simple-notification h3 {
+            margin: 0 0 8px 0;
+            font-size: 18px;
+        }
+
+        .simple-notification p {
+            margin: 0;
+            font-size: 14px;
+            opacity: 0.95;
+        }
+
+        /* Messages Button */
+        .messages-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+
+        .messages-btn:hover {
+            background: #5568d3;
+        }
+
+        .badge {
+            background: #ef4444;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 11px;
+            margin-left: 4px;
+        }
+
+        /* Conversation Item */
+        .conversation-item {
+            padding: 15px;
+            background: #EEF2FF;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            transition: background 0.2s;
+        }
+
+        .conversation-item:hover {
+            background: #E0E7FF;
+        }
+
+        .conversation-item h4 {
+            margin: 0 0 5px 0;
+            color: #1F2937;
+            font-size: 14px;
+        }
+
+        .conversation-item p {
+            margin: 0;
+            color: #6B7280;
+            font-size: 14px;
+        }
+
+        .conversation-item .product-ref {
+            margin: 5px 0 0 0;
+            color: #9CA3AF;
+            font-size: 12px;
+        }
+
+        .conversation-item .unread-badge {
+            background: #EF4444;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Animations */
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .demo-note {
+            background: #FEF3C7;
+            border-left: 4px solid #F59E0B;
+            padding: 12px 16px;
+            border-radius: 4px;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #92400E;
+        }
+
+        .demo-note i {
+            margin-right: 8px;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-list li {
+            padding: 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #4B5563;
+        }
+
+        .feature-list li i {
+            color: #10B981;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="demo-container">
+        <h1><i class="fas fa-bell"></i> Artisan Dashboard Notifications</h1>
+        <p class="subtitle">Visual preview of all notification types</p>
+
+        <!-- Order Notifications -->
+        <div class="section">
+            <div class="section-title">
+                <i class="fas fa-shopping-cart"></i>
+                <span>Order Notifications (Advanced Mode)</span>
+            </div>
+
+            <div class="notification-toast">
+                <div class="icon">🛍️</div>
+                <div class="content">
+                    <h4>New Order!</h4>
+                    <p>John Smith ordered Handmade Blue Pottery Vase</p>
+                    <p class="amount">Amount: USD 45.00</p>
+                </div>
+                <button class="close-btn">✕</button>
+            </div>
+
+            <div class="demo-note">
+                <i class="fas fa-info-circle"></i>
+                <strong>Features:</strong> Real-time Socket.IO, Auto-refresh orders, Click to scroll to orders section
+            </div>
+        </div>
+
+        <!-- Message Notifications -->
+        <div class="section">
+            <div class="section-title">
+                <i class="fas fa-comments"></i>
+                <span>Message Notifications (Advanced Mode)</span>
+            </div>
+
+            <div class="message-notification">
+                <div class="icon">💬</div>
+                <div class="content">
+                    <h4>Sarah Johnson</h4>
+                    <p>Hi! Can you customize the design with blue patterns?</p>
+                </div>
+                <button class="close-btn">✕</button>
+            </div>
+
+            <div class="demo-note">
+                <i class="fas fa-info-circle"></i>
+                <strong>Features:</strong> Click to open chat, Shows message preview, Real-time updates
+            </div>
+        </div>
+
+        <!-- Simple Mode Notification -->
+        <div class="section">
+            <div class="section-title">
+                <i class="fas fa-volume-up"></i>
+                <span>Voice Notification (Simple Mode)</span>
+            </div>
+
+            <div class="simple-notification">
+                <h3>नया ऑर्डर!</h3>
+                <p>John Smith ने Handmade Blue Pottery Vase ऑर्डर किया</p>
+            </div>
+
+            <div class="demo-note">
+                <i class="fas fa-info-circle"></i>
+                <strong>Voice Says:</strong> "नया ऑर्डर आया है! John Smith ने आपका Handmade Blue Pottery Vase खरीदा है।
+                कीमत 45.00 रुपये है।"
+            </div>
+        </div>
+
+        <!-- Messages Button -->
+        <div class="section">
+            <div class="section-title">
+                <i class="fas fa-inbox"></i>
+                <span>Messages Button (Auto-appears)</span>
+            </div>
+
+            <button class="messages-btn">
+                <i class="fas fa-comments"></i> Messages
+                <span class="badge">3</span>
+            </button>
+
+            <div class="demo-note">
+                <i class="fas fa-info-circle"></i>
+                <strong>Behavior:</strong> Automatically appears in header when unread messages exist
+            </div>
+        </div>
+
+        <!-- Conversations List -->
+        <div class="section">
+            <div class="section-title">
+                <i class="fas fa-list"></i>
+                <span>Conversations List</span>
+            </div>
+
+            <div class="conversation-item">
+                <div>
+                    <h4>John Smith</h4>
+                    <p>Thank you! Looking forward to receiving it.</p>
+                    <p class="product-ref">Re: Handmade Blue Pottery Vase</p>
+                </div>
+                <span class="unread-badge">2</span>
+            </div>
+
+            <div class="conversation-item" style="background: white;">
+                <div>
+                    <h4>Sarah Johnson</h4>
+                    <p>Can you ship to Canada?</p>
+                    <p class="product-ref">Re: Traditional Jaipur Textile</p>
+                </div>
+            </div>
+
+            <div class="demo-note">
+                <i class="fas fa-info-circle"></i>
+                <strong>Features:</strong> Shows product context, Highlights unread, Click to open chat
+            </div>
+        </div>
+
+        <!-- Feature Summary -->
+        <div class="section">
+            <div class="section-title">
+                <i class="fas fa-check-circle"></i>
+                <span>Implemented Features</span>
+            </div>
+
+            <ul class="feature-list">
+                <li><i class="fas fa-check"></i> Real-time order notifications via Socket.IO</li>
+                <li><i class="fas fa-check"></i> Voice announcements in Hindi (Simple Mode)</li>
+                <li><i class="fas fa-check"></i> Visual toast notifications (Advanced Mode)</li>
+                <li><i class="fas fa-check"></i> Messages button with unread count</li>
+                <li><i class="fas fa-check"></i> Conversations list with buyers</li>
+                <li><i class="fas fa-check"></i> Product context in messages</li>
+                <li><i class="fas fa-check"></i> Auto-refresh every 30 seconds (fallback)</li>
+                <li><i class="fas fa-check"></i> Click notifications to take action</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Add click handlers for demo
+        document.querySelectorAll('.notification-toast, .message-notification').forEach(el => {
+            el.addEventListener('click', function (e) {
+                if (!e.target.classList.contains('close-btn')) {
+                    alert('In the real dashboard, this would scroll to the orders section or open the chat!');
+                }
+            });
+        });
+
+        document.querySelectorAll('.close-btn').forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                this.closest('.notification-toast, .message-notification').style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => {
+                    this.closest('.notification-toast, .message-notification').remove();
+                }, 300);
+            });
+        });
+
+        document.querySelector('.messages-btn').addEventListener('click', function () {
+            alert('In the real dashboard, this would open the conversations modal!');
+        });
+
+        document.querySelectorAll('.conversation-item').forEach(item => {
+            item.addEventListener('click', function () {
+                alert('In the real dashboard, this would open the chat with this buyer!');
+            });
+        });
+    </script>
+</body>
+
+</html>

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
     <link rel="stylesheet" href="/static/css/ai-features.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body>
     <!-- Top Bar with Voice Support -->
     <header class="simple-header">
@@ -44,6 +46,10 @@
         </div>
     </header>
 
+    <!-- Notification Container for Real-time Alerts -->
+    <div id="notification-container" style="position: fixed; top: 80px; right: 20px; z-index: 10000; max-width: 350px;">
+    </div>
+
     <!-- Main Dashboard - Large Visual Cards -->
     <main class="dashboard-container">
         <!-- Greeting with Voice -->
@@ -59,7 +65,7 @@
 
         <!-- Big Action Cards - Icon First, Minimal Text -->
         <div class="action-cards">
-            
+
             <!-- Card 1: Upload Product (Simplified) -->
             <div class="big-card upload-card" data-card="upload" onclick="showSimpleUpload()">
                 <div class="card-icon">
@@ -183,7 +189,7 @@
             <button class="close-btn" onclick="closeUploadModal()">
                 <i class="fas fa-times"></i>
             </button>
-            
+
             <h2>
                 <span class="hindi">अपने काम की फोटो लें</span>
                 <button class="voice-btn-inline" onclick="playVoice('upload-instruction')">
@@ -198,10 +204,12 @@
                         <i class="fas fa-camera-retro"></i>
                         <p class="hindi">फोटो लेने के लिए यहाँ दबाएं</p>
                         <p class="english">Tap here to take photo</p>
-                        <input type="file" id="photoInput" name="images" accept="image/*" capture="environment" multiple style="display: none;" onchange="showPhotoPreview(this)">
+                        <input type="file" id="photoInput" name="images" accept="image/*" capture="environment" multiple
+                            style="display: none;" onchange="showPhotoPreview(this)">
                     </div>
                     <div id="photoPreview" class="photo-preview"></div>
-                    <button type="button" class="big-next-btn" onclick="nextStep(2)" style="display: none;" id="photoNextBtn">
+                    <button type="button" class="big-next-btn" onclick="nextStep(2)" style="display: none;"
+                        id="photoNextBtn">
                         <span class="hindi">आगे बढ़ें</span>
                         <i class="fas fa-arrow-right"></i>
                     </button>
@@ -216,7 +224,8 @@
                         </button>
                     </label>
                     <div class="number-pad">
-                        <input type="number" id="priceInput" name="price" inputmode="numeric" pattern="[0-9]*" placeholder="100" required>
+                        <input type="number" id="priceInput" name="price" inputmode="numeric" pattern="[0-9]*"
+                            placeholder="100" required>
                         <div class="quick-price-buttons">
                             <button type="button" onclick="setPrice(50)">₹50</button>
                             <button type="button" onclick="setPrice(100)">₹100</button>
@@ -246,7 +255,8 @@
                         <i class="fas fa-microphone"></i>
                         <span class="hindi">बोलें</span>
                     </button>
-                    <textarea id="descriptionInput" name="description" rows="3" placeholder="या यहाँ लिखें..."></textarea>
+                    <textarea id="descriptionInput" name="description" rows="3"
+                        placeholder="या यहाँ लिखें..."></textarea>
                     <input type="hidden" name="title" id="titleInput">
                     <div class="step-buttons">
                         <button type="button" class="back-btn" onclick="prevStep(2)">
@@ -278,7 +288,8 @@
         <p class="hindi">आपका उत्पाद अपलोड हो गया</p>
     </div>
 
-    <script src="/static/js/artisan-simple-multilingual.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script src="/static/js/artisan-simple.js"></script>
 </body>
-</html>
 
+</html>

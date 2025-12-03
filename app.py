@@ -23,6 +23,8 @@ import routes.translation
 import routes.export_docs
 import routes.cluster_pooling
 import routes.checkout
+import routes.messages
+import routes.stats
 
 
 app = Flask(__name__)
@@ -95,6 +97,8 @@ app.register_blueprint(routes.translation.bp)
 app.register_blueprint(routes.export_docs.bp)
 app.register_blueprint(routes.cluster_pooling.bp)
 app.register_blueprint(routes.checkout.bp)
+app.register_blueprint(routes.messages.bp)
+app.register_blueprint(routes.stats.bp)
 
 @app.route('/')
 def index():

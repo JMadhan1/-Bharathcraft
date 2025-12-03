@@ -155,6 +155,20 @@ def process_transaction():
         
         g.db.commit()
         
+        # Emit Socket.IO notification for real-time update
+        try:
+            from app import socketio
+            socketio.emit('new_order', {
+                'order_id': order.id,
+                'buyer_name': buyer.user.full_name,
+                'product_title': product.title,
+                'quantity': quantity,
+                'amount': f"{total_buyer_amount:.2f}",
+                'currency': currency
+            }, room=f'user_{product.artisan.user_id}')
+        except Exception as e:
+            print(f"Socket.IO notification error: {e}")
+        
         return jsonify({
             'success': True, 
             'order_id': order.id,

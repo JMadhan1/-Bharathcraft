@@ -10,6 +10,30 @@
 
     document.getElementById('userName').textContent = userData.full_name || '';
 
+    // Initialize Socket.IO for real-time notifications
+    let socket = null;
+    if (typeof io !== 'undefined') {
+        socket = io();
+        socket.on('connect', () => {
+            console.log('Connected to notification service');
+            socket.emit('join', { room: `user_${userData.id}` });
+        });
+
+        // Listen for new order notifications
+        socket.on('new_order', (data) => {
+            console.log('New order notification:', data);
+            showOrderNotification(data);
+            loadMyOrders(); // Refresh orders list
+        });
+
+        // Listen for new messages
+        socket.on('new_message', (data) => {
+            console.log('New message notification:', data);
+            showMessageNotification(data);
+            updateUnreadCount();
+        });
+    }
+
     // Expose functions globally for onclick handlers
     window.showUploadProduct = function () {
         document.getElementById('uploadModal').classList.add('active');
@@ -27,11 +51,18 @@
         // Load products and orders
         loadMyProducts();
         loadMyOrders();
+        loadUnreadMessages();
 
         document.getElementById('productUploadForm').addEventListener('submit', async function (e) {
             e.preventDefault();
             await uploadProduct();
         });
+
+        // Poll for new orders every 30 seconds (fallback if Socket.IO fails)
+        setInterval(() => {
+            loadMyOrders();
+            updateUnreadCount();
+        }, 30000);
     });
 
     async function uploadProduct() {
@@ -277,6 +308,219 @@
         } catch (error) {
             console.error('Error approving order:', error);
             alert('Error approving order. Please try again.');
+        }
+    };
+
+    // Show order notification
+    function showOrderNotification(data) {
+        const container = document.getElementById('notification-container');
+        if (!container) return;
+
+        const notification = document.createElement('div');
+        notification.className = 'notification-toast order-notification';
+        notification.style.cssText = `
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            padding: 16px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            animation: slideIn 0.3s ease-out;
+            max-width: 350px;
+            cursor: pointer;
+        `;
+
+        notification.innerHTML = `
+            <div style="flex-shrink: 0; margin-right: 12px; font-size: 24px;">🛍️</div>
+            <div style="flex-grow: 1;">
+                <h4 style="margin: 0 0 4px 0; font-size: 14px; font-weight: 600;">New Order!</h4>
+                <p style="margin: 0; font-size: 13px; opacity: 0.95;">${data.buyer_name} ordered ${data.product_title}</p>
+                <p style="margin: 4px 0 0 0; font-size: 12px; opacity: 0.9;">Amount: ${data.currency} ${data.amount}</p>
+            </div>
+            <button onclick="this.parentElement.remove()" style="background: rgba(255,255,255,0.2); border: none; color: white; cursor: pointer; padding: 4px 8px; border-radius: 4px;">✕</button>
+        `;
+
+        notification.onclick = () => {
+            // Scroll to orders section
+            document.getElementById('recentOrders')?.scrollIntoView({ behavior: 'smooth' });
+            notification.remove();
+        };
+
+        container.appendChild(notification);
+
+        // Auto remove after 10 seconds
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            setTimeout(() => notification.remove(), 300);
+        }, 10000);
+    }
+
+    // Show message notification
+    function showMessageNotification(data) {
+        const container = document.getElementById('notification-container');
+        if (!container) return;
+
+        const notification = document.createElement('div');
+        notification.className = 'notification-toast message-notification';
+        notification.style.cssText = `
+            background: white;
+            border-left: 4px solid #10B981;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 16px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            display: flex;
+            align-items: flex-start;
+            animation: slideIn 0.3s ease-out;
+            max-width: 350px;
+            cursor: pointer;
+        `;
+
+        const content = data.translated_content || data.content;
+        notification.innerHTML = `
+            <div style="flex-shrink: 0; margin-right: 12px; font-size: 20px;">💬</div>
+            <div style="flex-grow: 1;">
+                <h4 style="margin: 0 0 4px 0; color: #1F2937; font-size: 14px; font-weight: 600;">${data.sender_name}</h4>
+                <p style="margin: 0; color: #4B5563; font-size: 13px;">${content.substring(0, 60)}${content.length > 60 ? '...' : ''}</p>
+            </div>
+            <button onclick="this.parentElement.remove()" style="background: none; border: none; color: #9CA3AF; cursor: pointer;">✕</button>
+        `;
+
+        notification.onclick = () => {
+            openChat(data.sender_id, data.sender_name);
+            notification.remove();
+        };
+
+        container.appendChild(notification);
+
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            setTimeout(() => notification.remove(), 300);
+        }, 7000);
+    }
+
+    // Load unread messages count
+    async function loadUnreadMessages() {
+        try {
+            const response = await authenticatedFetch('/api/messages/unread-count', {
+                method: 'GET'
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                updateUnreadBadge(data.count || 0);
+            }
+        } catch (error) {
+            console.error('Error loading unread count:', error);
+        }
+    }
+
+    // Update unread count
+    async function updateUnreadCount() {
+        await loadUnreadMessages();
+    }
+
+    // Update unread badge
+    function updateUnreadBadge(count) {
+        let badge = document.getElementById('unreadBadge');
+        if (!badge && count > 0) {
+            // Create badge if it doesn't exist
+            const header = document.querySelector('.header .nav');
+            if (header) {
+                const messagesBtn = document.createElement('button');
+                messagesBtn.className = 'btn btn-primary';
+                messagesBtn.onclick = showMessages;
+                messagesBtn.innerHTML = `
+                    <i class="fas fa-comments"></i> Messages 
+                    <span id="unreadBadge" class="badge" style="background: #ef4444; color: white; padding: 2px 6px; border-radius: 10px; font-size: 11px; margin-left: 4px;">${count}</span>
+                `;
+                header.insertBefore(messagesBtn, header.firstChild);
+            }
+        } else if (badge) {
+            if (count > 0) {
+                badge.textContent = count;
+                badge.style.display = 'inline';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+    }
+
+    // Show messages/chat interface
+    window.showMessages = async function () {
+        try {
+            const response = await authenticatedFetch('/api/messages/conversations', {
+                method: 'GET'
+            });
+
+            if (!response.ok) {
+                alert('Error loading messages');
+                return;
+            }
+
+            const conversations = await response.json();
+
+            // Create modal for messages
+            let modal = document.getElementById('messagesModal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'messagesModal';
+                modal.className = 'modal';
+                document.body.appendChild(modal);
+            }
+
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 600px;">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-comments"></i> Messages</h3>
+                        <span class="close" onclick="closeMessagesModal()">×</span>
+                    </div>
+                    <div style="padding: 20px;">
+                        ${conversations.length === 0 ? '<p>No messages yet.</p>' : `
+                            <div style="display: flex; flex-direction: column; gap: 10px;">
+                                ${conversations.map(conv => `
+                                    <div onclick="openChat(${conv.user_id}, '${conv.user_name}')" 
+                                         style="padding: 15px; background: ${conv.unread_count > 0 ? '#EEF2FF' : 'white'}; 
+                                                border: 1px solid #E5E7EB; border-radius: 8px; cursor: pointer;
+                                                display: flex; justify-content: space-between; align-items: center;">
+                                        <div>
+                                            <h4 style="margin: 0 0 5px 0; color: #1F2937;">${conv.user_name}</h4>
+                                            <p style="margin: 0; color: #6B7280; font-size: 14px;">${conv.last_message || 'No messages'}</p>
+                                            ${conv.product_title ? `<p style="margin: 5px 0 0 0; color: #9CA3AF; font-size: 12px;">Re: ${conv.product_title}</p>` : ''}
+                                        </div>
+                                        ${conv.unread_count > 0 ? `<span style="background: #EF4444; color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: 600;">${conv.unread_count}</span>` : ''}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        `}
+                    </div>
+                </div>
+            `;
+
+            modal.classList.add('active');
+        } catch (error) {
+            console.error('Error showing messages:', error);
+            alert('Error loading messages');
+        }
+    };
+
+    window.closeMessagesModal = function () {
+        const modal = document.getElementById('messagesModal');
+        if (modal) {
+            modal.classList.remove('active');
+        }
+    };
+
+    // Open chat with specific user
+    window.openChat = function (userId, userName) {
+        closeMessagesModal();
+        // Use existing chat functionality
+        if (typeof window.openChatWith === 'function') {
+            window.openChatWith(userId, userName);
+        } else {
+            alert(`Chat with ${userName} will open here. Chat functionality is being loaded...`);
         }
     };
 

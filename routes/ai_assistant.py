@@ -354,16 +354,17 @@ def get_recommendations():
         user_orders = g.db.query(Order).filter_by(buyer_id=user_id).limit(10).all()
         
         # Get all available products
-        all_products = g.db.query(Product).filter_by(status='available').limit(50).all()
+        all_products = g.db.query(Product).filter_by(is_available=True).limit(50).all()
         
         # Build context from order history
         purchased_categories = []
         price_range = []
         for order in user_orders:
-            product = g.db.query(Product).get(order.product_id)
-            if product:
-                purchased_categories.append(product.craft_type)
-                price_range.append(product.price)
+            for item in order.order_items:
+                product = item.product
+                if product:
+                    purchased_categories.append(product.craft_type)
+                    price_range.append(product.price)
         
         # Analyze preferences
         avg_price = sum(price_range) / len(price_range) if price_range else 0
@@ -378,7 +379,7 @@ Buyer Profile:
 - Total orders: {len(user_orders)}
 
 Available Products (sample):
-{json.dumps([{'id': p.id, 'title': p.title, 'craft_type': p.craft_type, 'price': p.price, 'quality': p.quality_grade} for p in all_products[:10]], indent=2)}
+{json.dumps([{'id': p.id, 'title': p.title, 'craft_type': p.craft_type, 'price': p.price, 'quality': p.quality_grade.value if p.quality_grade else 'standard'} for p in all_products[:10]], indent=2)}
 
 Task: Recommend 5-8 products that match the buyer's preferences. Consider:
 1. Similar craft types they've purchased
@@ -410,33 +411,47 @@ No explanations, just the array."""
             if not isinstance(recommended_ids, list):
                 recommended_ids = []
         except:
-            # Fallback: recommend based on categories
-            recommended_ids = [p.id for p in all_products if p.craft_type in preferred_categories][:8]
+            # Fallback: recommend based on categories or all products
+            if preferred_categories:
+                recommended_ids = [p.id for p in all_products if p.craft_type in preferred_categories][:8]
+            else:
+                # If no order history, recommend popular/quality products
+                recommended_ids = [p.id for p in all_products][:8]
+        
+        # If still no recommendations, use all available products
+        if not recommended_ids and all_products:
+            recommended_ids = [p.id for p in all_products[:8]]
         
         # Get recommended products
         recommended_products = []
         for pid in recommended_ids[:8]:
             product = g.db.query(Product).get(pid)
-            if product and product.status == 'available':
+            if product and product.is_available:
                 recommended_products.append({
                     'id': product.id,
                     'title': product.title,
                     'description': product.description,
                     'price': product.price,
                     'craft_type': product.craft_type,
-                    'quality_grade': product.quality_grade,
-                    'images': product.images or [],
+                    'quality_grade': product.quality_grade.value if product.quality_grade else 'standard',
+                    'images': product.images.split(',') if product.images else [],
                     'artisan': {
                         'id': product.artisan_id,
-                        'name': product.artisan.full_name if product.artisan else 'Unknown'
-                    } if hasattr(product, 'artisan') else None
+                        'name': product.artisan.user.full_name if product.artisan and product.artisan.user else 'Unknown'
+                    }
                 })
+        
+        # Create reasoning message
+        if len(user_orders) > 0:
+            reasoning = f"Based on your {len(user_orders)} previous orders in {', '.join(preferred_categories) if preferred_categories else 'various'} categories"
+        else:
+            reasoning = "Popular products you might like - Start shopping to get personalized recommendations!"
         
         return jsonify({
             'success': True,
             'recommendations': recommended_products,
             'count': len(recommended_products),
-            'reasoning': f"Based on your {len(user_orders)} previous orders in {', '.join(preferred_categories) if preferred_categories else 'various'} categories"
+            'reasoning': reasoning
         }), 200
         
     except Exception as e:
@@ -469,7 +484,7 @@ def visual_search():
         image_file.save(image_path)
         
         # Get all products with images
-        all_products = g.db.query(Product).filter_by(status='available').limit(100).all()
+        all_products = g.db.query(Product).filter_by(is_available=True).limit(100).all()
         
         # Use Gemini Vision to analyze the uploaded image
         try:

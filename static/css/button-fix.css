@@ -1,0 +1,28 @@
+/* Fix for all button text visibility - ensures white text on all buttons */
+button,
+.btn,
+.btn-primary,
+.btn-secondary,
+.pay-btn,
+button[class*="btn"],
+button[onclick] {
+    color: #FFFFFF !important;
+}
+
+button:hover,
+.btn:hover,
+.btn-primary:hover,
+.btn-secondary:hover,
+.pay-btn:hover {
+    color: #FFFFFF !important;
+}
+
+/* Specific fix for checkout page */
+#payBtn {
+    color: #FFFFFF !important;
+    background: var(--primary) !important;
+}
+
+#payBtn:hover {
+    color: #FFFFFF !important;
+}
