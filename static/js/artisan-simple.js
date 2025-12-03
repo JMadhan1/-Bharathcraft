@@ -258,6 +258,14 @@
         window.location.href = '/artisan/dashboard.html';
     };
 
+    window.showMyProducts = function () {
+        // Switch to advanced mode to see products
+        if (confirm('उत्पाद देखने के लिए Advanced Mode में जाएं?\n\nGo to Advanced Mode to see products?')) {
+            localStorage.setItem('artisanDashboardMode', 'advanced');
+            window.location.href = '/artisan';
+        }
+    };
+
     window.showOrders = function () {
         // Switch to advanced mode to see orders
         if (confirm('ऑर्डर देखने के लिए Advanced Mode में जाएं?\n\nGo to Advanced Mode to see orders?')) {
@@ -316,6 +324,41 @@
         }
     `;
     document.head.appendChild(style);
+
+    // Function to load artisan stats
+    window.loadStats = async function () {
+        try {
+            const token = localStorage.getItem('authToken');
+            if (!token) return;
+
+            const response = await fetch('/api/stats/artisan', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+
+                // Update UI elements if they exist
+                const productCount = document.getElementById('productCount');
+                if (productCount) productCount.textContent = data.total_products || 0;
+
+                const orderCount = document.getElementById('orderCount');
+                if (orderCount) orderCount.textContent = data.pending_orders || 0;
+
+                const totalEarnings = document.getElementById('totalEarnings');
+                if (totalEarnings) totalEarnings.textContent = (data.total_earnings || 0).toLocaleString('en-IN');
+            }
+        } catch (error) {
+            console.error('Error loading stats:', error);
+        }
+    };
+
+    // Function to switch to advanced mode
+    window.switchToAdvancedMode = function () {
+        window.location.href = '/artisan/dashboard';
+    };
 
     // Initialize
     document.addEventListener('DOMContentLoaded', function () {

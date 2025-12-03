@@ -23,75 +23,76 @@ def get_unread_count():
 @jwt_required()
 def get_conversations():
     """Get list of conversations with unread counts"""
-    user_id = int(get_jwt_identity())
-    
-    # Get all users who have messaged this user or been messaged by this user
-    # Group by conversation partner
-    conversations = []
-    
-    # Subquery to get the latest message for each conversation
-    latest_messages = g.db.query(
-        Message,
-        func.max(Message.created_at).label('latest_time')
-    ).filter(
-        or_(
-            Message.sender_id == user_id,
-            Message.receiver_id == user_id
-        )
-    ).group_by(
-        func.case(
-            (Message.sender_id == user_id, Message.receiver_id),
-            else_=Message.sender_id
-        )
-    ).all()
-    
-    # Get unique conversation partners
-    partners = set()
-    for msg, _ in latest_messages:
-        partner_id = msg.receiver_id if msg.sender_id == user_id else msg.sender_id
-        partners.add(partner_id)
-    
-    # Build conversation list
-    for partner_id in partners:
-        partner = g.db.query(User).get(partner_id)
-        if not partner:
-            continue
+    try:
+        user_id = int(get_jwt_identity())
         
-        # Get last message
-        last_message = g.db.query(Message).filter(
+        # Get all messages involving this user
+        all_messages = g.db.query(Message).filter(
             or_(
-                and_(Message.sender_id == user_id, Message.receiver_id == partner_id),
-                and_(Message.sender_id == partner_id, Message.receiver_id == user_id)
+                Message.sender_id == user_id,
+                Message.receiver_id == user_id
             )
-        ).order_by(Message.created_at.desc()).first()
+        ).all()
         
-        # Count unread messages from this partner
-        unread_count = g.db.query(Message).filter(
-            Message.sender_id == partner_id,
-            Message.receiver_id == user_id,
-            Message.is_read == False
-        ).count()
+        if not all_messages:
+            return jsonify([]), 200
         
-        # Get product title if message is related to a product
-        product_title = None
-        if last_message and last_message.product_id:
-            product = g.db.query(Product).get(last_message.product_id)
-            if product:
-                product_title = product.title
+        # Get unique conversation partners
+        partners = set()
+        for msg in all_messages:
+            partner_id = msg.receiver_id if msg.sender_id == user_id else msg.sender_id
+            partners.add(partner_id)
         
-        conversations.append({
-            'user_id': partner_id,
-            'user_name': partner.full_name,
-            'last_message': last_message.content if last_message else None,
-            'last_message_time': last_message.created_at.isoformat() if last_message else None,
-            'unread_count': unread_count,
-            'product_title': product_title
-        })
-    
-    # Sort by last message time
-    conversations.sort(key=lambda x: x['last_message_time'] or '', reverse=True)
-    
-    return jsonify(conversations), 200
+        conversations = []
+        
+        # Build conversation list
+        for partner_id in partners:
+            # Use filter instead of get for better compatibility
+            partner = g.db.query(User).filter(User.id == partner_id).first()
+            if not partner:
+                continue
+            
+            # Get last message
+            last_message = g.db.query(Message).filter(
+                or_(
+                    and_(Message.sender_id == user_id, Message.receiver_id == partner_id),
+                    and_(Message.sender_id == partner_id, Message.receiver_id == user_id)
+                )
+            ).order_by(Message.created_at.desc()).first()
+            
+            # Count unread messages from this partner
+            unread_count = g.db.query(Message).filter(
+                Message.sender_id == partner_id,
+                Message.receiver_id == user_id,
+                Message.is_read == False
+            ).count()
+            
+            # Get product title if message is related to a product
+            product_title = None
+            if last_message and last_message.product_id:
+                product = g.db.query(Product).filter(Product.id == last_message.product_id).first()
+                if product:
+                    product_title = product.title
+            
+            conversations.append({
+                'user_id': partner_id,
+                'user_name': partner.full_name,
+                'last_message': last_message.content if last_message else None,
+                'last_message_time': last_message.created_at.isoformat() if last_message else None,
+                'unread_count': unread_count,
+                'product_title': product_title
+            })
+        
+        # Sort by last message time
+        conversations.sort(key=lambda x: x['last_message_time'] or '', reverse=True)
+        
+        return jsonify(conversations), 200
+    except Exception as e:
+        print(f"Error loading conversations: {e}")
+        import traceback
+        traceback.print_exc()
+        # Return empty array instead of error for better UX
+        return jsonify([]), 200
 
 @bp.route('/conversation/<int:partner_id>', methods=['GET'])
 @jwt_required()

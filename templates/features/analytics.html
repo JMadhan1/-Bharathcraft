@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artisan Analytics - Bharatcraft</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .analytics-page {
+            padding-top: 80px;
+            background: #F8FAFC;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .date-range {
+            background: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: 1px solid #E5E7EB;
+            color: #4B5563;
+            font-size: 0.9rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-label {
+            color: #6B7280;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1F2937;
+        }
+
+        .stat-trend {
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .trend-up {
+            color: #10B981;
+        }
+
+        .trend-down {
+            color: #EF4444;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1F2937;
+        }
+
+        .top-products {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .product-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid #F3F4F6;
+        }
+
+        .product-img {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .product-info h4 {
+            margin: 0;
+            font-size: 0.95rem;
+            color: #1F2937;
+        }
+
+        .product-info p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: #6B7280;
+        }
+
+        .product-sales {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        @media (max-width: 1024px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar"
+        style="position: fixed; top: 0; width: 100%; z-index: 1000; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 1rem 2rem;">
+        <div
+            style="display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto;">
+            <a href="/" style="text-decoration: none; font-size: 1.5rem; font-weight: 800; color: var(--primary);">
+                Bharatcraft
+            </a>
+            <div style="display: flex; gap: 2rem;">
+                <a href="/artisan" style="text-decoration: none; color: #4B5563; font-weight: 500;">Dashboard</a>
+                <a href="/features/analytics"
+                    style="text-decoration: none; color: var(--primary); font-weight: 600;">Analytics</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="analytics-page">
+        <div class="container">
+            <div class="header-section">
+                <div>
+                    <h1 style="margin: 0; color: #1F2937;">📊 Performance Analytics</h1>
+                    <p style="margin: 0.5rem 0 0; color: #6B7280;">Track your sales, growth, and global reach.</p>
+                </div>
+                <div class="date-range">
+                    <i class="far fa-calendar"></i> Last 30 Days
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Revenue</div>
+                    <div class="stat-value">₹1,24,500</div>
+                    <div class="stat-trend trend-up">
+                        <i class="fas fa-arrow-up"></i> 12.5% vs last month
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Orders</div>
+                    <div class="stat-value">48</div>
+                    <div class="stat-trend trend-up">
+                        <i class="fas fa-arrow-up"></i> 8.2% vs last month
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Avg. Order Value</div>
+                    <div class="stat-value">₹2,593</div>
+                    <div class="stat-trend trend-up">
+                        <i class="fas fa-arrow-up"></i> 4.1% vs last month
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Global Reach</div>
+                    <div class="stat-value">6 Countries</div>
+                    <div class="stat-trend trend-up">
+                        <i class="fas fa-plus"></i> 2 new this month
+                    </div>
+                </div>
+            </div>
+
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">Revenue Growth</div>
+                    </div>
+                    <canvas id="revenueChart" height="300"></canvas>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">Top Products</div>
+                    </div>
+                    <ul class="top-products">
+                        <li class="product-item">
+                            <img src="https://images.unsplash.com/photo-1606293926075-69a00dbfde81?w=100&q=80"
+                                class="product-img">
+                            <div class="product-info">
+                                <h4>Kutch Shawl</h4>
+                                <p>Textiles</p>
+                            </div>
+                            <div class="product-sales">
+                                <div style="font-weight: 600;">₹45,000</div>
+                                <div style="font-size: 0.8rem; color: #6B7280;">18 sales</div>
+                            </div>
+                        </li>
+                        <li class="product-item">
+                            <img src="https://images.unsplash.com/photo-1590615370581-255577741584?w=100&q=80"
+                                class="product-img">
+                            <div class="product-info">
+                                <h4>Brass Lamp</h4>
+                                <p>Metalwork</p>
+                            </div>
+                            <div class="product-sales">
+                                <div style="font-weight: 600;">₹32,500</div>
+                                <div style="font-size: 0.8rem; color: #6B7280;">12 sales</div>
+                            </div>
+                        </li>
+                        <li class="product-item">
+                            <img src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=100&q=80"
+                                class="product-img">
+                            <div class="product-info">
+                                <h4>Block Print Saree</h4>
+                                <p>Textiles</p>
+                            </div>
+                            <div class="product-sales">
+                                <div style="font-weight: 600;">₹28,000</div>
+                                <div style="font-size: 0.8rem; color: #6B7280;">8 sales</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Revenue Chart
+        const ctx = document.getElementById('revenueChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                datasets: [{
+                    label: 'Revenue (₹)',
+                    data: [25000, 32000, 28000, 39500],
+                    borderColor: '#FF6B35',
+                    backgroundColor: 'rgba(255, 107, 53, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#F3F4F6' }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

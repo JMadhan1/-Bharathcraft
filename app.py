@@ -25,6 +25,7 @@ import routes.cluster_pooling
 import routes.checkout
 import routes.messages
 import routes.stats
+import routes.features
 
 
 app = Flask(__name__)
@@ -99,12 +100,18 @@ app.register_blueprint(routes.cluster_pooling.bp)
 app.register_blueprint(routes.checkout.bp)
 app.register_blueprint(routes.messages.bp)
 app.register_blueprint(routes.stats.bp)
+app.register_blueprint(routes.features.bp)
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
+@app.route('/success-stories')
+def success_stories():
+    return render_template('success-stories.html')
+
 @app.route('/artisan')
+@app.route('/artisan/dashboard')
 def artisan_portal():
     return render_template('artisan/dashboard.html')
 

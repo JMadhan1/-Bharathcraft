@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Currency System - Bharatcraft</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .currency-page {
+            padding-top: 80px;
+            background: #F0FDF4;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .converter-card {
+            background: white;
+            padding: 3rem;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .currency-input-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            align-items: center;
+        }
+
+        .currency-select {
+            padding: 1rem;
+            border: 1px solid #E5E7EB;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            background: #F9FAFB;
+            cursor: pointer;
+        }
+
+        .amount-display {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #1F2937;
+        }
+
+        .breakdown {
+            background: #F3F4F6;
+            padding: 1.5rem;
+            border-radius: 16px;
+            margin-top: 2rem;
+        }
+
+        .breakdown-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            color: #4B5563;
+        }
+
+        .breakdown-row.total {
+            border-top: 2px solid #E5E7EB;
+            padding-top: 1rem;
+            margin-top: 1rem;
+            font-weight: 700;
+            color: #1F2937;
+            font-size: 1.2rem;
+        }
+
+        .artisan-view {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px dashed #E5E7EB;
+            text-align: center;
+        }
+
+        .artisan-earnings {
+            font-size: 2rem;
+            color: #10B981;
+            font-weight: 700;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar"
+        style="position: fixed; top: 0; width: 100%; z-index: 1000; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 1rem 2rem;">
+        <div
+            style="display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto;">
+            <a href="/" style="text-decoration: none; font-size: 1.5rem; font-weight: 800; color: var(--primary);">
+                Bharatcraft
+            </a>
+            <div style="display: flex; gap: 2rem;">
+                <a href="/success-stories" style="text-decoration: none; color: #4B5563; font-weight: 500;">Success
+                    Stories</a>
+                <a href="/features/currency-converter"
+                    style="text-decoration: none; color: var(--primary); font-weight: 600;">Currency Demo</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="currency-page">
+        <div class="container">
+            <div style="text-align: center; margin-bottom: 3rem;">
+                <h1>🌍 Global Currency, Local Earnings</h1>
+                <p>Buyers pay in their currency. Artisans receive exact INR amount instantly.</p>
+            </div>
+
+            <div class="converter-card">
+                <div class="currency-input-group">
+                    <select class="currency-select" id="currencySelect" onchange="updateCurrency()">
+                        <option value="USD" data-rate="83.45" data-symbol="$">🇺🇸 USD (US Dollar)</option>
+                        <option value="EUR" data-rate="90.12" data-symbol="€">🇪🇺 EUR (Euro)</option>
+                        <option value="GBP" data-rate="105.67" data-symbol="£">🇬🇧 GBP (British Pound)</option>
+                        <option value="AED" data-rate="22.72" data-symbol="AED">🇦🇪 AED (Dirham)</option>
+                        <option value="AUD" data-rate="54.30" data-symbol="A$">🇦🇺 AUD (Aus Dollar)</option>
+                    </select>
+                    <div class="amount-display" id="displayAmount">$53.92</div>
+                </div>
+
+                <div class="breakdown">
+                    <div class="breakdown-row">
+                        <span>Product Price (INR 4,500)</span>
+                        <span id="productPrice">$53.92</span>
+                    </div>
+                    <div class="breakdown-row">
+                        <span>International Shipping</span>
+                        <span id="shippingCost">$25.00</span>
+                    </div>
+                    <div class="breakdown-row">
+                        <span>Platform Fee (2%)</span>
+                        <span id="platformFee">$1.08</span>
+                    </div>
+                    <div class="breakdown-row total">
+                        <span>Total Payable</span>
+                        <span id="totalPayable">$80.00</span>
+                    </div>
+                </div>
+
+                <div class="artisan-view">
+                    <p style="color: #6B7280; margin-bottom: 0.5rem;">Artisan Receives (Guaranteed)</p>
+                    <div class="artisan-earnings">₹4,500 INR</div>
+                    <p style="font-size: 0.8rem; color: #9CA3AF; margin-top: 0.5rem;">
+                        <i class="fas fa-check-circle"></i> Zero forex loss for artisan
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateCurrency() {
+            const select = document.getElementById('currencySelect');
+            const option = select.options[select.selectedIndex];
+            const rate = parseFloat(option.dataset.rate);
+            const symbol = option.dataset.symbol;
+
+            const basePriceINR = 4500;
+            const shippingINR = 2086; // ~$25
+
+            const price = (basePriceINR / rate).toFixed(2);
+            const shipping = (shippingINR / rate).toFixed(2);
+            const fee = (price * 0.02).toFixed(2);
+            const total = (parseFloat(price) + parseFloat(shipping) + parseFloat(fee)).toFixed(2);
+
+            document.getElementById('displayAmount').textContent = symbol + price;
+            document.getElementById('productPrice').textContent = symbol + price;
+            document.getElementById('shippingCost').textContent = symbol + shipping;
+            document.getElementById('platformFee').textContent = symbol + fee;
+            document.getElementById('totalPayable').textContent = symbol + total;
+        }
+
+        // Initialize
+        updateCurrency();
+    </script>
+</body>
+
+</html>

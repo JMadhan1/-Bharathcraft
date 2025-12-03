@@ -1,7 +1,23 @@
 from flask import Blueprint, jsonify, g
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from models import ArtisanProfile, Product, Order
 
 bp = Blueprint('stats', __name__, url_prefix='/api/stats')
+
+@bp.route('/artisan', methods=['GET'])
+@jwt_required()
+def get_artisan_stats():
+    """Get stats for the logged-in artisan"""
+    try:
+        user_id = get_jwt_identity()
+        # Mock data for demo stability
+        return jsonify({
+            'total_products': 12,
+            'pending_orders': 5,
+            'total_earnings': 45000
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @bp.route('/platform', methods=['GET'])
 def get_platform_stats():

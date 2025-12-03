@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blockchain Traceability - Bharatcraft</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .trace-page {
+            padding-top: 80px;
+            background: #F8FAFC;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .trace-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .qr-section {
+            background: white;
+            padding: 3rem;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            max-width: 500px;
+            margin: 0 auto;
+            transition: all 0.3s;
+        }
+
+        .qr-code {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 2rem;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+        }
+
+        .scan-btn {
+            padding: 1rem 2rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 9999px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: transform 0.2s;
+        }
+
+        .scan-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .journey-container {
+            display: none;
+            margin-top: 3rem;
+        }
+
+        .product-info {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 16px;
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #E5E7EB;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 3rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s;
+        }
+
+        .timeline-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .timeline-icon {
+            position: absolute;
+            left: -2.6rem;
+            width: 40px;
+            height: 40px;
+            background: white;
+            border: 2px solid var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            z-index: 1;
+        }
+
+        .timeline-content {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .hash-tag {
+            display: inline-block;
+            background: #F3F4F6;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            color: #6B7280;
+            margin-top: 0.5rem;
+        }
+
+        .verified-badge {
+            color: #10B981;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            margin-top: 0.5rem;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 107, 53, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(255, 107, 53, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 107, 53, 0);
+            }
+        }
+
+        .scanning .qr-code {
+            animation: pulse 1.5s infinite;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar"
+        style="position: fixed; top: 0; width: 100%; z-index: 1000; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 1rem 2rem;">
+        <div
+            style="display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto;">
+            <a href="/" style="text-decoration: none; font-size: 1.5rem; font-weight: 800; color: var(--primary);">
+                Bharatcraft
+            </a>
+            <div style="display: flex; gap: 2rem;">
+                <a href="/success-stories" style="text-decoration: none; color: #4B5563; font-weight: 500;">Success
+                    Stories</a>
+                <a href="/features/blockchain-trace"
+                    style="text-decoration: none; color: var(--primary); font-weight: 600;">Traceability</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="trace-page">
+        <div class="container">
+            <div class="trace-header">
+                <h1>🔗 Blockchain Traceability</h1>
+                <p>Scan product QR code to verify authenticity and track journey from artisan to you.</p>
+            </div>
+
+            <div class="qr-section" id="qrSection">
+                <div class="qr-code">
+                    <i class="fas fa-qrcode fa-4x" style="color: #1F2937;"></i>
+                </div>
+                <button class="scan-btn" onclick="simulateScan()">
+                    <i class="fas fa-camera"></i> Scan Product QR
+                </button>
+            </div>
+
+            <div class="journey-container" id="journeyContainer">
+                <div class="product-info">
+                    <img src="https://images.unsplash.com/photo-1606293926075-69a00dbfde81?w=200&q=80"
+                        style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;">
+                    <div>
+                        <h3 style="margin: 0 0 0.5rem 0;">Hand-Embroidered Kutch Shawl</h3>
+                        <p style="color: #6B7280; margin: 0;">Artisan: Lakshmi Devi • Bhuj, Gujarat</p>
+                        <div style="margin-top: 0.5rem; color: #10B981; font-weight: 600;">
+                            <i class="fas fa-check-circle"></i> Authenticity Verified
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline">
+                    <!-- Steps injected by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const steps = [
+            {
+                title: "Product Created",
+                desc: "Completed by Lakshmi Devi in Bhuj",
+                date: "Dec 1, 2024 • 09:15 AM",
+                hash: "0x7f9...1a9",
+                icon: "fa-pencil-alt"
+            },
+            {
+                title: "Quality Verified",
+                desc: "AI Grade: Premium (98.5% Score)",
+                date: "Dec 1, 2024 • 02:30 PM",
+                hash: "0x3b2...c4d",
+                icon: "fa-check-double"
+            },
+            {
+                title: "GI Tag Certified",
+                desc: "Verified as Authentic Kutch Craft",
+                date: "Dec 2, 2024 • 11:00 AM",
+                hash: "0x8e1...f5a",
+                icon: "fa-certificate"
+            },
+            {
+                title: "Shipped from Hub",
+                desc: "Dispatched via DHL Express",
+                date: "Dec 3, 2024 • 04:45 PM",
+                hash: "0x1d4...b2e",
+                icon: "fa-shipping-fast"
+            }
+        ];
+
+        async function simulateScan() {
+            const qrSection = document.getElementById('qrSection');
+            qrSection.classList.add('scanning');
+
+            // Simulate scanning delay
+            await new Promise(r => setTimeout(r, 2000));
+
+            qrSection.style.display = 'none';
+            const container = document.getElementById('journeyContainer');
+            container.style.display = 'block';
+
+            const timeline = document.querySelector('.timeline');
+
+            for (let i = 0; i < steps.length; i++) {
+                const step = steps[i];
+                const el = document.createElement('div');
+                el.className = 'timeline-item';
+                el.innerHTML = `
+                    <div class="timeline-icon">
+                        <i class="fas ${step.icon}"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <h3 style="margin: 0 0 0.5rem 0;">${step.title}</h3>
+                        <p style="color: #4B5563; margin: 0;">${step.desc}</p>
+                        <div style="margin-top: 1rem; font-size: 0.85rem; color: #9CA3AF; display: flex; justify-content: space-between; align-items: center;">
+                            <span><i class="far fa-clock"></i> ${step.date}</span>
+                            <span class="hash-tag">Tx: ${step.hash}</span>
+                        </div>
+                        <div class="verified-badge">
+                            <i class="fas fa-shield-alt"></i> On Polygon Blockchain
+                        </div>
+                    </div>
+                `;
+                timeline.appendChild(el);
+
+                // Trigger animation
+                await new Promise(r => setTimeout(r, 100));
+                el.classList.add('visible');
+                await new Promise(r => setTimeout(r, 800));
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Shipping Calculator - Bharatcraft</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .shipping-page {
+            padding-top: 80px;
+            background: #F0F9FF;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .input-panel {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #4B5563;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .calc-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .calc-btn:hover {
+            background: #e05e2b;
+        }
+
+        .results-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .shipping-option {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 16px;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .shipping-option:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .option-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .carrier-logo {
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: #1F2937;
+        }
+
+        .price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            font-size: 0.9rem;
+            color: #6B7280;
+        }
+
+        .detail-item i {
+            width: 20px;
+            color: #9CA3AF;
+        }
+
+        .customs-badge {
+            background: #FEF3C7;
+            color: #92400E;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            display: inline-block;
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .calculator-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar"
+        style="position: fixed; top: 0; width: 100%; z-index: 1000; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 1rem 2rem;">
+        <div
+            style="display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto;">
+            <a href="/" style="text-decoration: none; font-size: 1.5rem; font-weight: 800; color: var(--primary);">
+                Bharatcraft
+            </a>
+            <div style="display: flex; gap: 2rem;">
+                <a href="/success-stories" style="text-decoration: none; color: #4B5563; font-weight: 500;">Success
+                    Stories</a>
+                <a href="/features/shipping-calculator"
+                    style="text-decoration: none; color: var(--primary); font-weight: 600;">Shipping Demo</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="shipping-page">
+        <div class="container">
+            <div style="text-align: center;">
+                <h1>📦 Smart Logistics Engine</h1>
+                <p>Instant shipping quotes to 50+ countries with customs duty estimation.</p>
+            </div>
+
+            <div class="calculator-grid">
+                <div class="input-panel">
+                    <div class="form-group">
+                        <label>Destination Country</label>
+                        <select class="form-control" id="country">
+                            <option value="US">🇺🇸 United States</option>
+                            <option value="GB">🇬🇧 United Kingdom</option>
+                            <option value="AE">🇦🇪 UAE</option>
+                            <option value="AU">🇦🇺 Australia</option>
+                            <option value="DE">🇩🇪 Germany</option>
+                            <option value="CA">🇨🇦 Canada</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Package Weight (kg)</label>
+                        <input type="number" class="form-control" id="weight" value="1.5" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label>Product Value (INR)</label>
+                        <input type="number" class="form-control" id="value" value="4500">
+                    </div>
+                    <button class="calc-btn" onclick="calculateShipping()">
+                        Calculate Rates
+                    </button>
+                </div>
+
+                <div class="results-panel" id="resultsPanel" style="display: none;">
+                    <!-- Standard Shipping -->
+                    <div class="shipping-option">
+                        <div class="option-header">
+                            <div class="carrier-logo"><i class="fas fa-shipping-fast"></i> Standard Post</div>
+                            <div class="price" id="stdPrice">$28.50</div>
+                        </div>
+                        <div class="details-grid">
+                            <div class="detail-item">
+                                <i class="far fa-clock"></i> <span id="stdTime">15-20 Days</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-box"></i> Tracking Included
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-shield-alt"></i> Insurance: $2.00
+                            </div>
+                        </div>
+                        <div class="customs-badge">
+                            Est. Customs Duty: <span id="stdCustoms">$4.50</span>
+                        </div>
+                    </div>
+
+                    <!-- Express Shipping -->
+                    <div class="shipping-option" style="border-color: var(--primary); background: #FFF7ED;">
+                        <div class="option-header">
+                            <div class="carrier-logo"><i class="fas fa-plane"></i> DHL Express</div>
+                            <div class="price" id="expPrice">$48.00</div>
+                        </div>
+                        <div class="details-grid">
+                            <div class="detail-item">
+                                <i class="far fa-clock"></i> <span id="expTime">7-10 Days</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-check-circle"></i> Priority Handling
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-shield-alt"></i> Full Insurance
+                            </div>
+                        </div>
+                        <div class="customs-badge">
+                            Est. Customs Duty: <span id="expCustoms">$4.50</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function calculateShipping() {
+            const country = document.getElementById('country').value;
+            const weight = document.getElementById('weight').value;
+            const value = document.getElementById('value').value;
+
+            try {
+                const response = await fetch('/features/api/calculate-shipping', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ country, weight, value })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('resultsPanel').style.display = 'flex';
+
+                    // Update Standard
+                    document.getElementById('stdPrice').textContent = '$' + data.standard.total;
+                    document.getElementById('stdTime').textContent = data.standard.deliveryDays + ' Days';
+                    document.getElementById('stdCustoms').textContent = '$' + data.standard.customs;
+
+                    // Update Express
+                    document.getElementById('expPrice').textContent = '$' + data.express.total;
+                    document.getElementById('expTime').textContent = data.express.deliveryDays + ' Days';
+                    document.getElementById('expCustoms').textContent = '$' + data.express.customs;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+    </script>
+</body>
+
+</html>

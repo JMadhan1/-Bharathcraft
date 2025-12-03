@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Quality Grading - Bharatcraft</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .grading-page {
+            padding-top: 80px;
+            background: #F8FAFC;
+            min-height: 100vh;
+        }
+
+        .grading-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .upload-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        .drop-zone {
+            border: 2px dashed #CBD5E1;
+            border-radius: 12px;
+            padding: 3rem 2rem;
+            margin: 2rem 0;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .drop-zone:hover {
+            border-color: var(--primary);
+            background: #FFF7ED;
+        }
+
+        .drop-zone i {
+            font-size: 3rem;
+            color: #9CA3AF;
+            margin-bottom: 1rem;
+        }
+
+        .report-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            display: none;
+        }
+
+        .grade-badge {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            background: linear-gradient(135deg, #FFD700 0%, #FDB931 100%);
+            color: #78350F;
+            font-weight: 800;
+            border-radius: 9999px;
+            font-size: 1.25rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1rem;
+        }
+
+        .metric-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .metric-item {
+            background: #F1F5F9;
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        .metric-label {
+            font-size: 0.875rem;
+            color: #6B7280;
+        }
+
+        .metric-value {
+            font-weight: 600;
+            color: #1F2937;
+        }
+
+        .checklist {
+            list-style: none;
+            padding: 0;
+            margin: 1.5rem 0;
+        }
+
+        .checklist li {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+        }
+
+        .checklist i {
+            color: #10B981;
+        }
+
+        .improvement-tips {
+            background: #EFF6FF;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .tip-item {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .tip-icon {
+            font-size: 1.5rem;
+        }
+
+        .scanning-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: white;
+        }
+
+        .scanner-line {
+            width: 300px;
+            height: 2px;
+            background: #10B981;
+            box-shadow: 0 0 10px #10B981;
+            animation: scan 2s infinite;
+        }
+
+        @keyframes scan {
+            0% {
+                transform: translateY(-150px);
+            }
+
+            50% {
+                transform: translateY(150px);
+            }
+
+            100% {
+                transform: translateY(-150px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .grading-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar"
+        style="position: fixed; top: 0; width: 100%; z-index: 1000; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 1rem 2rem;">
+        <div
+            style="display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto;">
+            <a href="/" style="text-decoration: none; font-size: 1.5rem; font-weight: 800; color: var(--primary);">
+                Bharatcraft
+            </a>
+            <div style="display: flex; gap: 2rem;">
+                <a href="/success-stories" style="text-decoration: none; color: #4B5563; font-weight: 500;">Success
+                    Stories</a>
+                <a href="/features/quality-grading"
+                    style="text-decoration: none; color: var(--primary); font-weight: 600;">Quality AI</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="grading-page">
+        <div class="grading-container">
+            <div class="upload-section">
+                <h1>📸 AI Quality Inspector</h1>
+                <p>Upload product photos for instant quality grading, defect detection, and export compliance check.</p>
+
+                <div class="drop-zone" onclick="document.getElementById('fileInput').click()">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <h3>Click or Drag Photos Here</h3>
+                    <p>Supports JPG, PNG (Max 10MB)</p>
+                    <input type="file" id="fileInput" hidden accept="image/*" onchange="handleUpload(this)">
+                </div>
+
+                <div id="previewContainer" style="display: none; margin-top: 2rem;">
+                    <img id="previewImage" src=""
+                        style="max-width: 100%; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                </div>
+            </div>
+
+            <div class="report-section" id="reportSection">
+                <div style="display: flex; justify-content: space-between; align-items: start;">
+                    <div>
+                        <div class="grade-badge" id="gradeBadge">PREMIUM GRADE</div>
+                        <div style="color: #6B7280; font-size: 0.9rem;">Confidence: <span
+                                id="confidenceScore">94%</span></div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 2rem; font-weight: 800; color: #10B981;">Passed</div>
+                        <div style="color: #6B7280;">Export Ready</div>
+                    </div>
+                </div>
+
+                <div class="metric-grid">
+                    <div class="metric-item">
+                        <div class="metric-label">Stitch Density</div>
+                        <div class="metric-value" id="stitchDensity">18 stitches/cm²</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-label">Material</div>
+                        <div class="metric-value" id="material">100% Cotton</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-label">Defects Found</div>
+                        <div class="metric-value" id="defectCount" style="color: #EF4444;">2 Minor</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-label">HS Code</div>
+                        <div class="metric-value" id="hsCode">6304.93.00</div>
+                    </div>
+                </div>
+
+                <h3>✅ Compliance Checklist</h3>
+                <ul class="checklist" id="complianceList">
+                    <!-- Injected by JS -->
+                </ul>
+
+                <div class="improvement-tips">
+                    <h3 style="margin-top: 0; color: #1E40AF;"><i class="fas fa-lightbulb"></i> AI Suggestions</h3>
+                    <div id="tipsList">
+                        <!-- Injected by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="scanning-overlay" id="scanningOverlay">
+        <div
+            style="position: relative; width: 300px; height: 300px; border: 2px solid rgba(255,255,255,0.3); border-radius: 16px; overflow: hidden;">
+            <img id="scanPreview" src="" style="width: 100%; height: 100%; object-fit: cover;">
+            <div class="scanner-line" style="position: absolute; top: 0; left: 0;"></div>
+        </div>
+        <h2 style="margin-top: 2rem;">Analyzing Craftsmanship...</h2>
+        <p>Checking stitch density, patterns, and defects</p>
+    </div>
+
+    <script>
+        function handleUpload(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('previewImage').src = e.target.result;
+                    document.getElementById('scanPreview').src = e.target.result;
+                    document.getElementById('previewContainer').style.display = 'block';
+                    startScanning();
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        async function startScanning() {
+            const overlay = document.getElementById('scanningOverlay');
+            overlay.style.display = 'flex';
+
+            // Simulate scanning delay
+            await new Promise(r => setTimeout(r, 3000));
+
+            try {
+                const response = await fetch('/features/api/analyze-quality', {
+                    method: 'POST'
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    renderReport(data.result);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+
+            overlay.style.display = 'none';
+            document.getElementById('reportSection').style.display = 'block';
+        }
+
+        function renderReport(result) {
+            document.getElementById('gradeBadge').textContent = result.grade + ' GRADE';
+            document.getElementById('confidenceScore').textContent = result.confidence + '%';
+            document.getElementById('stitchDensity').textContent = result.stitchDensity;
+            document.getElementById('material').textContent = result.material;
+            document.getElementById('defectCount').textContent = result.issues.length + ' Issues';
+            document.getElementById('hsCode').textContent = result.hsCode;
+
+            const complianceList = document.getElementById('complianceList');
+            complianceList.innerHTML = result.requirements.map(req => `
+                <li>
+                    <i class="fas ${req.met ? 'fa-check-circle' : 'fa-times-circle'}" style="color: ${req.met ? '#10B981' : '#EF4444'}"></i>
+                    ${req.name}
+                </li>
+            `).join('');
+
+            const tipsList = document.getElementById('tipsList');
+            tipsList.innerHTML = result.improvementTips.map(tip => `
+                <div class="tip-item">
+                    <div class="tip-icon">${tip.icon}</div>
+                    <div>${tip.hindi}</div>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+
+</html>

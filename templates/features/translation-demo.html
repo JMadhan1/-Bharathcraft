@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Cultural Translation - Bharatcraft</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .demo-page {
+            padding-top: 80px;
+            background: #F3F4F6;
+            min-height: 100vh;
+        }
+
+        .demo-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .demo-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .demo-header h1 {
+            font-size: 2.5rem;
+            color: #1F2937;
+            margin-bottom: 1rem;
+        }
+
+        .demo-interface {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .panel {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .panel h3 {
+            margin-top: 0;
+            color: #4B5563;
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .language-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 1rem;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            resize: none;
+            font-family: inherit;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .translate-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .translate-btn:hover {
+            background: #e05e2b;
+        }
+
+        .process-arrow {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            padding-top: 4rem;
+            color: #9CA3AF;
+        }
+
+        .process-steps {
+            margin-top: 1rem;
+            font-size: 0.875rem;
+            text-align: center;
+        }
+
+        .step {
+            margin-bottom: 0.5rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .step.active {
+            opacity: 1;
+            color: var(--primary);
+        }
+
+        .result-box {
+            background: #F9FAFB;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .context-box {
+            background: #EFF6FF;
+            border-left: 4px solid #3B82F6;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .suggestion-box {
+            background: #ECFDF5;
+            border-left: 4px solid #10B981;
+            padding: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .sample-btns {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+            justify-content: center;
+        }
+
+        .sample-btn {
+            padding: 0.5rem 1rem;
+            background: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 9999px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: #6B7280;
+            transition: all 0.2s;
+        }
+
+        .sample-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            .demo-interface {
+                grid-template-columns: 1fr;
+            }
+
+            .process-arrow {
+                transform: rotate(90deg);
+                padding: 1rem 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar"
+        style="position: fixed; top: 0; width: 100%; z-index: 1000; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 1rem 2rem;">
+        <div
+            style="display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto;">
+            <a href="/" style="text-decoration: none; font-size: 1.5rem; font-weight: 800; color: var(--primary);">
+                Bharatcraft
+            </a>
+            <div style="display: flex; gap: 2rem;">
+                <a href="/success-stories" style="text-decoration: none; color: #4B5563; font-weight: 500;">Success
+                    Stories</a>
+                <a href="/features/translation-demo"
+                    style="text-decoration: none; color: var(--primary); font-weight: 600;">AI Demo</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="demo-page">
+        <div class="demo-container">
+            <div class="demo-header">
+                <h1>🗣️ AI Cultural Translation Engine</h1>
+                <p>Translates with business context, not just words. Empowering artisans to negotiate globally.</p>
+            </div>
+
+            <div class="demo-interface">
+                <!-- Buyer Side -->
+                <div class="panel">
+                    <h3><i class="fas fa-user"></i> Buyer (International)</h3>
+                    <select class="language-select">
+                        <option value="en">🇺🇸 English</option>
+                        <option value="es">🇪🇸 Spanish</option>
+                        <option value="de">🇩🇪 German</option>
+                        <option value="fr">🇫🇷 French</option>
+                    </select>
+                    <textarea id="buyerInput" placeholder="Type a message..."></textarea>
+                    <button class="translate-btn" onclick="translateMessage()">
+                        <i class="fas fa-magic"></i> Translate with AI
+                    </button>
+                </div>
+
+                <!-- AI Processing -->
+                <div class="process-arrow">
+                    <i class="fas fa-arrow-right fa-2x"></i>
+                    <div class="process-steps">
+                        <div class="step" id="step1">Analyzing intent...</div>
+                        <div class="step" id="step2">Contextualizing...</div>
+                        <div class="step" id="step3">Generating insights...</div>
+                    </div>
+                </div>
+
+                <!-- Artisan Side -->
+                <div class="panel">
+                    <h3><i class="fas fa-user-tie"></i> Artisan (India)</h3>
+                    <select class="language-select" id="targetLang">
+                        <option value="hindi">🇮🇳 Hindi</option>
+                        <option value="gujarati">🇮🇳 Gujarati</option>
+                        <option value="tamil">🇮🇳 Tamil</option>
+                        <option value="telugu">🇮🇳 Telugu</option>
+                        <option value="bengali">🇮🇳 Bengali</option>
+                    </select>
+
+                    <div id="resultContainer" style="display: none;">
+                        <div class="result-box">
+                            <strong>Translation:</strong>
+                            <p id="translationText" style="font-size: 1.1rem; margin-top: 0.5rem;"></p>
+                        </div>
+
+                        <div class="context-box">
+                            <strong>💡 Business Context:</strong>
+                            <p id="contextText" style="margin-top: 0.5rem;"></p>
+                        </div>
+
+                        <div class="suggestion-box">
+                            <strong>💰 Suggested Action:</strong>
+                            <p id="suggestionText" style="margin-top: 0.5rem;"></p>
+                        </div>
+
+                        <div style="text-align: right; font-size: 0.8rem; color: #6B7280;">
+                            Success Rate: <strong style="color: #10B981;" id="successRate"></strong>
+                        </div>
+                    </div>
+
+                    <div id="placeholder" style="text-align: center; color: #9CA3AF; padding: 2rem;">
+                        Translation results will appear here
+                    </div>
+                </div>
+            </div>
+
+            <div class="sample-btns">
+                <button class="sample-btn" onclick="setInput('Can you reduce the price?')">"Can you reduce the
+                    price?"</button>
+                <button class="sample-btn" onclick="setInput('I need 100 pieces, what\'s bulk pricing?')">"Bulk pricing
+                    inquiry"</button>
+                <button class="sample-btn" onclick="setInput('Can you customize the design?')">"Customization
+                    request"</button>
+                <button class="sample-btn" onclick="setInput('What\'s your delivery time?')">"Delivery time
+                    inquiry"</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function setInput(text) {
+            document.getElementById('buyerInput').value = text;
+        }
+
+        async function translateMessage() {
+            const message = document.getElementById('buyerInput').value;
+            const targetLang = document.getElementById('targetLang').value;
+
+            if (!message) return;
+
+            // Show processing steps
+            document.getElementById('step1').classList.add('active');
+            await new Promise(r => setTimeout(r, 600));
+            document.getElementById('step2').classList.add('active');
+            await new Promise(r => setTimeout(r, 600));
+            document.getElementById('step3').classList.add('active');
+            await new Promise(r => setTimeout(r, 600));
+
+            try {
+                const response = await fetch('/features/api/translate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        target_language: targetLang
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('placeholder').style.display = 'none';
+                    document.getElementById('resultContainer').style.display = 'block';
+
+                    document.getElementById('translationText').textContent = data.translation;
+                    document.getElementById('contextText').textContent = data.context;
+                    document.getElementById('suggestionText').textContent = data.suggestion;
+                    document.getElementById('successRate').textContent = data.success_rate + '%';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+
+            // Reset steps
+            setTimeout(() => {
+                document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            }, 2000);
+        }
+    </script>
+</body>
+
+</html>

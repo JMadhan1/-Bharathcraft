@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artisan Success Stories - Bharatcraft</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .success-stories-page {
+            padding-top: 80px;
+            background: #F9FAFB;
+            min-height: 100vh;
+        }
+
+        .page-header {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 100%);
+        }
+
+        .page-header h1 {
+            font-size: 3rem;
+            color: #1F2937;
+            margin-bottom: 1rem;
+        }
+
+        .page-header p {
+            font-size: 1.25rem;
+            color: #6B7280;
+            max-width: 600px;
+            margin: 0 auto 3rem;
+        }
+
+        .aggregate-stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat .number {
+            display: block;
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .stat .label {
+            color: #6B7280;
+            font-weight: 500;
+        }
+
+        .filters {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            padding: 2rem;
+            background: white;
+            border-bottom: 1px solid #E5E7EB;
+            position: sticky;
+            top: 70px;
+            z-index: 10;
+        }
+
+        .filter-btn {
+            padding: 0.75rem 1.5rem;
+            border: 1px solid #E5E7EB;
+            border-radius: 9999px;
+            background: white;
+            color: #4B5563;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .stories-grid {
+            max-width: 1200px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+            display: grid;
+            gap: 3rem;
+        }
+
+        .story-card {
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            transition: transform 0.3s;
+        }
+
+        .story-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .story-visuals {
+            position: relative;
+            height: 500px;
+            overflow: hidden;
+        }
+
+        .story-visuals img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: opacity 0.5s;
+        }
+
+        .before-after-toggle {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 0.5rem;
+            border-radius: 9999px;
+            display: flex;
+            gap: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .toggle-btn {
+            padding: 0.5rem 1.5rem;
+            border: none;
+            border-radius: 9999px;
+            background: transparent;
+            font-weight: 600;
+            cursor: pointer;
+            color: #6B7280;
+        }
+
+        .toggle-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .story-content {
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .artisan-profile {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .profile-pic {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #FFF7ED;
+        }
+
+        .artisan-info h3 {
+            font-size: 1.5rem;
+            margin: 0;
+            color: #1F2937;
+        }
+
+        .artisan-info p {
+            margin: 0;
+            color: #6B7280;
+        }
+
+        .income-comparison {
+            background: #F3F4F6;
+            padding: 1.5rem;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+        }
+
+        .income-box {
+            text-align: center;
+        }
+
+        .income-box .label {
+            display: block;
+            font-size: 0.875rem;
+            color: #6B7280;
+            margin-bottom: 0.25rem;
+        }
+
+        .income-box .amount {
+            display: block;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1F2937;
+        }
+
+        .income-arrow {
+            color: #9CA3AF;
+            font-size: 1.5rem;
+        }
+
+        .income-box.after .amount {
+            color: #10B981;
+        }
+
+        .increase-badge {
+            background: #D1FAE5;
+            color: #065F46;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+            display: inline-block;
+        }
+
+        .testimonial {
+            font-size: 1.125rem;
+            line-height: 1.6;
+            color: #4B5563;
+            font-style: italic;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+        }
+
+        .impact-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: auto;
+            border-top: 1px solid #E5E7EB;
+            padding-top: 2rem;
+        }
+
+        .metric {
+            text-align: center;
+        }
+
+        .metric i {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .metric span {
+            display: block;
+            font-size: 0.875rem;
+            color: #4B5563;
+        }
+
+        @media (max-width: 768px) {
+            .story-card {
+                grid-template-columns: 1fr;
+            }
+
+            .story-visuals {
+                height: 300px;
+            }
+
+            .page-header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar"
+        style="position: fixed; top: 0; width: 100%; z-index: 1000; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 1rem 2rem;">
+        <div
+            style="display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto;">
+            <a href="/" style="text-decoration: none; font-size: 1.5rem; font-weight: 800; color: var(--primary);">
+                Bharatcraft
+            </a>
+            <div style="display: flex; gap: 2rem;">
+                <a href="/marketplace" style="text-decoration: none; color: #4B5563; font-weight: 500;">Marketplace</a>
+                <a href="/success-stories"
+                    style="text-decoration: none; color: var(--primary); font-weight: 600;">Success Stories</a>
+                <a href="/features/translation-demo" style="text-decoration: none; color: #4B5563; font-weight: 500;">AI
+                    Demo</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="success-stories-page">
+        <div class="page-header">
+            <h1>🌟 Lives Transformed</h1>
+            <p>Real artisans, real impact, real income growth. See how technology is empowering India's rural
+                craftsmanship.</p>
+
+            <div class="aggregate-stats">
+                <div class="stat">
+                    <span class="number" id="totalArtisans">25</span>
+                    <span class="label">Artisans Empowered</span>
+                </div>
+                <div class="stat">
+                    <span class="number">340%</span>
+                    <span class="label">Avg Income Increase</span>
+                </div>
+                <div class="stat">
+                    <span class="number">47</span>
+                    <span class="label">Total Orders</span>
+                </div>
+                <div class="stat">
+                    <span class="number">₹8.2L</span>
+                    <span class="label">Total Earnings</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="filters">
+            <button class="filter-btn active" onclick="filterStories('all')">All Stories</button>
+            <button class="filter-btn" onclick="filterStories('textiles')">Textiles</button>
+            <button class="filter-btn" onclick="filterStories('pottery')">Pottery</button>
+            <button class="filter-btn" onclick="filterStories('metalwork')">Metalwork</button>
+        </div>
+
+        <div class="stories-grid" id="storiesGrid">
+            <!-- Stories will be injected here by JS -->
+        </div>
+    </div>
+
+    <script>
+        const stories = [
+            {
+                id: 1,
+                name: "Lakshmi Devi",
+                craft: "Kutch Embroidery",
+                location: "Bhuj, Gujarat",
+                category: "textiles",
+                imageBefore: "https://images.unsplash.com/photo-1606293926075-69a00dbfde81?w=800&q=80",
+                imageAfter: "https://images.unsplash.com/photo-1628148679698-477041584982?w=800&q=80",
+                incomeBefore: 8000,
+                incomeAfter: 32000,
+                increase: 300,
+                quote: "Before I got ₹80 per piece. Now I sell directly at ₹450. My daughter can now go to school.",
+                stats: {
+                    orders: 47,
+                    earnings: "1.2L",
+                    countries: 3
+                }
+            },
+            {
+                id: 2,
+                name: "Rajesh Kumar",
+                craft: "Brass Metalwork",
+                location: "Moradabad, UP",
+                category: "metalwork",
+                imageBefore: "https://images.unsplash.com/photo-1590615370581-255577741584?w=800&q=80",
+                imageAfter: "https://images.unsplash.com/photo-1615655406736-b37c4fabf923?w=800&q=80",
+                incomeBefore: 12000,
+                incomeAfter: 45000,
+                increase: 275,
+                quote: "Export houses used to take 70% commission. Now I keep 90% and my family's life has changed completely.",
+                stats: {
+                    orders: 34,
+                    earnings: "1.5L",
+                    countries: 5
+                }
+            },
+            {
+                id: 3,
+                name: "Meena Patel",
+                craft: "Block Printing",
+                location: "Jaipur, Rajasthan",
+                category: "textiles",
+                imageBefore: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=800&q=80",
+                imageAfter: "https://images.unsplash.com/photo-1633636536098-941219b6736c?w=800&q=80",
+                incomeBefore: 6000,
+                incomeAfter: 28000,
+                increase: 367,
+                quote: "I can now support my family and teach block printing to 5 young women. BharathCraft gave us dignity.",
+                stats: {
+                    orders: 52,
+                    earnings: "1.4L",
+                    countries: 4
+                }
+            },
+            {
+                id: 4,
+                name: "Arjun Sharma",
+                craft: "Wooden Toys",
+                location: "Channapatna, Karnataka",
+                category: "woodwork",
+                imageBefore: "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=800&q=80",
+                imageAfter: "https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=800&q=80",
+                incomeBefore: 10000,
+                incomeAfter: 38000,
+                increase: 280,
+                quote: "My eco-friendly toys are now reaching children worldwide. I'm preserving our 200-year heritage.",
+                stats: {
+                    orders: 41,
+                    earnings: "1.5L",
+                    countries: 3
+                }
+            },
+            {
+                id: 5,
+                name: "Fatima Begum",
+                craft: "Chikankari Embroidery",
+                location: "Lucknow, UP",
+                category: "textiles",
+                imageBefore: "https://images.unsplash.com/photo-1583391733958-e0265af9d9a5?w=800&q=80",
+                imageAfter: "https://images.unsplash.com/photo-1589810635657-232948472d98?w=800&q=80",
+                incomeBefore: 7000,
+                incomeAfter: 29000,
+                increase: 314,
+                quote: "Chikankari is our pride. Now international customers value our work at its true worth.",
+                stats: {
+                    orders: 38,
+                    earnings: "1.1L",
+                    countries: 3
+                }
+            }
+        ];
+
+        function renderStories(filter = 'all') {
+            const grid = document.getElementById('storiesGrid');
+            grid.innerHTML = '';
+
+            const filteredStories = filter === 'all'
+                ? stories
+                : stories.filter(s => s.category === filter);
+
+            filteredStories.forEach(story => {
+                const card = document.createElement('div');
+                card.className = 'story-card';
+                card.innerHTML = `
+                    <div class="story-visuals">
+                        <img src="${story.imageAfter}" class="after-img" alt="${story.name} After">
+                        <img src="${story.imageBefore}" class="before-img" alt="${story.name} Before" style="display: none;">
+                        <div class="before-after-toggle">
+                            <button class="toggle-btn" onclick="toggleImage(this, 'before')">Before</button>
+                            <button class="toggle-btn active" onclick="toggleImage(this, 'after')">After</button>
+                        </div>
+                    </div>
+                    <div class="story-content">
+                        <div class="artisan-profile">
+                            <img src="https://ui-avatars.com/api/?name=${story.name}&background=random" class="profile-pic" alt="${story.name}">
+                            <div class="artisan-info">
+                                <h3>${story.name}</h3>
+                                <p>${story.craft} • ${story.location}</p>
+                            </div>
+                        </div>
+
+                        <div class="income-comparison">
+                            <div class="income-box">
+                                <span class="label">Before</span>
+                                <span class="amount">₹${story.incomeBefore.toLocaleString()}</span>
+                            </div>
+                            <div class="income-arrow">
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                            <div class="income-box after">
+                                <span class="label">After</span>
+                                <span class="amount">₹${story.incomeAfter.toLocaleString()}</span>
+                                <span class="increase-badge">+${story.increase}%</span>
+                            </div>
+                        </div>
+
+                        <blockquote class="testimonial">
+                            "${story.quote}"
+                        </blockquote>
+
+                        <div class="impact-metrics">
+                            <div class="metric">
+                                <i class="fas fa-shopping-bag"></i>
+                                <span>${story.stats.orders} Orders</span>
+                            </div>
+                            <div class="metric">
+                                <i class="fas fa-coins"></i>
+                                <span>₹${story.stats.earnings} Earned</span>
+                            </div>
+                            <div class="metric">
+                                <i class="fas fa-globe-americas"></i>
+                                <span>${story.stats.countries} Countries</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        window.toggleImage = function (btn, type) {
+            const container = btn.closest('.story-visuals');
+            const btns = container.querySelectorAll('.toggle-btn');
+            btns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const beforeImg = container.querySelector('.before-img');
+            const afterImg = container.querySelector('.after-img');
+
+            if (type === 'before') {
+                beforeImg.style.display = 'block';
+                afterImg.style.display = 'none';
+            } else {
+                beforeImg.style.display = 'none';
+                afterImg.style.display = 'block';
+            }
+        };
+
+        window.filterStories = function (category) {
+            const btns = document.querySelectorAll('.filter-btn');
+            btns.forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            renderStories(category);
+        };
+
+        // Initialize
+        renderStories();
+    </script>
+</body>
+
+</html>
