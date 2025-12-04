@@ -545,6 +545,36 @@
         document.body.removeChild(input);
     };
 
+    window.virtualTryOn = function () {
+        const modal = createModal('Virtual Try-On (AR)', `
+            <div style="text-align: center; padding: 2rem;">
+                <div style="position: relative; display: inline-block; margin-bottom: 2rem;">
+                    <i class="fas fa-vr-cardboard" style="font-size: 5rem; color: var(--primary);"></i>
+                    <div style="position: absolute; top: -10px; right: -10px; background: #10B981; color: white; padding: 0.25rem 0.5rem; border-radius: 50px; font-size: 0.8rem; font-weight: bold;">BETA</div>
+                </div>
+                <h3>Experience Products in Your Space</h3>
+                <p style="color: var(--gray-500); margin-bottom: 2rem;">
+                    Our Augmented Reality feature allows you to see how handicrafts look in your home before you buy.
+                </p>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem;">
+                    <div style="padding: 1rem; border: 1px solid #E5E7EB; border-radius: 8px;">
+                        <i class="fas fa-camera" style="font-size: 2rem; color: #3B82F6; margin-bottom: 0.5rem;"></i>
+                        <h4>Use Camera</h4>
+                        <p style="font-size: 0.8rem; color: var(--gray-500);">Point your camera at a surface</p>
+                    </div>
+                    <div style="padding: 1rem; border: 1px solid #E5E7EB; border-radius: 8px;">
+                        <i class="fas fa-image" style="font-size: 2rem; color: #8B5CF6; margin-bottom: 0.5rem;"></i>
+                        <h4>Upload Room Photo</h4>
+                        <p style="font-size: 0.8rem; color: var(--gray-500);">Visualize on a static image</p>
+                    </div>
+                </div>
+                <button onclick="alert('Camera access required. Please try on a mobile device.');" style="padding: 1rem 2rem; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                    <i class="fas fa-magic"></i> Launch AR Experience
+                </button>
+            </div>
+        `);
+    };
+
     function displayVisualSearchResults(data, modal) {
         const content = modal.querySelector('.modal-content');
         content.innerHTML = `

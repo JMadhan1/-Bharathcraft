@@ -65,43 +65,43 @@
 
         <!-- Quick Stats -->
         <section class="quick-stats">
-            <div class="stat-card earnings-stat">
+            <div class="stat-card earnings-stat" data-card="earnings">
                 <div class="stat-icon"><i class="fas fa-coins"></i></div>
                 <div class="stat-content">
-                    <p class="stat-label">कुल कमाई / Total Earnings</p>
+                    <p class="stat-label card-subtitle-text">कुल कमाई / Total Earnings</p>
                     <h2 class="stat-value">₹<span id="totalEarnings">0</span></h2>
                 </div>
-                <button class="voice-btn-stat" onclick="playVoice('earnings')">
+                <button class="voice-btn-stat" onclick="playVoice('earnings', null, this)">
                     <i class="fas fa-volume-up"></i>
                 </button>
             </div>
-            <div class="stat-card products-stat">
+            <div class="stat-card products-stat" data-card="products">
                 <div class="stat-icon"><i class="fas fa-box-open"></i></div>
                 <div class="stat-content">
-                    <p class="stat-label">उत्पाद / Products</p>
+                    <p class="stat-label card-subtitle-text">उत्पाद / Products</p>
                     <h2 class="stat-value"><span id="productCount">0</span></h2>
                 </div>
-                <button class="voice-btn-stat" onclick="playVoice('products')">
+                <button class="voice-btn-stat" onclick="playVoice('products', null, this)">
                     <i class="fas fa-volume-up"></i>
                 </button>
             </div>
-            <div class="stat-card orders-stat" onclick="showAllOrders()" style="cursor: pointer;">
+            <div class="stat-card orders-stat" onclick="showAllOrders()" style="cursor: pointer;" data-card="orders">
                 <div class="stat-icon"><i class="fas fa-shopping-cart"></i></div>
                 <div class="stat-content">
-                    <p class="stat-label">नए ऑर्डर / New Orders</p>
+                    <p class="stat-label card-subtitle-text">नए ऑर्डर / New Orders</p>
                     <h2 class="stat-value"><span id="orderCount">0</span></h2>
                 </div>
-                <button class="voice-btn-stat" onclick="event.stopPropagation(); playVoice('orders')">
+                <button class="voice-btn-stat" onclick="event.stopPropagation(); playVoice('orders', null, this)">
                     <i class="fas fa-volume-up"></i>
                 </button>
             </div>
-            <div class="stat-card messages-stat" onclick="showMessages()" style="cursor: pointer;">
+            <div class="stat-card messages-stat" onclick="showMessages()" style="cursor: pointer;" data-card="messages">
                 <div class="stat-icon"><i class="fas fa-comments"></i></div>
                 <div class="stat-content">
-                    <p class="stat-label">संदेश / Messages</p>
+                    <p class="stat-label card-subtitle-text">संदेश / Messages</p>
                     <h2 class="stat-value"><span id="messageCount">0</span></h2>
                 </div>
-                <button class="voice-btn-stat" onclick="event.stopPropagation(); playVoice('messages')">
+                <button class="voice-btn-stat" onclick="event.stopPropagation(); playVoice('messages', null, this)">
                     <i class="fas fa-volume-up"></i>
                 </button>
             </div>
@@ -110,49 +110,51 @@
         <!-- Main Action Cards -->
         <section class="action-grid">
             <!-- Upload Product -->
-            <div class="action-card primary-card" onclick="showSimpleUpload()">
+            <div class="action-card primary-card" onclick="showSimpleUpload()" data-card="upload">
                 <div class="card-icon-large">
                     <i class="fas fa-camera"></i>
                 </div>
-                <h3>फोटो खींचें<br><span class="en-text">Take Photo</span></h3>
-                <p>अपने काम की फोटो लें और बेचें</p>
-                <button class="voice-btn-card" onclick="playVoice('upload'); event.stopPropagation();">
+                <h3><span class="card-primary">फोटो खींचें</span><br><span class="card-secondary en-text">Take
+                        Photo</span></h3>
+                <p class="card-subtitle-text">अपने काम की फोटो लें और बेचें</p>
+                <button class="voice-btn-card" onclick="playVoice('upload', null, this); event.stopPropagation();">
                     <i class="fas fa-volume-up"></i>
                 </button>
             </div>
 
             <!-- My Products -->
-            <div class="action-card" onclick="showMyProducts()">
+            <div class="action-card" onclick="showMyProducts()" data-card="products">
                 <div class="card-icon-large">
                     <i class="fas fa-box-open"></i>
                 </div>
-                <h3>मेरा सामान<br><span class="en-text">My Products</span></h3>
-                <p>आपके उत्पाद देखें और प्रबंधित करें</p>
-                <button class="voice-btn-card" onclick="playVoice('my-products'); event.stopPropagation();">
+                <h3><span class="card-primary">मेरा सामान</span><br><span class="card-secondary en-text">My
+                        Products</span></h3>
+                <p class="card-subtitle-text">आपके उत्पाद देखें और प्रबंधित करें</p>
+                <button class="voice-btn-card" onclick="playVoice('products', null, this); event.stopPropagation();">
                     <i class="fas fa-volume-up"></i>
                 </button>
             </div>
 
             <!-- Orders -->
-            <div class="action-card" onclick="showOrders()">
+            <div class="action-card" onclick="showOrders()" data-card="orders">
                 <div class="card-icon-large">
                     <i class="fas fa-shopping-cart"></i>
                 </div>
-                <h3>ऑर्डर<br><span class="en-text">Orders</span></h3>
-                <p>नए ऑर्डर देखें और स्वीकार करें</p>
-                <button class="voice-btn-card" onclick="playVoice('view-orders'); event.stopPropagation();">
+                <h3><span class="card-primary">ऑर्डर</span><br><span class="card-secondary en-text">Orders</span></h3>
+                <p class="card-subtitle-text">नए ऑर्डर देखें और स्वीकार करें</p>
+                <button class="voice-btn-card" onclick="playVoice('orders', null, this); event.stopPropagation();">
                     <i class="fas fa-volume-up"></i>
                 </button>
             </div>
 
             <!-- Messages -->
-            <div class="action-card" onclick="showMessages()">
+            <div class="action-card" onclick="showMessages()" data-card="messages">
                 <div class="card-icon-large">
                     <i class="fas fa-comments"></i>
                 </div>
-                <h3>संदेश<br><span class="en-text">Messages</span></h3>
-                <p>खरीदार से बात करें</p>
-                <button class="voice-btn-card" onclick="playVoice('chat'); event.stopPropagation();">
+                <h3><span class="card-primary">संदेश</span><br><span class="card-secondary en-text">Messages</span></h3>
+                <p class="card-subtitle-text">खरीदार से बात करें</p>
+                <button class="voice-btn-card" onclick="playVoice('messages', null, this); event.stopPropagation();">
                     <i class="fas fa-volume-up"></i>
                 </button>
             </div>
@@ -171,13 +173,13 @@
             </div>
 
             <!-- Help/Tutorial -->
-            <div class="action-card" onclick="showVideoTutorial()">
+            <div class="action-card" onclick="showVideoTutorial()" data-card="help">
                 <div class="card-icon-large">
                     <i class="fas fa-play-circle"></i>
                 </div>
-                <h3>सीखें<br><span class="en-text">Learn</span></h3>
-                <p>वीडियो ट्यूटोरियल देखें</p>
-                <button class="voice-btn-card" onclick="playVoice('help'); event.stopPropagation();">
+                <h3><span class="card-primary">सीखें</span><br><span class="card-secondary en-text">Learn</span></h3>
+                <p class="card-subtitle-text">वीडियो ट्यूटोरियल देखें</p>
+                <button class="voice-btn-card" onclick="playVoice('help', null, this); event.stopPropagation();">
                     <i class="fas fa-volume-up"></i>
                 </button>
             </div>
@@ -359,7 +361,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <script src="/static/js/auth-helper.js"></script>
-    <script src="/static/js/artisan-simple.js"></script>
+    <script src="/static/js/artisan-simple-multilingual.js"></script>
 </body>
 
 </html>
