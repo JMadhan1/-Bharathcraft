@@ -114,6 +114,8 @@ class Product(Base):
     gi_tag = Column(String(255))  # Geographical Indication tag
     esg_certified = Column(Boolean, default=True)  # ESG compliance
     carbon_footprint = Column(Float)  # Estimated carbon footprint in kg
+    certificate_id = Column(String(100))  # AI Quality Certificate ID
+    digital_passport_hash = Column(String(255))  # Blockchain hash for traceability
     created_at = Column(DateTime, default=datetime.utcnow)
     
     artisan = relationship("ArtisanProfile", back_populates="products")
@@ -124,6 +126,7 @@ class Order(Base):
     
     id = Column(Integer, primary_key=True)
     buyer_id = Column(Integer, ForeignKey('buyer_profiles.id'), nullable=False)
+    artisan_id = Column(Integer, ForeignKey('users.id')) # Added direct link for easier querying
     status = Column(Enum(OrderStatus), default=OrderStatus.PENDING)
     total_amount = Column(Float, nullable=False)
     currency = Column(String(10), default='USD')
@@ -131,6 +134,9 @@ class Order(Base):
     payment_status = Column(String(50), default='pending')
     payment_intent_id = Column(String(255))
     tracking_number = Column(String(100))
+    smart_contract_hash = Column(String(255)) # Blockchain contract hash
+    escrow_status = Column(String(50), default='inactive') # inactive, held, released
+    shipping_cost = Column(Float, default=0.0) # Added for cluster pooling calculations
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     

@@ -141,7 +141,11 @@ def get_products():
     if request.args.get('quality_grade'):
         filters['quality_grade'] = QualityGrade[request.args.get('quality_grade').upper()]
     
-    query = g.db.query(Product).filter_by(is_available=True, **filters)
+    from sqlalchemy.orm import joinedload
+    
+    query = g.db.query(Product).options(
+        joinedload(Product.artisan).joinedload(ArtisanProfile.user)
+    ).filter_by(is_available=True, **filters)
     
     if request.args.get('min_price'):
         query = query.filter(Product.price >= float(request.args.get('min_price')))

@@ -184,27 +184,27 @@
         `;
 
         // Add AI context card for received messages with context
-        if (!isSent && aiContext.context_explanation) {
+        // Ensure we check for context properties even if they are nested differently or named slightly differently
+        if (!isSent && (aiContext.context_explanation || aiContext.negotiation_insight || aiContext.suggestion)) {
             html += `
-                <div class="ai-context-card">
-                    <div class="ai-badge">
-                        <i class="fas fa-robot"></i>
-                        AI Context
+                <div class="ai-context-card" style="background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 8px; padding: 10px; margin-top: 5px; font-size: 0.9em;">
+                    <div class="ai-badge" style="color: #0284c7; font-weight: bold; margin-bottom: 5px;">
+                        <i class="fas fa-robot"></i> AI Insight
                     </div>
                     
                     ${aiContext.original_message ? `
-                        <div style="font-size: 0.75rem; color: #6B7280; margin-top: 0.5rem;">
+                        <div style="font-size: 0.8em; color: #64748b; margin-bottom: 5px;">
                             <strong>Original:</strong> "${aiContext.original_message}"
                         </div>
                     ` : ''}
                     
-                    <div class="context-explanation">
-                        ${aiContext.context_explanation}
+                    <div class="context-explanation" style="color: #334155; margin-bottom: 5px;">
+                        ${aiContext.context_explanation || aiContext.context || ''}
                     </div>
                     
-                    ${aiContext.negotiation_insight ? `
-                        <div class="context-insight">
-                            <strong>💡 Tip:</strong> ${aiContext.negotiation_insight}
+                    ${(aiContext.negotiation_insight || aiContext.suggestion) ? `
+                        <div class="context-insight" style="background: #fff; padding: 5px; border-radius: 4px; border-left: 3px solid #f59e0b;">
+                            <strong>💡 Tip:</strong> ${aiContext.negotiation_insight || aiContext.suggestion}
                         </div>
                     ` : ''}
                 </div>
@@ -213,16 +213,16 @@
             // Add smart replies
             if (aiContext.suggested_responses && aiContext.suggested_responses.length > 0) {
                 html += `
-                    <div class="smart-replies">
-                        <div class="smart-reply-label">
-                            <i class="fas fa-lightbulb"></i>
-                            Quick Replies:
+                    <div class="smart-replies" style="margin-top: 5px; display: flex; gap: 5px; flex-wrap: wrap;">
+                        <div class="smart-reply-label" style="width: 100%; font-size: 0.8em; color: #64748b;">
+                            <i class="fas fa-lightbulb"></i> Quick Replies:
                         </div>
                 `;
 
                 aiContext.suggested_responses.forEach((reply, index) => {
                     html += `
-                        <button class="smart-reply-btn" onclick="sendSmartReply('${reply.replace(/'/g, "\\'")}')">
+                        <button class="smart-reply-btn" onclick="sendSmartReply('${reply.replace(/'/g, "\\'")}')"
+                                style="background: #fff; border: 1px solid #e2e8f0; padding: 4px 8px; border-radius: 12px; cursor: pointer; font-size: 0.85em; color: #475569;">
                             ${reply}
                         </button>
                     `;
@@ -235,9 +235,8 @@
         // Add translation indicator
         if (aiContext.intent) {
             html += `
-                <div class="translation-indicator">
-                    <i class="fas fa-language"></i>
-                    <span>Auto-translated</span>
+                <div class="translation-indicator" style="font-size: 0.75em; color: #94a3b8; margin-top: 2px; text-align: right;">
+                    <i class="fas fa-language"></i> Auto-translated
                 </div>
             `;
         }

@@ -117,6 +117,7 @@ def translate_message():
 def analyze_quality():
     """Analyze product quality from image"""
     # Mock quality analysis result
+    # Mock quality analysis result
     result = {
         "grade": "PREMIUM",
         "confidence": 94,
@@ -127,31 +128,39 @@ def analyze_quality():
         "stitchDensity": "18 stitches/cm²",
         "strengths": [
             "Uniform stitch density across entire surface",
-            "Precise pattern alignment with no distortion",
-            "High-quality cotton base fabric (180 thread count)",
-            "Professional finishing with hidden seams",
-            "Colorfast dyes (tested visually)"
-        ],
-        "issues": [
-            "2 loose threads on back side (easily fixable in 2 minutes)",
-            "Slight color variation in border region (within 5% tolerance)"
-        ],
-        "hsCode": "6304.93.00",
-        "dutyRate": "6.7%",
-        "requirements": [
-            {"name": "Textile fiber content label", "met": True},
-            {"name": "Country of origin marking", "met": True},
-            {"name": "OEKO-TEX certification (recommended)", "met": False},
-            {"name": "Flammability test for children's items", "met": True}
-        ],
-        "improvementTips": [
-            {"icon": "✂️", "hindi": "पीछे की तरफ के 2 धागे काट दें (2 मिनट में fix हो जाएगा)"},
-            {"icon": "🎨", "hindi": "बॉर्डर का रंग थोड़ा और consistent बनाएं"},
             {"icon": "🏆", "hindi": "Perfect! यह PREMIUM category में बेच सकते हैं"},
             {"icon": "💰", "hindi": "इस quality के लिए ₹500-600 price justify होगी"}
         ],
         "exportReady": True
     }
+
+    # Generate Certificate ID and Blockchain Hash
+    import uuid
+    from utils.blockchain import generate_digital_passport
+    
+    cert_id = str(uuid.uuid4())[:8].upper()
+    result['certificate_id'] = cert_id
+    
+    # If product_id is provided, save to DB
+    product_id = request.form.get('product_id')
+    if product_id:
+        try:
+            from models import Product
+            product = g.db.query(Product).get(product_id)
+            if product:
+                product.ai_quality_score = 94.0 # Mock score
+                product.quality_grade = "PREMIUM"
+                product.certificate_id = cert_id
+                
+                # Generate Digital Passport
+                passport_hash = generate_digital_passport(product.id, product.artisan_id, product.ai_quality_score)
+                product.digital_passport_hash = passport_hash
+                result['digital_passport'] = passport_hash
+                
+                g.db.commit()
+        except Exception as db_e:
+            print(f"Error saving to DB: {db_e}")
+            g.db.rollback()
     
     return jsonify({
         'success': True,

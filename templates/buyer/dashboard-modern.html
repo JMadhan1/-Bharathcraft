@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +9,23 @@
     <link rel="stylesheet" href="/static/css/chat.css">
     <link rel="stylesheet" href="/static/css/chat-enhanced.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="manifest" href="/static/manifest.json">
+    <meta name="theme-color" content="#FF6B35">
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    </script>
 </head>
+
 <body>
     <!-- Header -->
     <header class="modern-header">
@@ -17,12 +34,13 @@
                 <img src="/static/logo.png" alt="Bharatcraft" onerror="this.style.display='none'">
                 <h1>Bharatcraft</h1>
             </div>
-            
+
             <div class="search-bar-header">
                 <i class="fas fa-search"></i>
-                <input type="text" id="headerSearch" placeholder="Search for handicrafts, artisans, regions..." onkeyup="quickSearch(this.value)">
+                <input type="text" id="headerSearch" placeholder="Search for handicrafts, artisans, regions..."
+                    onkeyup="quickSearch(this.value)">
             </div>
-            
+
             <nav class="header-nav">
                 <button class="icon-btn" onclick="showWishlist()" title="Wishlist">
                     <i class="fas fa-heart"></i>
@@ -122,7 +140,8 @@
                     <input type="number" id="maxPrice" placeholder="Max" onchange="applyFilters()">
                 </div>
                 <div class="price-range-slider">
-                    <input type="range" id="priceRange" min="0" max="10000" value="10000" oninput="updatePriceRange(this.value)">
+                    <input type="range" id="priceRange" min="0" max="10000" value="10000"
+                        oninput="updatePriceRange(this.value)">
                     <span id="priceRangeValue">Up to ₹10,000</span>
                 </div>
             </div>
@@ -271,5 +290,5 @@
     <script src="/static/js/chat-enhanced.js"></script>
     <script src="/static/js/buyer-modern.js"></script>
 </body>
-</html>
 
+</html>

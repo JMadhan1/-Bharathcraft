@@ -41,33 +41,46 @@ def get_messages():
 def get_conversations():
     current_user_id = int(get_jwt_identity())
     
-    sent = g.db.query(Message.receiver_id).filter(Message.sender_id == current_user_id).distinct()
-    received = g.db.query(Message.sender_id).filter(Message.receiver_id == current_user_id).distinct()
+    # Optimize: Fetch all messages involving the current user in one query
+    from sqlalchemy import or_
     
-    user_ids = set([u[0] for u in sent] + [u[0] for u in received])
+    all_messages = g.db.query(Message).filter(
+        or_(Message.sender_id == current_user_id, Message.receiver_id == current_user_id)
+    ).order_by(Message.created_at.desc()).all()
+    
+    conversations_map = {}
+    unread_counts = {}
+    
+    for msg in all_messages:
+        other_id = msg.sender_id if msg.receiver_id == current_user_id else msg.receiver_id
+        
+        # Count unread messages
+        if msg.receiver_id == current_user_id and not msg.is_read:
+            unread_counts[other_id] = unread_counts.get(other_id, 0) + 1
+            
+        # Track latest message for each conversation
+        if other_id not in conversations_map:
+            conversations_map[other_id] = msg
+            
+    # Fetch all user details in one query
+    if not conversations_map:
+        return jsonify([]), 200
+        
+    other_user_ids = list(conversations_map.keys())
+    users = g.db.query(User).filter(User.id.in_(other_user_ids)).all()
+    user_map = {u.id: u for u in users}
     
     conversations = []
-    for user_id in user_ids:
-        user = g.db.query(User).filter_by(id=user_id).first()
+    for other_id, last_msg in conversations_map.items():
+        user = user_map.get(other_id)
         if user:
-            last_message = g.db.query(Message).filter(
-                ((Message.sender_id == current_user_id) & (Message.receiver_id == user_id)) |
-                ((Message.sender_id == user_id) & (Message.receiver_id == current_user_id))
-            ).order_by(Message.created_at.desc()).first()
-            
-            unread_count = g.db.query(Message).filter(
-                Message.sender_id == user_id,
-                Message.receiver_id == current_user_id,
-                Message.is_read == False
-            ).count()
-            
             conversations.append({
                 'user_id': user.id,
                 'user_name': user.full_name,
                 'user_role': user.role.value,
-                'last_message': last_message.content if last_message else '',
-                'last_message_time': last_message.created_at.isoformat() if last_message else None,
-                'unread_count': unread_count
+                'last_message': last_msg.content,
+                'last_message_time': last_msg.created_at.isoformat(),
+                'unread_count': unread_counts.get(other_id, 0)
             })
-    
-    return jsonify(sorted(conversations, key=lambda x: x['last_message_time'] or '', reverse=True)), 200
+            
+    return jsonify(sorted(conversations, key=lambda x: x['last_message_time'], reverse=True)), 200

@@ -36,6 +36,9 @@ BUYER_LANGUAGES = {
 
 ALL_LANGUAGES = {**ARTISAN_LANGUAGES, **BUYER_LANGUAGES}
 
+# Simple in-memory cache for translations
+TRANSLATION_CACHE = {}
+
 
 def translate_message(text, source_lang, target_lang, context="general"):
     """
@@ -58,6 +61,12 @@ def translate_message(text, source_lang, target_lang, context="general"):
             'cultural_notes': None
         }
     
+    # Check cache
+    cache_key = f"{text}:{source_lang}:{target_lang}:{context}"
+    if cache_key in TRANSLATION_CACHE:
+        print(f"Cache hit for translation: {text[:20]}...")
+        return TRANSLATION_CACHE[cache_key]
+
     source_lang_name = ALL_LANGUAGES.get(source_lang, 'Unknown')
     target_lang_name = ALL_LANGUAGES.get(target_lang, 'Unknown')
     
@@ -118,6 +127,9 @@ Example output:
         result['original_text'] = text
         result['source_lang'] = source_lang
         result['target_lang'] = target_lang
+        
+        # Store in cache
+        TRANSLATION_CACHE[cache_key] = result
         
         return result
         

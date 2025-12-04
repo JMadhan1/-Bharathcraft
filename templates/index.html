@@ -14,6 +14,21 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@700;800;900&display=swap"
         rel="stylesheet">
+    <link rel="manifest" href="/static/manifest.json">
+    <meta name="theme-color" content="#FF6B35">
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    </script>
 </head>
 
 <body>
@@ -479,6 +494,308 @@
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="/static/js/main.js"></script>
+</body>
+
+<!-- Install App Popup -->
+<div id="installPopup" class="install-popup" style="display: none;">
+    <div class="install-content">
+        <span class="close-btn" onclick="closeInstallPopup()">&times;</span>
+        <div class="install-icon">
+            <img src="/static/logo.png" alt="App"
+                onerror="this.src='https://via.placeholder.com/50/FF6B35/FFFFFF?text=BC'">
+        </div>
+        <div class="install-text">
+            <h3>Install Bharatcraft</h3>
+            <p>Get the best experience</p>
+        </div>
+        <button class="install-btn" onclick="installApp()">Install</button>
+    </div>
+</div>
+
+<style>
+    .install-popup {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: white;
+        padding: 15px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        z-index: 9999;
+        animation: slideUp 0.5s ease-out;
+        min-width: 300px;
+        max-width: 90%;
+    }
+
+    .install-content {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        position: relative;
+    }
+
+    .close-btn {
+        position: absolute;
+        top: -25px;
+        right: -10px;
+        font-size: 24px;
+        cursor: pointer;
+        color: #333;
+        background: white;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        line-height: 1;
+    }
+
+    .install-icon img {
+        width: 50px;
+        height: 50px;
+        border-radius: 10px;
+        object-fit: cover;
+    }
+
+    .install-text h3 {
+        margin: 0;
+        font-size: 16px;
+        color: #333;
+        font-weight: 600;
+    }
+
+    .install-text p {
+        margin: 2px 0 0;
+        font-size: 12px;
+        color: #666;
+    }
+
+    .install-btn {
+        background: #FF6B35;
+        color: white;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-weight: 600;
+        margin-left: auto;
+        white-space: nowrap;
+    }
+
+    @keyframes slideUp {
+        from {
+            bottom: -100px;
+            opacity: 0;
+        }
+
+        to {
+            bottom: 20px;
+            opacity: 1;
+        }
+    }
+</style>
+
+
+<!-- PWA Install Popup -->
+<div id="installPopup"
+    style="display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1.5rem 2rem; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 10000; max-width: 400px; width: 90%; animation: slideUp 0.5s ease-out;">
+    <button onclick="closeInstallPopup()"
+        style="position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.2); border: none; color: white; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center;">×</button>
+    <div style="display: flex; align-items: center; gap: 1rem;">
+        <div style="font-size: 3rem;">📱</div>
+        <div style="flex: 1;">
+            <h3 style="margin: 0 0 0.5rem 0; font-size: 1.25rem;">Install Bharatcraft App</h3>
+            <p style="margin: 0 0 1rem 0; font-size: 0.9rem; opacity: 0.9;">Get the full experience with offline access!
+            </p>
+            <button onclick="installApp()"
+                style="background: white; color: #667eea; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 1rem; width: 100%;">
+                <i class="fas fa-download"></i> Install Now
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+    @keyframes slideUp {
+        from {
+            transform: translateX(-50%) translateY(100px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateX(-50%) translateY(0);
+            <h2>Register</h2><form id="registerForm"><select name="role" id="registerRole" required><option value="">I am a...</option><option value="artisan">Artisan (Seller)</option><option value="buyer">Buyer</option></select><input type="text" name="full_name" placeholder="Full Name" required><input type="email" name="email" placeholder="Email" required><input type="password" name="password" placeholder="Password (min 6 characters)" required minlength="6"><input type="tel" name="phone" placeholder="Phone Number"><select name="language"><option value="en">Preferred Language</option><option value="hi">हिंदी</option><option value="te">తెలుగు</option><option value="ta">தமிழ்</option><option value="kn">ಕನ್ನಡ</option><option value="ml">മലയാളം</option><option value="bn">বাংলা</option><option value="gu">ગુજરાતી</option><option value="mr">मराठी</option><option value="pa">ਪੰਜਾਬੀ</option><option value="od">ଓଡ଼ିଆ</option><option value="as">অসমীয়া</option></select><div id="artisanFields" style="display:none;"><input type="text" name="craft_type" placeholder="Craft Type (e.g., Pottery, Textiles)"><input type="text" name="skills" placeholder="Your Skills"><input type="number" name="experience_years" placeholder="Years of Experience" min="0"><input type="text" name="address" placeholder="Address"></div><div id="buyerFields" style="display:none;"><input type="text" name="company_name" placeholder="Company Name (Optional)"><input type="text" name="company_address" placeholder="Company Address (Optional)"><select name="country" required><option value="">Select Country</option><option value="India">India</option><option value="USA">USA</option><option value="UK">UK</option><option value="Canada">Canada</option><option value="Australia">Australia</option><option value="Germany">Germany</option><option value="France">France</option><option value="Japan">Japan</option><option value="UAE">UAE</option><option value="Singapore">Singapore</option></select></div><button type="submit" class="btn btn-primary"><i class="fas fa-user-plus"></i>Register </button></form></div></div><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="/static/js/main.js"></script></body>< !-- Install App Popup --><div id="installPopup" class="install-popup" style="display: none;"><div class="install-content"><span class="close-btn" onclick="closeInstallPopup()">&times;
+            </span><div class="install-icon"><img src="/static/logo.png" alt="App"
+
+            onerror="this.src='https://via.placeholder.com/50/FF6B35/FFFFFF?text=BC'"></div><div class="install-text"><h3>Install Bharatcraft</h3><p>Get the best experience</p></div><button class="install-btn" onclick="installApp()">Install</button></div></div><style>.install-popup {
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: white;
+                padding: 15px;
+                border-radius: 12px;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+                z-index: 9999;
+                animation: slideUp 0.5s ease-out;
+                min-width: 300px;
+                max-width: 90%;
+            }
+
+            .install-content {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+                position: relative;
+            }
+
+            .close-btn {
+                position: absolute;
+                top: -25px;
+                right: -10px;
+                font-size: 24px;
+                cursor: pointer;
+                color: #333;
+                background: white;
+                border-radius: 50%;
+                width: 30px;
+                height: 30px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                line-height: 1;
+            }
+
+            .install-icon img {
+                width: 50px;
+                height: 50px;
+                border-radius: 10px;
+                object-fit: cover;
+            }
+
+            .install-text h3 {
+                margin: 0;
+                font-size: 16px;
+                color: #333;
+                font-weight: 600;
+            }
+
+            .install-text p {
+                margin: 2px 0 0;
+                font-size: 12px;
+                color: #666;
+            }
+
+            .install-btn {
+                background: #FF6B35;
+                color: white;
+                border: none;
+                padding: 8px 20px;
+                border-radius: 20px;
+                cursor: pointer;
+                font-weight: 600;
+                margin-left: auto;
+                white-space: nowrap;
+            }
+
+            @keyframes slideUp {
+                from {
+                    bottom: -100px;
+                    opacity: 0;
+                }
+
+                to {
+                    bottom: 20px;
+                    opacity: 1;
+                }
+            }
+</style>
+
+
+<!-- PWA Install Popup -->
+<div id="installPopup"
+    style="display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1.5rem 2rem; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 10000; max-width: 400px; width: 90%; animation: slideUp 0.5s ease-out;">
+    <button onclick="closeInstallPopup()"
+        style="position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.2); border: none; color: white; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center;">×</button>
+    <div style="display: flex; align-items: center; gap: 1rem;">
+        <div style="font-size: 3rem;">📱</div>
+        <div style="flex: 1;">
+            <h3 style="margin: 0 0 0.5rem 0; font-size: 1.25rem;">Install Bharatcraft App</h3>
+            <p style="margin: 0 0 1rem 0; font-size: 0.9rem; opacity: 0.9;">Get the full experience with offline access!
+            </p>
+            <button onclick="installApp()"
+                style="background: white; color: #667eea; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 1rem; width: 100%;">
+                <i class="fas fa-download"></i> Install Now
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+    @keyframes slideUp {
+        from {
+            transform: translateX(-50%) translateY(100px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+    }
+</style>
+
+<script>
+    let deferredPrompt;
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+    });
+
+    window.addEventListener('load', () => {
+        // Show popup immediately
+        setTimeout(() => {
+            const popup = document.getElementById('installPopup');
+            if (popup) {
+                popup.style.display = 'block';
+
+                // Auto close after 5 seconds
+                setTimeout(() => {
+                    closeInstallPopup();
+                }, 5000);
+            }
+        }, 0); // Show immediately
+    });
+
+    function closeInstallPopup() {
+        const popup = document.getElementById('installPopup');
+        if (popup) {
+            popup.style.animation = 'slideUp 0.5s ease-in reverse forwards';
+            setTimeout(() => {
+                popup.style.display = 'none';
+                popup.style.animation = ''; // Reset animation
+            }, 500);
+        }
+    }
+
+    async function installApp() {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log(`User response to the install prompt: ${outcome}`);
+            deferredPrompt = null;
+        } else {
+            // Fallback for browsers that don't support beforeinstallprompt
+            alert('To install, tap "Share" then "Add to Home Screen"');
+        }
+        closeInstallPopup();
+    }
+</script>
 </body>
 
 </html>

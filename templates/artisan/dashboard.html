@@ -5,53 +5,143 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Artisan Dashboard - Bharatcraft</title>
-    <link rel="stylesheet" href="/static/css/main.css">
-    <link rel="stylesheet" href="/static/css/product-cards.css">
-    <link rel="stylesheet" href="/static/css/chat.css">
-    <link rel="stylesheet" href="/static/css/chat-enhanced.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/artisan-dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="manifest" href="/static/manifest.json">
 </head>
 
 <body>
-    <header class="header">
-        <div class="container">
-            <h1 class="logo">🎨 Bharatcraft</h1>
-            <nav class="nav">
-                <span id="userName"></span>
-                <button class="btn btn-info" onclick="switchToSimpleMode()"
-                    title="Switch to Simple Dashboard (Voice-enabled, Easy to use)">
+    <!-- Professional Header -->
+    <header class="modern-header">
+        <div class="header-container">
+            <div class="logo">
+                <i class="fas fa-palette"></i>
+                <span>Bharatcraft</span>
+            </div>
+            <div class="header-actions">
+                <button class="btn-messages" onclick="showMessages()">
+                    <i class="fas fa-comments"></i>
+                    <span class="badge" id="messageCount">0</span>
+                </button>
+                <span class="user-name" id="userName">Welcome</span>
+                <button class="btn-simple-mode" onclick="switchToSimpleMode()">
                     <i class="fas fa-mobile-alt"></i> Simple Mode
                 </button>
-                <button class="btn btn-secondary" onclick="logout()">Logout</button>
-            </nav>
+                <button class="btn-logout" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
         </div>
     </header>
 
-    <div id="notification-container" style="position: fixed; top: 20px; right: 20px; z-index: 1000;"></div>
+    <!-- Notification Container -->
+    <div id="notification-container"></div>
 
-    <div class="container dashboard">
-        <div class="dashboard-header">
-            <h2>Artisan Dashboard</h2>
-            <p>Manage your products and orders</p>
-        </div>
+    <!-- Main Dashboard -->
+    <main class="dashboard-container">
+        <!-- Welcome Banner -->
+        <section class="welcome-banner">
+            <div class="welcome-content">
+                <h1>Artisan Dashboard</h1>
+                <p>Manage your products and orders</p>
+            </div>
+            <div class="quick-stats-mini">
+                <div class="mini-stat">
+                    <i class="fas fa-coins"></i>
+                    <div>
+                        <span class="mini-stat-value">₹<span id="totalEarnings">0</span></span>
+                        <span class="mini-stat-label">Earnings</span>
+                    </div>
+                </div>
+                <div class="mini-stat">
+                    <i class="fas fa-box-open"></i>
+                    <div>
+                        <span class="mini-stat-value"><span id="productCount">0</span></span>
+                        <span class="mini-stat-label">Products</span>
+                    </div>
+                </div>
+                <div class="mini-stat">
+                    <i class="fas fa-shopping-cart"></i>
+                    <div>
+                        <span class="mini-stat-value"><span id="orderCount">0</span></span>
+                        <span class="mini-stat-label">Orders</span>
+                    </div>
+                </div>
+            </div>
+        </section>
 
+        <!-- Main Grid -->
         <div class="dashboard-grid">
-            <div class="card">
-                <h3>My Products</h3>
-                <button class="btn btn-primary" onclick="showUploadProduct()">Upload New Product</button>
-                <div id="myProducts"></div>
+            <!-- Left Column -->
+            <div class="left-column">
+                <!-- My Products Card -->
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-box-open"></i> My Products</h2>
+                        <button class="btn-primary" onclick="showUploadProduct()">
+                            <i class="fas fa-plus"></i> Upload New Product
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div id="myProducts" class="products-list"></div>
+                    </div>
+                </div>
+
+                <!-- Logistics Cluster Card -->
+                <div class="dashboard-card cluster-card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-truck"></i> Logistics Clusters</h2>
+                        <span class="badge-active">Active</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="cluster-info">
+                            <p class="cluster-text">Join <strong>Jaipur Textile Pool</strong> to save
+                                <strong>40%</strong> on shipping to USA.</p>
+                            <div class="cluster-actions">
+                                <button class="btn-success" onclick="joinCluster()">
+                                    <i class="fas fa-check-circle"></i> Join Pool
+                                </button>
+                                <button class="btn-outline" onclick="viewClusterMap()">
+                                    <i class="fas fa-map-marked-alt"></i> View Map
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="card">
-                <h3>Recent Orders</h3>
-                <div id="recentOrders"></div>
-            </div>
-            <div class="card">
-                <h3>Earnings</h3>
-                <div id="earnings"></div>
+
+            <!-- Right Column -->
+            <div class="right-column">
+                <!-- Recent Orders Card -->
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-shopping-cart"></i> Recent Orders</h2>
+                        <button class="btn-link" onclick="showAllOrders()">View All</button>
+                    </div>
+                    <div class="card-body">
+                        <div id="recentOrders" class="orders-list"></div>
+                    </div>
+                </div>
+
+                <!-- Earnings Card -->
+                <div class="dashboard-card earnings-card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-coins"></i> Earnings</h2>
+                    </div>
+                    <div class="card-body">
+                        <div id="earnings" class="earnings-display">
+                            <div class="earnings-amount">
+                                <span class="currency">₹</span>
+                                <span class="amount" id="earningsAmount">0</span>
+                            </div>
+                            <p class="earnings-label">Total Earnings This Month</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
+    </main>
 
     <!-- Product Upload Modal -->
     <div id="uploadModal" class="modal">
@@ -69,30 +159,34 @@
                     <label for="description">Description *</label>
                     <textarea id="description" name="description" rows="4" required></textarea>
                 </div>
-                <div class="form-group">
-                    <label for="craft_type">Craft Type</label>
-                    <select id="craft_type" name="craft_type">
-                        <option value="pottery">Pottery</option>
-                        <option value="textiles">Textiles</option>
-                        <option value="jewelry">Jewelry</option>
-                        <option value="woodwork">Woodwork</option>
-                        <option value="metalwork">Metalwork</option>
-                        <option value="painting">Painting</option>
-                        <option value="sculpture">Sculpture</option>
-                        <option value="other">Other</option>
-                    </select>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="craft_type">Craft Type</label>
+                        <select id="craft_type" name="craft_type">
+                            <option value="pottery">Pottery</option>
+                            <option value="textiles">Textiles</option>
+                            <option value="jewelry">Jewelry</option>
+                            <option value="woodwork">Woodwork</option>
+                            <option value="metalwork">Metalwork</option>
+                            <option value="painting">Painting</option>
+                            <option value="sculpture">Sculpture</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="price">Price (INR) *</label>
+                        <input type="number" id="price" name="price" min="0" step="0.01" required>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="price">Price (INR) *</label>
-                    <input type="number" id="price" name="price" min="0" step="0.01" required>
-                </div>
-                <div class="form-group">
-                    <label for="stock_quantity">Stock Quantity</label>
-                    <input type="number" id="stock_quantity" name="stock_quantity" min="1" value="1">
-                </div>
-                <div class="form-group">
-                    <label for="production_time_days">Production Time (Days)</label>
-                    <input type="number" id="production_time_days" name="production_time_days" min="1" value="7">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="stock_quantity">Stock Quantity</label>
+                        <input type="number" id="stock_quantity" name="stock_quantity" min="1" value="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="production_time_days">Production Time (Days)</label>
+                        <input type="number" id="production_time_days" name="production_time_days" min="1" value="7">
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="images">Product Images *</label>
@@ -100,13 +194,31 @@
                     <small>Select multiple images (PNG, JPG, JPEG, GIF, WEBP)</small>
                 </div>
                 <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeUploadModal()">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Upload Product</button>
+                    <button type="button" class="btn-secondary" onclick="closeUploadModal()">Cancel</button>
+                    <button type="submit" class="btn-primary">Upload Product</button>
                 </div>
             </form>
         </div>
     </div>
 
+    <!-- Cluster Map Modal -->
+    <div id="mapModal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3><i class="fas fa-map-marked-alt"></i> Logistics Clusters</h3>
+                <span class="close" onclick="closeMapModal()">&times;</span>
+            </div>
+            <div id="clusterMap" style="height: 400px; width: 100%; border-radius: 8px;"></div>
+            <div class="map-info">
+                <p>
+                    <i class="fas fa-info-circle"></i>
+                    Green circles indicate active pooling clusters. Join a cluster to save up to 60% on shipping costs.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="/static/js/auth-helper.js"></script>
     <script src="/static/js/main.js"></script>
     <script src="/static/js/chat.js"></script>

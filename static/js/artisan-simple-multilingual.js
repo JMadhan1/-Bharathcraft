@@ -4,7 +4,7 @@
  * Features: Voice support in 12 Indian languages, visual-first interface
  */
 
-(function() {
+(function () {
     'use strict';
 
     const authToken = localStorage.getItem('authToken');
@@ -78,7 +78,7 @@
                 const primaryText = card.querySelector('.card-primary');
                 const secondaryText = card.querySelector('.card-secondary');
                 const subtitleText = card.querySelector('.card-subtitle-text');
-                
+
                 if (primaryText) primaryText.textContent = cardData.primary;
                 if (secondaryText) secondaryText.textContent = cardData.secondary;
                 if (subtitleText) subtitleText.textContent = cardData.subtitle;
@@ -91,11 +91,11 @@
     }
 
     // Text-to-Speech function with language support and visual feedback
-    window.playVoice = function(messageKey, customText, buttonElement) {
+    window.playVoice = function (messageKey, customText, buttonElement) {
         if ('speechSynthesis' in window) {
             // Cancel any ongoing speech immediately
             window.speechSynthesis.cancel();
-            
+
             let text = customText;
             if (!text && translations.cards && translations.cards[messageKey]) {
                 text = translations.cards[messageKey].voice;
@@ -116,7 +116,7 @@
                 const originalHTML = buttonElement.innerHTML;
                 buttonElement.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i>';
                 buttonElement.style.opacity = '0.7';
-                
+
                 // Restore after speech ends
                 setTimeout(() => {
                     buttonElement.innerHTML = originalHTML;
@@ -130,24 +130,24 @@
                 utterance.lang = languageVoiceCodes[currentLanguage] || 'hi-IN';
                 utterance.rate = 0.9;
                 utterance.pitch = 1;
-                
+
                 // Add event listeners for better feedback
-                utterance.onstart = function() {
+                utterance.onstart = function () {
                     console.log('Voice started speaking');
                 };
-                
-                utterance.onend = function() {
+
+                utterance.onend = function () {
                     console.log('Voice finished speaking');
                 };
-                
-                utterance.onerror = function(event) {
+
+                utterance.onerror = function (event) {
                     console.error('Speech error:', event);
                     if (buttonElement) {
                         buttonElement.innerHTML = originalHTML;
                         buttonElement.style.opacity = '1';
                     }
                 };
-                
+
                 window.speechSynthesis.speak(utterance);
             }, 100);
         } else {
@@ -157,27 +157,27 @@
     };
 
     // Change language
-    window.changeLanguage = async function(lang) {
+    window.changeLanguage = async function (lang) {
         await loadTranslations(lang);
         const selector = document.getElementById('languageSelector');
         if (selector) selector.value = lang;
     };
 
     // Start voice help
-    window.startVoiceHelp = function() {
+    window.startVoiceHelp = function () {
         const greetingText = translations.voiceGreeting || `Hello ${userData.full_name || 'Friend'}. Welcome to Bharatcraft.`;
         const text = greetingText.replace('{name}', userData.full_name || 'Friend');
         playVoice('greeting', text);
     };
 
     // Show simplified upload modal
-    window.showSimpleUpload = function() {
+    window.showSimpleUpload = function () {
         document.getElementById('uploadModal').classList.add('active');
         document.getElementById('step1').classList.add('active');
     };
 
     // Close upload modal
-    window.closeUploadModal = function() {
+    window.closeUploadModal = function () {
         document.getElementById('uploadModal').classList.remove('active');
         document.getElementById('simpleUploadForm').reset();
         document.querySelectorAll('.upload-step').forEach(step => step.classList.remove('active'));
@@ -186,27 +186,27 @@
     };
 
     // Show photo preview
-    window.showPhotoPreview = function(input) {
+    window.showPhotoPreview = function (input) {
         const preview = document.getElementById('photoPreview');
         preview.innerHTML = '';
-        
+
         if (input.files && input.files.length > 0) {
             Array.from(input.files).forEach(file => {
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = function (e) {
                     const img = document.createElement('img');
                     img.src = e.target.result;
                     preview.appendChild(img);
                 };
                 reader.readAsDataURL(file);
             });
-            
+
             document.getElementById('photoNextBtn').style.display = 'flex';
         }
     };
 
     // Navigate between steps
-    window.nextStep = function(stepNumber) {
+    window.nextStep = function (stepNumber) {
         if (stepNumber === 2) {
             const photoInput = document.getElementById('photoInput');
             if (!photoInput.files || photoInput.files.length === 0) {
@@ -215,7 +215,7 @@
                 return;
             }
         }
-        
+
         if (stepNumber === 3) {
             const priceInput = document.getElementById('priceInput');
             if (!priceInput.value || parseFloat(priceInput.value) <= 0) {
@@ -224,15 +224,15 @@
                 return;
             }
         }
-        
+
         document.querySelectorAll('.upload-step').forEach(step => {
             step.classList.remove('active');
         });
-        
+
         document.getElementById(`step${stepNumber}`).classList.add('active');
     };
 
-    window.prevStep = function(stepNumber) {
+    window.prevStep = function (stepNumber) {
         document.querySelectorAll('.upload-step').forEach(step => {
             step.classList.remove('active');
         });
@@ -240,46 +240,46 @@
     };
 
     // Quick price buttons
-    window.setPrice = function(amount) {
+    window.setPrice = function (amount) {
         document.getElementById('priceInput').value = amount;
     };
 
     // Voice description recording
-    window.startVoiceDescription = function() {
+    window.startVoiceDescription = function () {
         if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             const recognition = new SpeechRecognition();
-            
+
             recognition.lang = languageVoiceCodes[currentLanguage] || 'hi-IN';
             recognition.continuous = false;
             recognition.interimResults = false;
-            
+
             const btn = document.querySelector('.voice-record-btn');
             const originalHTML = btn.innerHTML;
             btn.innerHTML = '<i class="fas fa-circle" style="color: red; animation: pulse 1s infinite;"></i> <span class="hindi">सुन रहे हैं...</span>';
-            
-            recognition.onresult = function(event) {
+
+            recognition.onresult = function (event) {
                 const transcript = event.results[0][0].transcript;
                 document.getElementById('descriptionInput').value = transcript;
-                
+
                 if (!document.getElementById('titleInput').value) {
                     document.getElementById('titleInput').value = transcript.substring(0, 50);
                 }
-                
+
                 btn.innerHTML = originalHTML;
             };
-            
-            recognition.onerror = function(event) {
+
+            recognition.onerror = function (event) {
                 console.error('Speech recognition error:', event.error);
                 const msg = translations.alerts?.sessionExpired || 'Sorry, could not hear you';
                 alert(msg);
                 btn.innerHTML = originalHTML;
             };
-            
-            recognition.onend = function() {
+
+            recognition.onend = function () {
                 btn.innerHTML = originalHTML;
             };
-            
+
             recognition.start();
         } else {
             const msg = translations.alerts?.voiceNotSupported || 'Sorry, voice input not supported';
@@ -288,23 +288,23 @@
     };
 
     // Handle form submission
-    document.getElementById('simpleUploadForm').addEventListener('submit', async function(e) {
+    document.getElementById('simpleUploadForm').addEventListener('submit', async function (e) {
         e.preventDefault();
-        
+
         const formData = new FormData(this);
-        
+
         if (!formData.get('title')) {
             const description = formData.get('description') || 'Handmade Product';
             formData.set('title', description.substring(0, 50));
         }
-        
+
         if (!formData.get('craft_type')) {
             formData.set('craft_type', userData.craft_type || 'handicraft');
         }
-        
+
         document.querySelectorAll('.upload-step').forEach(step => step.classList.remove('active'));
         document.getElementById('uploadingState').style.display = 'block';
-        
+
         try {
             const response = await fetch('/api/products/', {
                 method: 'POST',
@@ -313,11 +313,11 @@
                 },
                 body: formData
             });
-            
+
             if (response.ok) {
                 closeUploadModal();
                 showSuccessAnimation();
-                
+
                 setTimeout(() => {
                     loadStats();
                 }, 2000);
@@ -340,10 +340,10 @@
     function showSuccessAnimation() {
         const successDiv = document.getElementById('successAnimation');
         successDiv.style.display = 'flex';
-        
+
         const successText = translations.voiceUploadSuccess || 'Excellent! Your product has been uploaded. Buyers can now see it.';
         playVoice('uploadSuccess', successText);
-        
+
         setTimeout(() => {
             successDiv.style.display = 'none';
         }, 3000);
@@ -357,48 +357,48 @@
                     'Authorization': `Bearer ${authToken}`
                 }
             });
-            
+
             if (productsResponse.ok) {
                 const products = await productsResponse.json();
                 document.getElementById('productCount').textContent = products.length;
             }
-            
+
             document.getElementById('orderCount').textContent = '0';
             document.getElementById('totalEarnings').textContent = '0';
             document.getElementById('messageCount').textContent = '0';
-            
+
         } catch (error) {
             console.error('Error loading stats:', error);
         }
     }
 
     // Navigation functions
-    window.showMyProducts = function() {
-        window.location.href = '/artisan/dashboard.html';
+    window.showMyProducts = function () {
+        window.location.href = '/artisan/dashboard';
     };
 
-    window.showOrders = function() {
+    window.showOrders = function () {
         const msg = `${translations.alerts?.noOrders || 'You have no orders yet.'} (${translations.alerts?.noOrdersEn || 'Check back later'})`;
         alert(msg);
     };
 
-    window.showEarnings = function() {
+    window.showEarnings = function () {
         const msg = `${translations.alerts?.earningsPrefix || 'Your earnings: ₹'}0\n(${translations.alerts?.earningsEn || 'Total money earned'})`;
         alert(msg);
     };
 
-    window.showMessages = function() {
+    window.showMessages = function () {
         // Open AI Chat Assistant Modal
         showAIChatAssistant();
     };
 
-    window.showVideoTutorial = function() {
+    window.showVideoTutorial = function () {
         // Open AI Learning Center Modal
         showLearningCenter();
     };
 
     // Switch to advanced dashboard
-    window.switchToAdvancedMode = function() {
+    window.switchToAdvancedMode = function () {
         if (confirm('Switch to Advanced Dashboard? (More features, for experienced users)\n\nउन्नत डैशबोर्ड पर स्विच करें? (अधिक सुविधाएं, अनुभवी उपयोगकर्ताओं के लिए)')) {
             localStorage.setItem('artisanDashboardMode', 'advanced');
             window.location.href = '/artisan';
@@ -453,17 +453,17 @@
         document.getElementById('aiQuestionInput').focus();
     }
 
-    window.askAI = async function(question) {
+    window.askAI = async function (question) {
         const messagesDiv = document.getElementById('aiMessages');
         if (!messagesDiv) return;
-        
+
         // Add user message
         messagesDiv.innerHTML += `
             <div class="ai-message user-message">
                 <div class="ai-message-content">${question}</div>
             </div>
         `;
-        
+
         // Add loading indicator
         messagesDiv.innerHTML += `
             <div class="ai-message bot-message loading-message">
@@ -473,7 +473,7 @@
             </div>
         `;
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        
+
         try {
             const response = await fetch('/api/ai/chat-help', {
                 method: 'POST',
@@ -487,13 +487,13 @@
                     context: 'general'
                 })
             });
-            
+
             const data = await response.json();
-            
+
             // Remove loading message
             const loadingMsg = messagesDiv.querySelector('.loading-message');
             if (loadingMsg) loadingMsg.remove();
-            
+
             // Add AI response
             messagesDiv.innerHTML += `
                 <div class="ai-message bot-message">
@@ -504,7 +504,7 @@
                 </div>
             `;
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
-            
+
         } catch (error) {
             console.error('AI error:', error);
             const loadingMsg = messagesDiv.querySelector('.loading-message');
@@ -517,7 +517,7 @@
         }
     };
 
-    window.askAIFromInput = function() {
+    window.askAIFromInput = function () {
         const input = document.getElementById('aiQuestionInput');
         const question = input.value.trim();
         if (question) {
@@ -526,23 +526,23 @@
         }
     };
 
-    window.askAIWithVoice = function() {
+    window.askAIWithVoice = function () {
         if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             const recognition = new SpeechRecognition();
             recognition.lang = languageVoiceCodes[currentLanguage] || 'hi-IN';
             recognition.continuous = false;
             recognition.interimResults = false;
-            
-            recognition.onresult = function(event) {
+
+            recognition.onresult = function (event) {
                 const transcript = event.results[0][0].transcript;
                 askAI(transcript);
             };
-            
-            recognition.onerror = function(event) {
+
+            recognition.onerror = function (event) {
                 console.error('Speech recognition error:', event.error);
             };
-            
+
             recognition.start();
         } else {
             alert(translations.alerts?.voiceNotSupported || 'Voice input not supported');
@@ -599,17 +599,17 @@
         document.body.appendChild(modal);
     }
 
-    window.loadTutorial = async function(topic) {
+    window.loadTutorial = async function (topic) {
         const contentDiv = document.getElementById('learningContent');
         if (!contentDiv) return;
-        
+
         contentDiv.innerHTML = `
             <div class="loading-tutorial">
                 <i class="fas fa-circle-notch fa-spin" style="font-size: 2rem; color: #FF6B35;"></i>
                 <p>${currentLanguage === 'hi' ? 'ट्यूटोरियल तैयार हो रहा है...' : 'Preparing tutorial...'}</p>
             </div>
         `;
-        
+
         try {
             const response = await fetch('/api/ai/tutorial', {
                 method: 'POST',
@@ -622,9 +622,9 @@
                     language: currentLanguage
                 })
             });
-            
+
             const data = await response.json();
-            
+
             contentDiv.innerHTML = `
                 <div class="tutorial-content">
                     <div class="tutorial-text">${data.content.replace(/\n/g, '<br>')}</div>
@@ -634,7 +634,7 @@
                     </button>
                 </div>
             `;
-            
+
         } catch (error) {
             console.error('Tutorial error:', error);
             contentDiv.innerHTML = `
@@ -647,10 +647,10 @@
     };
 
     // Logout function
-    window.logout = function() {
+    window.logout = function () {
         const thanksText = translations.alerts?.thankYou || 'Thank you! See you again.';
         playVoice('logout', thanksText);
-        
+
         setTimeout(() => {
             localStorage.removeItem('authToken');
             localStorage.removeItem('userData');
@@ -659,20 +659,20 @@
     };
 
     // Initialize
-    document.addEventListener('DOMContentLoaded', async function() {
+    document.addEventListener('DOMContentLoaded', async function () {
         // Set user name
         document.getElementById('userName').textContent = userData.full_name || 'Artisan';
-        
+
         // Load translations for current language
         await loadTranslations(currentLanguage);
-        
+
         // Set language selector
         const selector = document.getElementById('languageSelector');
         if (selector) selector.value = currentLanguage;
-        
+
         // Load stats
         loadStats();
-        
+
         // Auto-play greeting on first visit
         const hasPlayedGreeting = sessionStorage.getItem('hasPlayedGreeting');
         if (!hasPlayedGreeting) {

@@ -301,6 +301,13 @@ async function handleLoginSubmit(event) {
     event.preventDefault();
 
     const form = event.target;
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn.innerHTML;
+
+    // Show loading state
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
+
     const email = form.querySelector('input[name="email"]').value;
     const password = form.querySelector('input[name="password"]').value;
 
@@ -322,9 +329,13 @@ async function handleLoginSubmit(event) {
             redirectToDashboard();
         } else {
             alert(data.error || 'Login failed');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnText;
         }
     } catch (error) {
         alert('Login error: ' + error.message);
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnText;
     }
 }
 
@@ -333,6 +344,13 @@ async function handleRegisterSubmit(event) {
     event.preventDefault();
 
     const form = event.target;
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn.innerHTML;
+
+    // Show loading state
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
+
     const formData = new FormData(form);
     const data = {
         role: formData.get('role'),
@@ -373,9 +391,13 @@ async function handleRegisterSubmit(event) {
             redirectToDashboard();
         } else {
             alert(result.error || 'Registration failed');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnText;
         }
     } catch (error) {
         alert('Registration error: ' + error.message);
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnText;
     }
 }
 

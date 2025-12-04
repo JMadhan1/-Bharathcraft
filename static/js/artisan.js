@@ -524,6 +524,278 @@
         }
     };
 
+    // Cluster interactions
+    let clusterMap = null;
+
+    window.viewClusterMap = function () {
+        const modal = document.getElementById('mapModal');
+        if (!modal) return;
+
+        modal.classList.add('active');
+
+        // Initialize map if not already done
+        if (!clusterMap) {
+            // Wait for modal to be visible for correct sizing
+            setTimeout(() => {
+                clusterMap = L.map('clusterMap').setView([26.9124, 75.7873], 6); // Centered on Rajasthan/Jaipur
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(clusterMap);
+
+                // Add cluster markers
+                const clusters = [
+                    { name: 'Jaipur Textile Pool', lat: 26.9124, lon: 75.7873, members: 42, savings: '40%' },
+                    { name: 'Jodhpur Woodwork', lat: 26.2389, lon: 73.0243, members: 28, savings: '35%' },
+                    { name: 'Udaipur Pottery', lat: 24.5854, lon: 73.7125, members: 15, savings: '25%' },
+                    { name: 'Ajmer Jewelry', lat: 26.4499, lon: 74.6399, members: 31, savings: '38%' }
+                ];
+
+                clusters.forEach(cluster => {
+                    const marker = L.circleMarker([cluster.lat, cluster.lon], {
+                        color: '#16a34a',
+                        fillColor: '#22c55e',
+                        fillOpacity: 0.5,
+                        radius: 15 + (cluster.members / 5) // Size based on members
+                    }).addTo(clusterMap);
+
+                    marker.bindPopup(`
+                        <div style="text-align: center;">
+                            <h4 style="margin: 0 0 5px 0; color: #166534;">${cluster.name}</h4>
+                            <p style="margin: 0;"><strong>${cluster.members}</strong> Artisans</p>
+                            <p style="margin: 5px 0 0 0; color: #15803d; font-weight: bold;">${cluster.savings} Savings</p>
+                            <button onclick="joinCluster('${cluster.name}')" style="margin-top: 8px; background: #16a34a; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8em;">Join This Pool</button>
+                        </div>
+                    `);
+                });
+            }, 100);
+        } else {
+            setTimeout(() => {
+                clusterMap.invalidateSize();
+            }, 100);
+        }
+    };
+
+    window.closeMapModal = function () {
+        const modal = document.getElementById('mapModal');
+        if (modal) {
+            modal.classList.remove('active');
+        }
+    };
+
+    // Update joinCluster to show detailed cluster information
+    window.joinCluster = function (clusterName = "Jaipur Textile Pool") {
+        // Cluster data with detailed information
+        const clusterData = {
+            'Jaipur Textile Pool': {
+                hub: 'Jaipur Export Hub, Sitapura Industrial Area',
+                members: 42,
+                currentOrders: 67,
+                destinations: [
+                    { country: 'USA', orders: 28, flag: '🇺🇸' },
+                    { country: 'UK', orders: 15, flag: '🇬🇧' },
+                    { country: 'Germany', orders: 12, flag: '🇩🇪' },
+                    { country: 'Canada', orders: 8, flag: '🇨🇦' },
+                    { country: 'Australia', orders: 4, flag: '🇦🇺' }
+                ],
+                shippingDate: 'Dec 12, 2025',
+                daysUntilShip: 8,
+                savings: '40%',
+                individualCost: '₹3,500',
+                poolCost: '₹1,200',
+                totalSavings: '₹2,300'
+            },
+            'Jodhpur Woodwork': {
+                hub: 'Jodhpur Craft Center, Mandore Road',
+                members: 28,
+                currentOrders: 45,
+                destinations: [
+                    { country: 'USA', orders: 22, flag: '🇺🇸' },
+                    { country: 'Canada', orders: 12, flag: '🇨🇦' },
+                    { country: 'UK', orders: 11, flag: '🇬🇧' }
+                ],
+                shippingDate: 'Dec 15, 2025',
+                daysUntilShip: 11,
+                savings: '35%',
+                individualCost: '₹3,200',
+                poolCost: '₹2,080',
+                totalSavings: '₹1,120'
+            },
+            'Udaipur Pottery': {
+                hub: 'Udaipur Artisan Hub, Hathi Pol',
+                members: 15,
+                currentOrders: 23,
+                destinations: [
+                    { country: 'UK', orders: 10, flag: '🇬🇧' },
+                    { country: 'Australia', orders: 8, flag: '🇦🇺' },
+                    { country: 'France', orders: 5, flag: '🇫🇷' }
+                ],
+                shippingDate: 'Dec 18, 2025',
+                daysUntilShip: 14,
+                savings: '25%',
+                individualCost: '₹3,000',
+                poolCost: '₹2,250',
+                totalSavings: '₹750'
+            },
+            'Ajmer Jewelry': {
+                hub: 'Ajmer Gems & Jewelry Hub, Pushkar Road',
+                members: 31,
+                currentOrders: 52,
+                destinations: [
+                    { country: 'USA', orders: 20, flag: '🇺🇸' },
+                    { country: 'UAE', orders: 18, flag: '🇦🇪' },
+                    { country: 'UK', orders: 14, flag: '🇬🇧' }
+                ],
+                shippingDate: 'Dec 10, 2025',
+                daysUntilShip: 6,
+                savings: '38%',
+                individualCost: '₹3,400',
+                poolCost: '₹2,108',
+                totalSavings: '₹1,292'
+            }
+        };
+
+        const cluster = clusterData[clusterName] || clusterData['Jaipur Textile Pool'];
+
+        // Create modal HTML
+        const modalHTML = `
+            <div id="clusterDetailsModal" class="modal active" style="z-index: 10001;">
+                <div class="modal-content" style="max-width: 800px; width: 95%; max-height: 90vh; overflow-y: auto;">
+                    <div class="modal-header" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: white; padding: 2rem; border-radius: 16px 16px 0 0;">
+                        <h3 style="color: white; font-size: 1.75rem; margin: 0;">
+                            <i class="fas fa-truck"></i> ${clusterName}
+                        </h3>
+                        <span class="close" onclick="closeClusterDetailsModal()" style="color: white; font-size: 2rem; cursor: pointer;">&times;</span>
+                    </div>
+                    
+                    <div style="padding: 2rem;">
+                        <!-- Hub Location -->
+                        <div style="background: #F0FDF4; border: 2px solid #BBF7D0; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem;">
+                            <h4 style="margin: 0 0 1rem 0; color: #166534; display: flex; align-items: center; gap: 0.5rem;">
+                                <i class="fas fa-map-marker-alt"></i> Central Hub Location
+                            </h4>
+                            <p style="margin: 0; font-size: 1.125rem; color: #15803d; font-weight: 600;">${cluster.hub}</p>
+                            <p style="margin: 0.5rem 0 0 0; color: #166534; font-size: 0.875rem;">
+                                <i class="fas fa-info-circle"></i> All products will be collected here for consolidation
+                            </p>
+                        </div>
+
+                        <!-- Shipping Timeline -->
+                        <div style="background: #FEF3C7; border: 2px solid #FCD34D; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem;">
+                            <h4 style="margin: 0 0 1rem 0; color: #92400E; display: flex; align-items: center; gap: 0.5rem;">
+                                <i class="fas fa-calendar-alt"></i> Shipping Timeline
+                            </h4>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <div>
+                                    <p style="margin: 0; color: #78350F; font-size: 0.875rem;">Next Shipment Date:</p>
+                                    <p style="margin: 0.25rem 0 0 0; font-size: 1.25rem; font-weight: 700; color: #92400E;">${cluster.shippingDate}</p>
+                                </div>
+                                <div>
+                                    <p style="margin: 0; color: #78350F; font-size: 0.875rem;">Days Until Shipment:</p>
+                                    <p style="margin: 0.25rem 0 0 0; font-size: 1.25rem; font-weight: 700; color: #92400E;">${cluster.daysUntilShip} days</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Destination Countries -->
+                        <div style="background: #EFF6FF; border: 2px solid #BFDBFE; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem;">
+                            <h4 style="margin: 0 0 1rem 0; color: #1E40AF; display: flex; align-items: center; gap: 0.5rem;">
+                                <i class="fas fa-globe"></i> Destination Countries (${cluster.currentOrders} Total Orders)
+                            </h4>
+                            <div style="display: grid; gap: 0.75rem;">
+                                ${cluster.destinations.map(dest => `
+                                    <div style="display: flex; justify-content: space-between; align-items: center; background: white; padding: 1rem; border-radius: 8px;">
+                                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                            <span style="font-size: 1.5rem;">${dest.flag}</span>
+                                            <span style="font-weight: 600; color: #1F2937;">${dest.country}</span>
+                                        </div>
+                                        <div style="background: #DBEAFE; color: #1E40AF; padding: 0.5rem 1rem; border-radius: 20px; font-weight: 600;">
+                                            ${dest.orders} orders
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <!-- Cost Savings -->
+                        <div style="background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); border: 2px solid #F59E0B; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem;">
+                            <h4 style="margin: 0 0 1rem 0; color: #92400E; display: flex; align-items: center; gap: 0.5rem;">
+                                <i class="fas fa-piggy-bank"></i> Your Savings Breakdown
+                            </h4>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; text-align: center;">
+                                <div>
+                                    <p style="margin: 0; color: #78350F; font-size: 0.875rem;">Individual Shipping:</p>
+                                    <p style="margin: 0.25rem 0 0 0; font-size: 1.5rem; font-weight: 700; color: #DC2626; text-decoration: line-through;">${cluster.individualCost}</p>
+                                </div>
+                                <div>
+                                    <p style="margin: 0; color: #78350F; font-size: 0.875rem;">Pool Shipping:</p>
+                                    <p style="margin: 0.25rem 0 0 0; font-size: 1.5rem; font-weight: 700; color: #10B981;">${cluster.poolCost}</p>
+                                </div>
+                                <div>
+                                    <p style="margin: 0; color: #78350F; font-size: 0.875rem;">You Save:</p>
+                                    <p style="margin: 0.25rem 0 0 0; font-size: 1.5rem; font-weight: 700; color: #F59E0B;">${cluster.totalSavings}</p>
+                                </div>
+                            </div>
+                            <div style="margin-top: 1rem; padding: 1rem; background: rgba(255,255,255,0.5); border-radius: 8px; text-align: center;">
+                                <p style="margin: 0; font-size: 1.25rem; font-weight: 700; color: #92400E;">
+                                    <i class="fas fa-chart-line"></i> ${cluster.savings} Total Savings!
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Cluster Members -->
+                        <div style="background: #F3F4F6; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem;">
+                            <h4 style="margin: 0 0 0.5rem 0; color: #1F2937; display: flex; align-items: center; gap: 0.5rem;">
+                                <i class="fas fa-users"></i> ${cluster.members} Artisans Already Joined
+                            </h4>
+                            <p style="margin: 0; color: #6B7280; font-size: 0.875rem;">Join this active community of artisans shipping together</p>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div style="display: flex; gap: 1rem;">
+                            <button onclick="confirmJoinCluster('${clusterName}')" style="flex: 1; padding: 1rem; background: #10B981; color: white; border: none; border-radius: 12px; font-size: 1.125rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                                <i class="fas fa-check-circle"></i> Join This Pool
+                            </button>
+                            <button onclick="closeClusterDetailsModal()" style="flex: 0.3; padding: 1rem; background: #F3F4F6; color: #6B7280; border: 2px solid #E5E7EB; border-radius: 12px; font-weight: 600; cursor: pointer;">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Remove existing modal if any
+        const existingModal = document.getElementById('clusterDetailsModal');
+        if (existingModal) existingModal.remove();
+
+        // Add modal to body
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+    };
+
+    window.closeClusterDetailsModal = function () {
+        const modal = document.getElementById('clusterDetailsModal');
+        if (modal) {
+            modal.classList.remove('active');
+            setTimeout(() => modal.remove(), 300);
+        }
+    };
+
+    window.confirmJoinCluster = function (clusterName) {
+        if (confirm(`Confirm joining "${clusterName}"?\n\nYou will be notified when the shipment is ready.`)) {
+            alert('Successfully joined cluster! You will receive updates via notifications.');
+            // Update UI to show joined status
+            const btns = document.querySelectorAll('button[onclick^="joinCluster"]');
+            btns.forEach(btn => {
+                btn.textContent = 'Joined ✓';
+                btn.disabled = true;
+                btn.style.background = '#059669';
+            });
+            closeClusterDetailsModal();
+            if (typeof closeMapModal === 'function') closeMapModal();
+        }
+    };
+
     // Expose logout globally (used in header)
     window.logout = function () {
         localStorage.removeItem('authToken');

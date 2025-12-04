@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, g
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from models import ArtisanProfile, Product, Order
+from models import ArtisanProfile, Product, Order, OrderStatus
 
 bp = Blueprint('stats', __name__, url_prefix='/api/stats')
 
@@ -33,9 +33,9 @@ def get_platform_stats():
         total_orders = g.db.query(Order).count()
         
         # Calculate total revenue (sum of all completed orders)
-        from models import OrderStatus
-        completed_orders = g.db.query(Order).filter_by(status=OrderStatus.COMPLETED).all()
-        total_revenue = sum(order.total_amount for order in completed_orders)
+        # Calculate total revenue using SQL aggregation for performance
+        from sqlalchemy import func
+        total_revenue = g.db.query(func.sum(Order.total_amount)).filter_by(status=OrderStatus.COMPLETED).scalar() or 0.0
         
         return jsonify({
             'success': True,

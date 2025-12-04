@@ -110,8 +110,13 @@ def index():
 def success_stories():
     return render_template('success-stories.html')
 
+@app.route('/all-features')
+def all_features():
+    return render_template('all-features.html')
+
 @app.route('/artisan')
 @app.route('/artisan/dashboard')
+@app.route('/artisan/dashboard.html')
 def artisan_portal():
     return render_template('artisan/dashboard.html')
 
@@ -129,6 +134,11 @@ def buyer_portal():
 def admin_portal():
     return render_template('admin/dashboard.html')
 
+@app.route('/sw.js')
+def service_worker():
+    from flask import send_from_directory
+    return send_from_directory('static', 'sw.js')
+
 from chat_events import register_socketio_events
 register_socketio_events(socketio)
 
@@ -144,4 +154,4 @@ if __name__ == '__main__':
     # Disable debug in production
     debug = os.getenv('FLASK_ENV', 'development') == 'development'
     
-    socketio.run(app, host=host, port=port, debug=debug)
+    socketio.run(app, host=host, port=port, debug=debug, allow_unsafe_werkzeug=True)

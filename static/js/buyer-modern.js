@@ -99,6 +99,7 @@
                     ${overlay}
                     <div class="product-badges">
                         ${product.quality_grade === 'PREMIUM' ? '<span class="badge-tag badge-premium">⭐ Premium</span>' : ''}
+                        ${product.certificate_id ? '<span class="badge-tag badge-verified" style="background: #10B981; color: white; margin-left: 5px;"><i class="fas fa-check-circle"></i> AI Verified</span>' : ''}
                     </div>
                     <button class="product-wishlist-btn ${isWishlisted ? 'active' : ''}" onclick="toggleWishlist(${product.id}); event.stopPropagation();" ${isOutOfStock ? 'disabled' : ''}>
                         <i class="fas fa-heart"></i>
@@ -400,6 +401,19 @@
                     <button onclick="window.location.href='/checkout/${product.id}';" style="width: 48%; padding: 1rem; background: #10B981; color: white; border: none; border-radius: 12px; font-size: 1.125rem; font-weight: 700; cursor: pointer; margin-top: 2rem; margin-left: 2%;">
                         <i class="fas fa-bolt"></i> Buy Now
                     </button>
+                    ${product.digital_passport_hash ? `
+                        <div style="margin-top: 1.5rem; padding: 1rem; background: #F3F4F6; border-radius: 8px; font-size: 0.9rem;">
+                            <div style="display: flex; align-items: center; gap: 0.5rem; color: #4B5563; margin-bottom: 0.5rem;">
+                                <i class="fas fa-fingerprint"></i> <strong>Digital Passport</strong>
+                            </div>
+                            <div style="word-break: break-all; font-family: monospace; color: #6B7280; font-size: 0.8rem;">
+                                ${product.digital_passport_hash}
+                            </div>
+                            <a href="#" onclick="alert('Blockchain Explorer coming soon!'); return false;" style="display: block; margin-top: 0.5rem; color: #3B82F6; text-decoration: none; font-weight: 600;">
+                                View on Blockchain <i class="fas fa-external-link-alt"></i>
+                            </a>
+                        </div>
+                    ` : ''}
                 </div>
             </div>
         `;
