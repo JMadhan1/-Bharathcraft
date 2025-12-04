@@ -796,6 +796,13 @@
         }
     };
 
+    window.switchToSimpleMode = function () {
+        if (confirm('Switch to Simple Mode?')) {
+            localStorage.setItem('artisanDashboardMode', 'simple');
+            window.location.href = '/artisan/dashboard-simple';
+        }
+    };
+
     // Expose logout globally (used in header)
     window.logout = function () {
         localStorage.removeItem('authToken');

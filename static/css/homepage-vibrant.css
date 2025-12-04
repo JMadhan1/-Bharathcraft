@@ -228,6 +228,7 @@ h6 {
   background: var(--gradient-hero);
   background-size: 200% 200%;
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: gradient-shift 8s ease infinite;
   position: relative;
@@ -256,6 +257,7 @@ h6 {
 .highlight-text-gold {
   background: linear-gradient(90deg, var(--gold) 0%, #FBBF24 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   position: relative;
   display: inline-block;
@@ -446,6 +448,7 @@ h6 {
   background: var(--gradient-hero);
   background-size: 200% 200%;
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   margin: var(--space-md) 0;
   line-height: 1;
@@ -623,6 +626,7 @@ h6 {
   margin-bottom: var(--space-xl);
   background: var(--gradient-hero);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -901,6 +905,7 @@ h6 {
   font-size: 1.75rem;
   background: var(--gradient-hero);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: 900;
   letter-spacing: -0.5px;

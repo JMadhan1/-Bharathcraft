@@ -313,6 +313,10 @@
         document.getElementById('productsModal').classList.remove('active');
     };
 
+    // Alias for compatibility with HTML onclick handlers
+    window.showAllProducts = window.showMyProducts;
+
+
     async function loadAllProducts() {
         try {
             const response = await authenticatedFetch('/api/products/my-products');
@@ -354,6 +358,10 @@
     window.closeOrdersModal = function () {
         document.getElementById('ordersModal').classList.remove('active');
     };
+
+    // Alias for compatibility with HTML onclick handlers
+    window.showAllOrders = window.showOrders;
+
 
     async function loadAllOrders() {
         try {
@@ -511,6 +519,14 @@
                     <div style="background: #EF4444; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700;">
                         ${conv.unread_count}
                     </div>
+                ` : ''}
+            </div>
+        `).join('');
+    }
+
+    // Cluster Map
+    window.showClusterMap = function () {
+        playVoice('logistics');
         const modal = document.getElementById('mapModal');
         modal.classList.add('active');
 
@@ -528,7 +544,6 @@
                     { name: 'Udaipur Pottery', lat: 24.5854, lon: 73.7125, members: 15, savings: '25%' },
                     { name: 'Ajmer Jewelry', lat: 26.4499, lon: 74.6399, members: 31, savings: '38%' }
                 ];
-
                 clusters.forEach(cluster => {
                     const marker = L.circleMarker([cluster.lat, cluster.lon], {
                         color: '#10B981',
@@ -538,13 +553,13 @@
                     }).addTo(clusterMap);
 
                     marker.bindPopup(`
-                < div style = "text-align: center;" >
+                        <div style="text-align: center;">
                             <h4 style="margin: 0 0 5px 0; color: #166534;">${cluster.name}</h4>
                             <p style="margin: 0;"><strong>${cluster.members}</strong> Artisans</p>
                             <p style="margin: 5px 0 0 0; color: #15803d; font-weight: bold;">${cluster.savings} Savings</p>
                             <button onclick="joinCluster('${cluster.name}')" style="margin-top: 8px; background: #10B981; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer;">Join Pool</button>
-                        </div >
-            `);
+                        </div>
+                    `);
                 });
             }, 100);
         } else {
@@ -787,6 +802,13 @@
         container.appendChild(notification);
         setTimeout(() => notification.remove(), 5000);
     }
+
+    window.switchToAdvancedMode = function () {
+        if (confirm('Switch to Advanced Dashboard? / क्या आप एडवांस्ड डैशबोर्ड पर जाना चाहते हैं?')) {
+            localStorage.setItem('artisanDashboardMode', 'advanced');
+            window.location.href = '/artisan/dashboard';
+        }
+    };
 
     window.logout = function () {
         localStorage.removeItem('authToken');

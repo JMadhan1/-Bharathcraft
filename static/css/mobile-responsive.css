@@ -1,0 +1,621 @@
+/* Mobile Responsiveness Enhancements for Bharatcraft */
+
+/* Base Mobile-First Approach */
+@media (max-width: 768px) {
+
+    /* Header Adjustments */
+    .header {
+        padding: 0.75rem 1rem;
+    }
+
+    .header .logo {
+        font-size: 1.25rem;
+    }
+
+    .header .nav {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    /* Welcome Section */
+    .welcome-section {
+        padding: 1rem;
+        text-align: center;
+    }
+
+    .welcome-section h1 {
+        font-size: 1.5rem;
+    }
+
+    .welcome-section p {
+        font-size: 0.9rem;
+    }
+
+    /* Quick Stats Grid */
+    .quick-stats {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+        padding: 1rem;
+    }
+
+    .stat-card {
+        padding: 1rem;
+    }
+
+    .stat-card h2 {
+        font-size: 1.75rem;
+    }
+
+    .stat-card p {
+        font-size: 0.85rem;
+    }
+
+    /* Action Cards */
+    .action-cards {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        padding: 1rem;
+    }
+
+    .action-card {
+        padding: 1.5rem;
+    }
+
+    .action-card h3 {
+        font-size: 1.1rem;
+    }
+
+    /* Modals */
+    .modal-content {
+        width: 95%;
+        max-width: 95%;
+        margin: 1rem;
+        padding: 1rem;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    .modal-header {
+        padding: 1rem;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .modal-header h3 {
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .modal-header .close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+    }
+
+    /* Upload Modal */
+    .upload-modal {
+        padding: 1rem;
+    }
+
+    .photo-upload-area {
+        min-height: 200px;
+        padding: 1.5rem;
+    }
+
+    .photo-preview img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    .quick-price-buttons {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+    }
+
+    .quick-price-buttons button {
+        padding: 0.75rem;
+        font-size: 1rem;
+    }
+
+    /* Buttons */
+    .big-next-btn,
+    .big-submit-btn {
+        width: 100%;
+        padding: 1rem;
+        font-size: 1rem;
+    }
+
+    .step-buttons {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .step-buttons button {
+        width: 100%;
+    }
+
+    /* Products Grid */
+    .products-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        padding: 1rem;
+    }
+
+    .product-card {
+        padding: 1rem;
+    }
+
+    .product-card img {
+        height: 200px;
+    }
+
+    /* Orders Grid */
+    .orders-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        padding: 1rem;
+    }
+
+    /* Messages List */
+    .messages-list {
+        padding: 0.5rem;
+    }
+
+    .message-item {
+        padding: 0.75rem;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    /* Map Modal */
+    .map-modal {
+        width: 95%;
+        height: 80vh;
+    }
+
+    #clusterMap {
+        height: 300px !important;
+    }
+
+    /* Voice Buttons */
+    .voice-btn-card,
+    .voice-btn-stat,
+    .voice-btn-section {
+        width: 36px;
+        height: 36px;
+        font-size: 0.9rem;
+    }
+
+    /* Language Selector */
+    .language-selector {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Logout Button */
+    .logout-btn {
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+
+    /* Recent Sections */
+    .recent-section,
+    .orders-section {
+        padding: 1rem;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .section-header h2 {
+        font-size: 1.25rem;
+    }
+
+    /* Help Modal */
+    .help-sections {
+        padding: 0.5rem;
+    }
+
+    .help-section {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .help-section h4 {
+        font-size: 1rem;
+    }
+
+    .help-section ol,
+    .help-section ul {
+        padding-left: 1.25rem;
+        font-size: 0.9rem;
+    }
+
+    /* Cluster Pool Detail Modal */
+    .cluster-detail-modal {
+        width: 95%;
+        padding: 1rem;
+    }
+
+    .destination-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+
+    .cost-breakdown {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .cost-item {
+        padding: 0.75rem;
+    }
+
+    /* Tables */
+    table {
+        font-size: 0.85rem;
+    }
+
+    table th,
+    table td {
+        padding: 0.5rem;
+    }
+
+    /* Forms */
+    input[type="text"],
+    input[type="number"],
+    input[type="email"],
+    input[type="tel"],
+    textarea,
+    select {
+        font-size: 16px;
+        /* Prevents zoom on iOS */
+        padding: 0.75rem;
+    }
+
+    /* Success Animation */
+    .success-animation {
+        width: 90%;
+        padding: 2rem 1rem;
+    }
+
+    .success-checkmark i {
+        font-size: 3rem;
+    }
+
+    /* Install Popup */
+    #installPopup {
+        bottom: 10px;
+        left: 5%;
+        right: 5%;
+        transform: none;
+        width: 90%;
+        padding: 1rem;
+    }
+
+    #installPopup h3 {
+        font-size: 1rem;
+    }
+
+    #installPopup p {
+        font-size: 0.85rem;
+    }
+
+    #installPopup button {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* Extra Small Devices (phones in portrait) */
+@media (max-width: 480px) {
+    .quick-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .stat-card {
+        padding: 1.25rem;
+    }
+
+    .stat-card h2 {
+        font-size: 2rem;
+    }
+
+    .action-card {
+        padding: 1.25rem;
+    }
+
+    .card-icon-large {
+        font-size: 2.5rem;
+    }
+
+    .modal-content {
+        width: 100%;
+        height: 100vh;
+        margin: 0;
+        border-radius: 0;
+    }
+
+    .photo-upload-area {
+        min-height: 150px;
+    }
+
+    .quick-price-buttons {
+        grid-template-columns: 1fr;
+    }
+
+    #clusterMap {
+        height: 250px !important;
+    }
+
+    .help-section {
+        padding: 0.75rem;
+    }
+}
+
+/* Landscape Mode Adjustments */
+@media (max-width: 768px) and (orientation: landscape) {
+    .modal-content {
+        max-height: 95vh;
+        overflow-y: auto;
+    }
+
+    .quick-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .action-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    #clusterMap {
+        height: 200px !important;
+    }
+}
+
+/* Tablet Adjustments */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .quick-stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    .action-cards {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    .products-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .modal-content {
+        width: 85%;
+        max-width: 700px;
+    }
+}
+
+/* Touch-Friendly Enhancements */
+@media (hover: none) and (pointer: coarse) {
+
+    /* Larger touch targets */
+    button,
+    .btn,
+    .action-card,
+    .stat-card,
+    .product-card {
+        min-height: 44px;
+        /* Apple's recommended minimum */
+    }
+
+    /* Prevent text selection on buttons */
+    button,
+    .btn {
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Better tap feedback */
+    .action-card:active,
+    .stat-card:active,
+    button:active {
+        transform: scale(0.98);
+        transition: transform 0.1s;
+    }
+}
+
+/* Accessibility Improvements */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+
+    .stat-card,
+    .action-card,
+    .modal-content {
+        border: 2px solid currentColor;
+    }
+
+    button {
+        border: 2px solid currentColor;
+    }
+}
+
+/* Dark Mode Support (if needed) */
+@media (prefers-color-scheme: dark) {
+    /* Add dark mode styles if needed */
+}
+
+/* Print Styles */
+@media print {
+
+    .header,
+    .voice-btn-card,
+    .voice-btn-stat,
+    .voice-btn-section,
+    button {
+        display: none;
+    }
+
+    .modal {
+        position: relative;
+        display: block;
+    }
+
+    .modal-content {
+        box-shadow: none;
+        border: 1px solid #000;
+    }
+}
+
+/* Specific Component Responsive Fixes */
+
+/* Cluster Pool Detail Modal - Mobile */
+@media (max-width: 768px) {
+    .pool-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .pool-stats {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+
+    .timeline-steps {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .timeline-step {
+        width: 100%;
+        text-align: left;
+        padding-left: 2rem;
+        position: relative;
+    }
+
+    .timeline-step::before {
+        left: 0;
+    }
+
+    .savings-comparison {
+        flex-direction: column;
+    }
+
+    .cost-column {
+        width: 100%;
+    }
+}
+
+/* Messages Modal - Mobile */
+@media (max-width: 768px) {
+    .message-item {
+        padding: 1rem;
+    }
+
+    .message-avatar {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+
+    .message-content h4 {
+        font-size: 0.95rem;
+    }
+
+    .message-content p {
+        font-size: 0.85rem;
+    }
+
+    .unread-badge {
+        width: 20px;
+        height: 20px;
+        font-size: 0.7rem;
+    }
+}
+
+/* Orders Modal - Mobile */
+@media (max-width: 768px) {
+    .order-card {
+        padding: 1rem;
+    }
+
+    .order-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .order-status {
+        align-self: flex-start;
+    }
+
+    .order-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .order-actions button {
+        width: 100%;
+    }
+}
+
+/* Products Modal - Mobile */
+@media (max-width: 768px) {
+    .product-list-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .product-list-item img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .product-info {
+        width: 100%;
+        padding: 1rem 0;
+    }
+
+    .product-actions {
+        width: 100%;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+}
+
+/* Ensure no horizontal scroll */
+* {
+    max-width: 100%;
+}
+
+html,
+body {
+    overflow-x: hidden;
+}
+
+/* Safe area for notched devices (iPhone X, etc.) */
+@supports (padding: max(0px)) {
+
+    .header,
+    .modal-content,
+    #installPopup {
+        padding-left: max(1rem, env(safe-area-inset-left));
+        padding-right: max(1rem, env(safe-area-inset-right));
+    }
+
+    .modal-content {
+        padding-bottom: max(1rem, env(safe-area-inset-bottom));
+    }
+}
