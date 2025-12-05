@@ -10,7 +10,6 @@ def create_user_token(user):
     if not user or not user.id:
         raise ValueError("Invalid user object")
     
-    # Ensure identity is a string
     user_id_str = str(user.id)
     
     return create_access_token(
@@ -22,20 +21,27 @@ def create_user_token(user):
 def register():
     data = request.json
     
-    if not all(k in data for k in ['email', 'password', 'role', 'full_name']):
+    # Allow phone-only registration
+    if not all(k in data for k in ['password', 'role', 'full_name']):
         return jsonify({'error': 'Missing required fields'}), 400
+    
+    if not data.get('email') and not data.get('phone'):
+        return jsonify({'error': 'Either email or phone is required'}), 400
     
     if data['role'] not in ['artisan', 'buyer']:
         return jsonify({'error': 'Invalid role'}), 400
     
-    existing_user = g.db.query(User).filter_by(email=data['email']).first()
+    # Use phone as email if not provided
+    email = data.get('email') or f"{data['phone']}@bharatcraft.local"
+    
+    existing_user = g.db.query(User).filter_by(email=email).first()
     if existing_user:
-        return jsonify({'error': 'Email already registered'}), 400
+        return jsonify({'error': 'Already registered'}), 400
     
     password_hash = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
     
     user = User(
-        email=data['email'],
+        email=email,
         password_hash=password_hash,
         role=UserRole.ARTISAN if data['role'] == 'artisan' else UserRole.BUYER,
         full_name=data['full_name'],
@@ -49,7 +55,7 @@ def register():
     if data['role'] == 'artisan':
         profile = ArtisanProfile(
             user_id=user.id,
-            craft_type=data.get('craft_type', ''),
+            craft_type=data.get('craft_type') or 'General',  # Default to 'General'
             skills=data.get('skills', ''),
             experience_years=data.get('experience_years', 0),
             latitude=data.get('latitude'),
@@ -93,10 +99,17 @@ def register():
 def login():
     data = request.json
     
-    if not all(k in data for k in ['email', 'password']):
-        return jsonify({'error': 'Missing email or password'}), 400
+    if not data.get('email') and not data.get('phone'):
+        return jsonify({'error': 'Email or phone required'}), 400
     
-    user = g.db.query(User).filter_by(email=data['email']).first()
+    if not data.get('password'):
+        return jsonify({'error': 'Password required'}), 400
+    
+    if data.get('email'):
+        user = g.db.query(User).filter_by(email=data['email']).first()
+    else:
+        email = f"{data['phone']}@bharatcraft.local"
+        user = g.db.query(User).filter_by(email=email).first()
     
     if not user or not bcrypt.checkpw(data['password'].encode('utf-8'), user.password_hash.encode('utf-8')):
         return jsonify({'error': 'Invalid credentials'}), 401
@@ -126,8 +139,6 @@ def get_profile():
     from flask_jwt_extended import get_jwt
     
     user_id = int(get_jwt_identity())
-    claims = get_jwt()
-    
     user = g.db.query(User).filter_by(id=user_id).first()
     
     if not user:
@@ -150,20 +161,14 @@ def get_profile():
             'experience_years': profile.experience_years,
             'quality_rating': profile.quality_rating,
             'total_sales': profile.total_sales,
-            'total_orders': profile.total_orders,
-            'latitude': profile.latitude,
-            'longitude': profile.longitude,
-            'address': profile.address
+            'total_orders': profile.total_orders
         }
     elif user.role == UserRole.BUYER and user.buyer_profile:
         profile = user.buyer_profile
         profile_data['buyer'] = {
             'company_name': profile.company_name,
-            'company_address': profile.company_address,
             'country': profile.country,
-            'currency': profile.currency,
-            'total_purchases': profile.total_purchases,
-            'total_orders': profile.total_orders
+            'currency': profile.currency
         }
     
     return jsonify(profile_data), 200
@@ -184,19 +189,6 @@ def update_profile():
         user.phone = data['phone']
     if 'language_preference' in data:
         user.language_preference = data['language_preference']
-    
-    if user.role == UserRole.ARTISAN and user.artisan_profile:
-        profile = user.artisan_profile
-        if 'craft_type' in data:
-            profile.craft_type = data['craft_type']
-        if 'skills' in data:
-            profile.skills = data['skills']
-        if 'latitude' in data:
-            profile.latitude = data['latitude']
-        if 'longitude' in data:
-            profile.longitude = data['longitude']
-        if 'address' in data:
-            profile.address = data['address']
     
     g.db.commit()
     

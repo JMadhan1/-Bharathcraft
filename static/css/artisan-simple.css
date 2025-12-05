@@ -435,7 +435,14 @@ body {
 }
 
 .modal.active {
-    display: flex;
+    display: flex !important;
+}
+
+/* Ensure messages modal is centered */
+#messagesModal.active {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
 }
 
 .modal-content {
@@ -752,7 +759,91 @@ textarea {
 }
 
 /* Responsive */
+/* Mobile Responsive Enhancements for Artisan Dashboard */
 @media (max-width: 768px) {
+    .modern-header {
+        padding: 0.75rem 1rem;
+        flex-wrap: wrap;
+    }
+
+    .logo img {
+        height: 50px !important;
+        width: auto;
+    }
+
+    .header-actions {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .language-selector {
+        font-size: 0.875rem;
+        padding: 0.5rem;
+        min-height: 44px;
+    }
+
+    .voice-btn-header {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        min-height: 44px;
+    }
+
+    .logout-btn {
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .stat-card {
+        padding: 1.25rem;
+    }
+
+    .action-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .action-card {
+        padding: 1.5rem;
+    }
+
+    .dashboard-container {
+        padding: 1rem;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+    }
+
+    .modal-content {
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        padding: 1rem;
+        max-height: 100vh;
+        height: 100vh;
+        border-radius: 0;
+    }
+
+    .modal-header {
+        position: sticky;
+        top: 0;
+        background: white;
+        z-index: 10;
+        padding: 1rem;
+        margin: -1rem -1rem 1rem -1rem;
+    }
+
+    #clusterMap {
+        height: 300px !important;
+    }
+}
+
+@media (max-width: 480px) {
     .dashboard-main {
         padding: 1rem;
     }

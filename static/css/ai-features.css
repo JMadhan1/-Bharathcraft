@@ -12,11 +12,21 @@
     height: 100%;
     background: rgba(0, 0, 0, 0.7);
     z-index: 2000;
-    display: flex;
+    display: flex !important;
     align-items: center;
     justify-content: center;
     padding: 1rem;
     animation: fadeIn 0.3s ease;
+    backdrop-filter: blur(4px);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 .ai-modal-content {

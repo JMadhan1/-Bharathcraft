@@ -1,6 +1,148 @@
 let currentUser = null;
 let authToken = null;
 
+// Global error handler to catch external script errors (like browser extensions)
+(function() {
+    'use strict';
+    
+    // Store original console methods
+    const originalError = console.error;
+    const originalWarn = console.warn;
+    
+    // Override console.error to filter external errors
+    console.error = function(...args) {
+        const errorStr = args.join(' ');
+        if (errorStr.includes('giveFreely') || 
+            errorStr.includes('extension://') ||
+            errorStr.includes('chrome-extension://') ||
+            errorStr.includes('payload') && errorStr.includes('undefined')) {
+            // Suppress external errors
+            return;
+        }
+        originalError.apply(console, args);
+    };
+    
+    // Error event handler
+    window.addEventListener('error', function(event) {
+        const filename = event.filename || event.target?.src || '';
+        const errorMessage = event.message || String(event.error || '');
+        const errorStack = event.error?.stack || '';
+        
+        // Check if it's an external script error
+        const isExternal = (
+            filename.includes('giveFreely') ||
+            filename.includes('extension://') ||
+            filename.includes('chrome-extension://') ||
+            filename.includes('moz-extension://') ||
+            filename.includes('safari-extension://') ||
+            filename.includes('edge-extension://') ||
+            errorMessage.includes('giveFreely') ||
+            errorMessage.includes('payload') && errorMessage.includes('undefined') ||
+            errorStack.includes('giveFreely') ||
+            (filename && !filename.includes(window.location.origin) && !filename.startsWith('/') && !filename.startsWith('http://localhost') && !filename.startsWith('http://127.0.0.1'))
+        );
+        
+        if (isExternal) {
+            event.preventDefault();
+            event.stopPropagation();
+            event.stopImmediatePropagation();
+            return false;
+        }
+        
+        return true;
+    }, true);
+    
+    // Handle unhandled promise rejections from external scripts
+    window.addEventListener('unhandledrejection', function(event) {
+        const errorMessage = event.reason?.message || String(event.reason || '');
+        const errorStack = event.reason?.stack || '';
+        const errorString = String(event.reason || '');
+        
+        // Check if it's an external script error
+        const isExternal = (
+            errorMessage.includes('giveFreely') || 
+            errorMessage.includes('payload') && errorMessage.includes('undefined') ||
+            errorStack.includes('giveFreely') ||
+            errorString.includes('giveFreely') ||
+            errorStack.includes('extension://') ||
+            errorStack.includes('chrome-extension://') ||
+            errorStack.includes('moz-extension://')
+        );
+        
+        if (isExternal) {
+            event.preventDefault();
+            event.stopPropagation();
+            return false;
+        }
+        return true;
+    });
+    
+    // Also catch errors at the window level
+    window.onerror = function(msg, url, line, col, error) {
+        const errorStr = String(msg || '') + String(url || '') + String(error?.stack || '');
+        if (errorStr.includes('giveFreely') || 
+            errorStr.includes('payload') && errorStr.includes('undefined') ||
+            (url && (url.includes('extension://') || url.includes('chrome-extension://')))) {
+            return true; // Suppress the error
+        }
+        return false; // Let other errors through
+    };
+})();
+
+// Ensure logo is visible immediately (before DOMContentLoaded)
+(function ensureLogoVisible() {
+    function forceLogoVisible() {
+        const logoImgs = document.querySelectorAll('.logo img, .logo-section img, header img[src*="logo"], img[alt*="Bharatcraft"]');
+        logoImgs.forEach(img => {
+            if (img) {
+                // Force visibility
+                img.style.setProperty('display', 'block', 'important');
+                img.style.setProperty('visibility', 'visible', 'important');
+                img.style.setProperty('opacity', '1', 'important');
+                img.style.setProperty('width', 'auto', 'important');
+                
+                // Ensure parent is visible
+                const parent = img.parentElement;
+                if (parent) {
+                    parent.style.setProperty('display', 'flex', 'important');
+                    parent.style.setProperty('visibility', 'visible', 'important');
+                }
+                
+                // Add cache busting if not present
+                if (!img.src.includes('?v=') && !img.src.includes('?t=')) {
+                    const separator = img.src.includes('?') ? '&' : '?';
+                    img.src = img.src + separator + 'v=3&t=' + Date.now();
+                }
+                
+                // Force reload if image failed
+                if (!img.complete || img.naturalHeight === 0) {
+                    const src = img.src.split('?')[0];
+                    img.src = '';
+                    setTimeout(() => {
+                        img.src = src + '?v=3&t=' + Date.now();
+                    }, 100);
+                }
+            }
+        });
+    }
+    
+    // Run immediately
+    forceLogoVisible();
+    
+    // Run after a short delay
+    setTimeout(forceLogoVisible, 50);
+    
+    // Run when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', forceLogoVisible);
+    } else {
+        forceLogoVisible();
+    }
+    
+    // Run after page load
+    window.addEventListener('load', forceLogoVisible);
+})();
+
 document.addEventListener('DOMContentLoaded', function () {
     // Check if user was redirected due to expired session
     const urlParams = new URLSearchParams(window.location.search);
@@ -13,6 +155,54 @@ document.addEventListener('DOMContentLoaded', function () {
     checkAuth();
     loadTranslations();
     initializeMap();
+    setupLogoScrollAnimation();
+    
+    // Double-check logo visibility after DOM loads
+    setTimeout(() => {
+        const logoImgs = document.querySelectorAll('.logo img, .logo-section img, header img[src*="logo"]');
+        logoImgs.forEach(img => {
+            if (img && (img.offsetHeight === 0 || img.style.display === 'none')) {
+                img.style.display = 'block';
+                img.style.visibility = 'visible';
+                img.style.opacity = '1';
+                // Force reload
+                const src = img.src.split('?')[0];
+                img.src = src + '?v=3&t=' + Date.now();
+            }
+        });
+    }, 100);
+
+    // Mobile menu toggle
+    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+    const mainNav = document.getElementById('mainNav');
+    if (mobileMenuToggle && mainNav) {
+        mobileMenuToggle.addEventListener('click', function() {
+            mobileMenuToggle.classList.toggle('active');
+            mainNav.classList.toggle('active');
+            document.body.style.overflow = mainNav.classList.contains('active') ? 'hidden' : '';
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', function(e) {
+            if (mainNav.classList.contains('active') && 
+                !mainNav.contains(e.target) && 
+                !mobileMenuToggle.contains(e.target)) {
+                mobileMenuToggle.classList.remove('active');
+                mainNav.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        });
+
+        // Close menu when clicking nav links
+        const navLinks = mainNav.querySelectorAll('a, button');
+        navLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                mobileMenuToggle.classList.remove('active');
+                mainNav.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+        });
+    }
 
     const langSelector = document.getElementById('languageSelector');
     if (langSelector) {
@@ -259,6 +449,69 @@ function initializeMap() {
     });
 }
 
+// Logo scroll animation - shrink and fade on scroll
+function setupLogoScrollAnimation() {
+    const header = document.querySelector('.header');
+    const logoImg = document.querySelector('.logo img');
+    const logo = document.querySelector('.logo');
+    
+    // Ensure logo is visible on page load
+    if (logoImg) {
+        logoImg.style.display = 'block';
+        logoImg.style.visibility = 'visible';
+        logoImg.style.opacity = '1';
+        // Force reload if image failed to load
+        if (!logoImg.complete || logoImg.naturalHeight === 0) {
+            const src = logoImg.src;
+            logoImg.src = '';
+            logoImg.src = src + (src.includes('?') ? '&' : '?') + 't=' + Date.now();
+        }
+    }
+    
+    if (!header) return;
+
+    const scrollThreshold = 100;
+    let isScrolled = false;
+
+    function handleScroll() {
+        const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+        
+        if (currentScroll > scrollThreshold && !isScrolled) {
+            // Scrolled down - shrink logo
+            isScrolled = true;
+            if (logoImg) {
+                logoImg.style.height = '60px';
+                logoImg.style.opacity = '0.9';
+                logoImg.style.transition = 'all 0.3s ease';
+            }
+            header.style.padding = '0.5rem 0';
+            header.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
+            header.style.transition = 'all 0.3s ease';
+        } else if (currentScroll <= scrollThreshold && isScrolled) {
+            // At top - full size logo
+            isScrolled = false;
+            if (logoImg) {
+                logoImg.style.height = '90px';
+                logoImg.style.opacity = '1';
+            }
+            header.style.padding = '1rem 0';
+            header.style.boxShadow = 'var(--shadow-md)';
+        }
+    }
+
+    // Use throttled scroll for better performance
+    let ticking = false;
+    window.addEventListener('scroll', function() {
+        if (!ticking) {
+            window.requestAnimationFrame(function() {
+                handleScroll();
+                ticking = false;
+            });
+            ticking = true;
+        }
+    }, { passive: true });
+}
+
 function showLogin() {
     const modal = document.getElementById('loginModal');
     if (modal) {
@@ -281,11 +534,23 @@ function registerAs(role) {
         const roleInput = document.getElementById('registerRole');
         if (roleInput) {
             roleInput.value = role;
+            // Select the role card visually
+            const roleCards = document.querySelectorAll('.role-card');
+            roleCards.forEach(card => {
+                card.classList.remove('selected');
+                const roleName = card.querySelector('.role-name');
+                if (roleName && (
+                    (role === 'artisan' && roleName.textContent.includes('Artisan')) ||
+                    (role === 'buyer' && roleName.textContent.includes('Buyer'))
+                )) {
+                    card.classList.add('selected');
+                }
+            });
             // Trigger change event manually
             const event = new Event('change');
             roleInput.dispatchEvent(event);
         }
-    }, 100);
+    }, 200);
 }
 
 function closeModal(modalId) {
@@ -293,6 +558,8 @@ function closeModal(modalId) {
     if (modal) {
         modal.style.display = 'none';
         document.body.style.overflow = 'auto';
+        // Also remove any active classes
+        modal.classList.remove('active');
     }
 }
 
@@ -308,14 +575,23 @@ async function handleLoginSubmit(event) {
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
 
-    const email = form.querySelector('input[name="email"]').value;
+    // Get email OR phone
+    const emailInput = form.querySelector('input[name="email"]');
+    const phoneInput = form.querySelector('input[name="phone"]');
+
+    const email = emailInput ? emailInput.value : null;
+    const phone = phoneInput ? phoneInput.value : null;
     const password = form.querySelector('input[name="password"]').value;
+
+    const payload = { password };
+    if (email) payload.email = email;
+    if (phone) payload.phone = phone;
 
     try {
         const response = await fetch('/api/auth/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password })
+            body: JSON.stringify(payload)
         });
 
         const data = await response.json();
@@ -355,18 +631,21 @@ async function handleRegisterSubmit(event) {
     const data = {
         role: formData.get('role'),
         full_name: formData.get('full_name'),
-        email: formData.get('email'),
         password: formData.get('password'),
         phone: formData.get('phone'),
         language: formData.get('language')
     };
 
+    // Add email only if present
+    const email = formData.get('email');
+    if (email) data.email = email;
+
     // Add role-specific fields
     if (data.role === 'artisan') {
-        data.craft_type = formData.get('craft_type');
-        data.skills = formData.get('skills');
+        data.craft_type = formData.get('craft_type') || 'General'; // Default to General
+        data.skills = formData.get('skills') || '';
         data.experience_years = parseInt(formData.get('experience_years')) || 0;
-        data.address = formData.get('address');
+        data.address = formData.get('address') || '';
     } else if (data.role === 'buyer') {
         data.company_name = formData.get('company_name');
         data.company_address = formData.get('company_address');

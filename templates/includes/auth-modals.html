@@ -1,0 +1,420 @@
+<!-- Artisan-Friendly Login/Register Modals -->
+<style>
+    .artisan-modal {
+        background: linear-gradient(135deg, #FFF5EB 0%, #FFE8D6 100%);
+        border-radius: 24px;
+        padding: 2rem;
+        max-width: 500px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+
+    .artisan-modal h2 {
+        text-align: center;
+        color: #1F2937;
+        margin-bottom: 1.5rem;
+        font-size: 2rem;
+    }
+
+    .artisan-modal .icon-header {
+        text-align: center;
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        animation: float 3s ease-in-out infinite;
+    }
+
+    .voice-input-btn {
+        background: linear-gradient(90deg, #10B981 0%, #34D399 100%);
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 50px;
+        font-size: 1.125rem;
+        font-weight: 600;
+        cursor: pointer;
+        width: 100%;
+        margin: 1rem 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        transition: all 0.3s;
+    }
+
+    .voice-input-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+    }
+
+    .voice-input-btn.listening {
+        animation: pulse 1.5s ease-in-out infinite;
+        background: linear-gradient(90deg, #EF4444 0%, #F87171 100%);
+    }
+
+    .simple-input {
+        width: 100%;
+        padding: 1rem 1.5rem;
+        border: 3px solid #E5E7EB;
+        border-radius: 16px;
+        font-size: 1.125rem;
+        margin: 0.75rem 0;
+        transition: all 0.3s;
+        font-family: inherit;
+    }
+
+    .simple-input:focus {
+        outline: none;
+        border-color: #FF6B35;
+        box-shadow: 0 0 0 4px rgba(255, 107, 53, 0.1);
+    }
+
+    .simple-input::placeholder {
+        color: #9CA3AF;
+        font-size: 1rem;
+    }
+
+    .role-selector {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin: 1.5rem 0;
+    }
+
+    .role-card {
+        background: white;
+        border: 3px solid #E5E7EB;
+        border-radius: 16px;
+        padding: 1.5rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .role-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .role-card.selected {
+        border-color: #FF6B35;
+        background: linear-gradient(135deg, #FFF5EB 0%, #FFE8D6 100%);
+        box-shadow: 0 0 0 4px rgba(255, 107, 53, 0.1);
+    }
+
+    .role-card .role-icon {
+        font-size: 3rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .role-card .role-name {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: #1F2937;
+    }
+
+    .help-text {
+        text-align: center;
+        color: #6B7280;
+        font-size: 0.875rem;
+        margin-top: 1rem;
+        line-height: 1.6;
+    }
+
+    .offline-badge {
+        background: linear-gradient(90deg, #3B82F6 0%, #60A5FA 100%);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+
+    @keyframes pulse {
+
+        0%,
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        50% {
+            opacity: 0.8;
+            transform: scale(1.05);
+        }
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 2000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(4px);
+        justify-content: center;
+        align-items: center;
+    }
+
+    .close {
+        position: absolute;
+        right: 1rem;
+        top: 1rem;
+        font-size: 2rem;
+        font-weight: bold;
+        color: #6B7280;
+        cursor: pointer;
+        z-index: 10;
+        transition: color 0.3s;
+    }
+
+    .close:hover {
+        color: #FF6B35;
+    }
+</style>
+
+<!-- Simple Login Modal for Artisans -->
+<div id="loginModal" class="modal">
+    <div class="modal-content artisan-modal">
+        <span class="close" onclick="closeModal('loginModal')">&times;</span>
+
+        <div class="icon-header">🔐</div>
+        <h2>Welcome Back</h2>
+        <p class="help-text">
+            <i class="fas fa-hand-point-down"></i> Login to your account
+        </p>
+
+        <form id="loginForm">
+            <button type="button" class="voice-input-btn" onclick="startVoiceLogin()">
+                <i class="fas fa-microphone"></i>
+                <span id="voiceLoginText">Speak Your Phone Number</span>
+            </button>
+
+            <div style="text-align: center; margin: 1rem 0; color: #9CA3AF; font-weight: 600;">OR</div>
+
+            <input type="tel" name="phone" id="loginPhone" class="simple-input"
+                placeholder="📱 Phone Number (10 digits)" pattern="[0-9]{10}" maxlength="10">
+
+            <input type="email" name="email" class="simple-input"
+                placeholder="📧 Email (optional)">
+
+            <input type="password" name="password" class="simple-input" placeholder="🔒 Password" required>
+
+            <button type="submit" class="btn btn-primary"
+                style="width: 100%; padding: 1rem; font-size: 1.125rem; margin-top: 1rem;">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+        </form>
+
+        <div class="help-text">
+            Don't have an account? <a href="#" onclick="closeModal('loginModal'); showRegister();"
+                style="color: #FF6B35; font-weight: 600;">Register here</a>
+        </div>
+
+        <div style="text-align: center;">
+            <span class="offline-badge">
+                <i class="fas fa-wifi"></i> Works Offline Too!
+            </span>
+        </div>
+    </div>
+</div>
+
+<!-- Simple Register Modal for Artisans -->
+<div id="registerModal" class="modal">
+    <div class="modal-content artisan-modal">
+        <span class="close" onclick="closeModal('registerModal')">&times;</span>
+
+        <div class="icon-header">✨</div>
+        <h2>Join Bharatcraft</h2>
+        <p class="help-text">
+            <i class="fas fa-hand-point-down"></i> Choose who you are
+        </p>
+
+        <form id="registerForm">
+            <!-- Role Selection -->
+            <div class="role-selector">
+                <div class="role-card" onclick="selectRole('artisan', this)">
+                    <div class="role-icon">👨‍🎨</div>
+                    <div class="role-name">Artisan</div>
+                    <div style="font-size: 0.875rem; color: #6B7280; margin-top: 0.5rem;">I make crafts</div>
+                </div>
+                <div class="role-card" onclick="selectRole('buyer', this)">
+                    <div class="role-icon">🛍️</div>
+                    <div class="role-name">Buyer</div>
+                    <div style="font-size: 0.875rem; color: #6B7280; margin-top: 0.5rem;">I buy crafts</div>
+                </div>
+            </div>
+            <input type="hidden" name="role" id="registerRole" required>
+
+            <button type="button" class="voice-input-btn" onclick="startVoiceRegister()">
+                <i class="fas fa-microphone"></i>
+                <span id="voiceRegisterText">Speak Your Details</span>
+            </button>
+
+            <div style="text-align: center; margin: 1rem 0; color: #9CA3AF; font-weight: 600;">OR</div>
+
+            <input type="text" name="full_name" class="simple-input" placeholder="👤 Your Name" required>
+
+            <input type="tel" name="phone" id="registerPhone" class="simple-input"
+                placeholder="📱 Phone Number (10 digits)" pattern="[0-9]{10}" maxlength="10" required>
+
+            <input type="password" name="password" class="simple-input" placeholder="🔒 Create Password (4+ characters)"
+                minlength="4" required>
+
+            <!-- Language Selection -->
+            <select name="language" class="simple-input" style="cursor: pointer;">
+                <option value="">🗣️ Choose Your Language</option>
+                <option value="te">తెలుగు (Telugu)</option>
+                <option value="hi">हिंदी (Hindi)</option>
+                <option value="en">English</option>
+                <option value="ta">தமிழ் (Tamil)</option>
+                <option value="kn">ಕನ್ನಡ (Kannada)</option>
+                <option value="ml">മലയാളം (Malayalam)</option>
+                <option value="bn">বাংলা (Bengali)</option>
+                <option value="gu">ગુજરાતી (Gujarati)</option>
+                <option value="mr">मराठी (Marathi)</option>
+                <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
+            </select>
+
+            <button type="submit" class="btn btn-primary"
+                style="width: 100%; padding: 1rem; font-size: 1.125rem; margin-top: 1rem;">
+                <i class="fas fa-user-plus"></i> Register
+            </button>
+        </form>
+
+        <div class="help-text">
+            <i class="fas fa-shield-alt"></i> Your data is safe and secure<br>
+            <i class="fas fa-clock"></i> Stay logged in for 1 week
+        </div>
+
+        <div style="text-align: center;">
+            <span class="offline-badge">
+                <i class="fas fa-wifi"></i> Works Offline Too!
+            </span>
+        </div>
+    </div>
+</div>
+
+<script>
+    let selectedRole = '';
+
+    function selectRole(role, element) {
+        selectedRole = role;
+        document.getElementById('registerRole').value = role;
+
+        // Remove selected class from all cards
+        document.querySelectorAll('.role-card').forEach(card => {
+            card.classList.remove('selected');
+        });
+
+        // Add selected class to clicked card
+        element.classList.add('selected');
+    }
+
+    function startVoiceLogin() {
+        const btn = event.target.closest('.voice-input-btn');
+        const textSpan = document.getElementById('voiceLoginText');
+
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const recognition = new SpeechRecognition();
+
+            recognition.lang = 'en-IN';
+            recognition.continuous = false;
+            recognition.interimResults = false;
+
+            btn.classList.add('listening');
+            textSpan.textContent = 'Listening... Speak Now!';
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                const phoneNumber = transcript.replace(/\D/g, '').slice(-10);
+                document.getElementById('loginPhone').value = phoneNumber;
+                btn.classList.remove('listening');
+                textSpan.textContent = '✓ Got it! ' + phoneNumber;
+            };
+
+            recognition.onerror = () => {
+                btn.classList.remove('listening');
+                textSpan.textContent = 'Try Again or Type Below';
+            };
+
+            recognition.onend = () => {
+                btn.classList.remove('listening');
+                setTimeout(() => {
+                    textSpan.textContent = 'Speak Your Phone Number';
+                }, 3000);
+            };
+
+            recognition.start();
+        } else {
+            alert('Voice input not supported. Please type your phone number.');
+        }
+    }
+
+    function startVoiceRegister() {
+        const btn = event.target.closest('.voice-input-btn');
+        const textSpan = document.getElementById('voiceRegisterText');
+
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const recognition = new SpeechRecognition();
+
+            recognition.lang = 'en-IN';
+            recognition.continuous = false;
+            recognition.interimResults = false;
+
+            btn.classList.add('listening');
+            textSpan.textContent = 'Listening... Speak Your Name and Phone';
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                // Try to extract phone number
+                const phoneNumber = transcript.replace(/\D/g, '').slice(-10);
+                if (phoneNumber.length === 10) {
+                    document.getElementById('registerPhone').value = phoneNumber;
+                }
+                // Try to extract name (everything before numbers)
+                const name = transcript.replace(/[0-9]/g, '').trim();
+                if (name) {
+                    document.querySelector('input[name="full_name"]').value = name;
+                }
+                btn.classList.remove('listening');
+                textSpan.textContent = '✓ Got it!';
+            };
+
+            recognition.onerror = () => {
+                btn.classList.remove('listening');
+                textSpan.textContent = 'Try Again or Type Below';
+            };
+
+            recognition.onend = () => {
+                btn.classList.remove('listening');
+                setTimeout(() => {
+                    textSpan.textContent = 'Speak Your Details';
+                }, 3000);
+            };
+
+            recognition.start();
+        } else {
+            alert('Voice input not supported. Please type your details.');
+        }
+    }
+
+    // Note: showLogin(), showRegister(), and closeModal() are defined in main.js
+    // These functions are kept here for backward compatibility but will be overridden by main.js
+
+    // Close modal when clicking outside (complement to main.js handler)
+    document.addEventListener('click', function (event) {
+        if (event.target.classList.contains('modal')) {
+            const modal = event.target;
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    });
+</script>

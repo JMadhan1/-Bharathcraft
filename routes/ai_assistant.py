@@ -356,6 +356,14 @@ def get_recommendations():
         # Get all available products
         all_products = g.db.query(Product).filter_by(is_available=True).limit(50).all()
         
+        if not all_products:
+            return jsonify({
+                'success': True,
+                'recommendations': [],
+                'count': 0,
+                'reasoning': 'No products available at the moment. Check back soon!'
+            }), 200
+        
         # Build context from order history
         purchased_categories = []
         price_range = []
@@ -370,8 +378,12 @@ def get_recommendations():
         avg_price = sum(price_range) / len(price_range) if price_range else 0
         preferred_categories = list(set(purchased_categories))
         
-        # Create prompt for Gemini
-        prompt = f"""You are a product recommendation engine for Bharatcraft, a handicraft marketplace.
+        recommended_ids = []
+        
+        # Try AI recommendations first, but have robust fallback
+        try:
+            # Create prompt for Gemini
+            prompt = f"""You are a product recommendation engine for Bharatcraft, a handicraft marketplace.
 
 Buyer Profile:
 - Previous purchases: {', '.join(preferred_categories) if preferred_categories else 'None yet'}
@@ -392,31 +404,48 @@ Return ONLY a JSON array of product IDs in order of relevance:
 [1, 5, 12, 8, 23, 15, 7, 19]
 
 No explanations, just the array."""
-        
-        # Get recommendations from AI
-        response_text = get_gemini_response(prompt)
-        
-        # Parse response (might be wrapped in markdown)
-        if '```json' in response_text:
-            json_start = response_text.find('```json') + 7
-            json_end = response_text.find('```', json_start)
-            response_text = response_text[json_start:json_end].strip()
-        elif '```' in response_text:
-            json_start = response_text.find('```') + 3
-            json_end = response_text.find('```', json_start)
-            response_text = response_text[json_start:json_end].strip()
-        
-        try:
+            
+            # Get recommendations from AI
+            response_text = get_gemini_response(prompt)
+            
+            # Parse response (might be wrapped in markdown)
+            if '```json' in response_text:
+                json_start = response_text.find('```json') + 7
+                json_end = response_text.find('```', json_start)
+                response_text = response_text[json_start:json_end].strip()
+            elif '```' in response_text:
+                json_start = response_text.find('```') + 3
+                json_end = response_text.find('```', json_start)
+                response_text = response_text[json_start:json_end].strip()
+            
+            # Try to extract JSON array from response
+            import re
+            # Look for array pattern [1, 2, 3] or [1,2,3]
+            array_match = re.search(r'\[[\d\s,]+]', response_text)
+            if array_match:
+                response_text = array_match.group(0)
+            
             recommended_ids = json.loads(response_text)
             if not isinstance(recommended_ids, list):
                 recommended_ids = []
-        except:
-            # Fallback: recommend based on categories or all products
+        except Exception as ai_error:
+            print(f"AI recommendation failed, using fallback: {ai_error}")
+            # Fallback logic - use smart recommendations based on history
+            pass
+        
+        # Fallback: recommend based on categories or all products
+        if not recommended_ids:
             if preferred_categories:
+                # Recommend products from preferred categories
                 recommended_ids = [p.id for p in all_products if p.craft_type in preferred_categories][:8]
             else:
                 # If no order history, recommend popular/quality products
-                recommended_ids = [p.id for p in all_products][:8]
+                # Sort by quality grade and price
+                sorted_products = sorted(all_products, key=lambda p: (
+                    p.quality_grade.value if p.quality_grade else 'standard',
+                    -p.price  # Higher price = premium
+                ), reverse=True)
+                recommended_ids = [p.id for p in sorted_products[:8]]
         
         # If still no recommendations, use all available products
         if not recommended_ids and all_products:
@@ -425,8 +454,27 @@ No explanations, just the array."""
         # Get recommended products
         recommended_products = []
         for pid in recommended_ids[:8]:
-            product = g.db.query(Product).get(pid)
-            if product and product.is_available:
+            if pid:  # Make sure pid is not None
+                product = g.db.query(Product).get(pid)
+                if product and product.is_available:
+                    recommended_products.append({
+                        'id': product.id,
+                        'title': product.title,
+                        'description': product.description,
+                        'price': product.price,
+                        'craft_type': product.craft_type,
+                        'quality_grade': product.quality_grade.value if product.quality_grade else 'standard',
+                        'images': product.images.split(',') if product.images else [],
+                        'artisan': {
+                            'id': product.artisan_id,
+                            'name': product.artisan.user.full_name if product.artisan and product.artisan.user else 'Unknown'
+                        }
+                    })
+        
+        # Ensure we have at least some recommendations
+        if not recommended_products and all_products:
+            # Last resort: just take first 8 products
+            for product in all_products[:8]:
                 recommended_products.append({
                     'id': product.id,
                     'title': product.title,
@@ -456,7 +504,16 @@ No explanations, just the array."""
         
     except Exception as e:
         print(f"Error getting recommendations: {e}")
-        return jsonify({'error': str(e)}), 500
+        import traceback
+        traceback.print_exc()
+        # Return empty recommendations instead of error
+        return jsonify({
+            'success': True,
+            'recommendations': [],
+            'count': 0,
+            'reasoning': 'Unable to generate recommendations at this time. Please try again later.',
+            'error': str(e)
+        }), 200  # Return 200 so frontend doesn't show error
 
 
 @bp.route('/visual-search', methods=['POST'])

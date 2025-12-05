@@ -3,8 +3,12 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>Bharatcraft - AI-Powered Export Marketplace for Artisan Clusters</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png">
+    <link rel="shortcut icon" href="/static/favicon.ico">
     <link rel="stylesheet" href="/static/css/main.css">
     <link rel="stylesheet" href="/static/css/homepage-vibrant.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -15,6 +19,7 @@
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@700;800;900&display=swap"
         rel="stylesheet">
     <link rel="manifest" href="/static/manifest.json">
+    <link rel="preload" href="/static/logo.png?v=3" as="image">
     <meta name="theme-color" content="#FF6B35">
     <script>
         if ('serviceWorker' in navigator) {
@@ -34,7 +39,10 @@
 <body>
     <header class="header">
         <div class="container">
-            <h1 class="logo">🪔 Bharatcraft</h1>
+            <div class="logo">
+                <img src="/static/logo.png?v=3" alt="Bharatcraft - From Hands to World"
+                    style="height: 90px; cursor: pointer; display: block;" onclick="window.location.href='/'">
+            </div>
             <nav class="nav">
                 <a href="/success-stories"
                     style="color: #1F2937; text-decoration: none; margin-right: 1rem; font-weight: 500;">Success
@@ -408,358 +416,213 @@
                     <div class="stat-icon">📈</div>
                     <div class="stat-number">70-75%</div>
                     <div class="stat-label">With Bharatcraft</div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🏅</div>
+                        <h3>GI Tag Authentication</h3>
+                        <p>Verify Geographical Indication products including Kanjivaram silk, Kashmir Pashmina, Jaipur
+                            block
+                            prints, Channapatna toys, and 400+ registered Indian handicrafts.</p>
+                    </div>
+                </div>
+            </div>
+    </section>
+
+    <!-- Quality Assurance Section -->
+    <section class="quality-assurance"
+        style="padding: 80px 20px; background: linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%);">
+        <div class="container">
+            <div style="text-align: center; margin-bottom: 3rem;">
+                <h2 style="font-size: 2.5rem; margin-bottom: 1rem; color: #1F2937;">
+                    <i class="fas fa-shield-alt" style="color: #10B981;"></i> Quality Assurance
+                </h2>
+                <p style="font-size: 1.2rem; color: #6B7280; max-width: 800px; margin: 0 auto;">
+                    How do we ensure quality when artisans are remote?
+                </p>
+            </div>
+
+            <div
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; max-width: 1200px; margin: 0 auto;">
+                <!-- AI Quality Detection -->
+                <div
+                    style="background: white; padding: 2rem; border-radius: 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); border-top: 4px solid #3B82F6;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🤖</div>
+                    <h3 style="font-size: 1.5rem; margin-bottom: 1rem; color: #1F2937;">AI-Powered Detection</h3>
+                    <p style="color: #6B7280; line-height: 1.8; margin-bottom: 1rem;">
+                        Our computer vision AI detects defects with <strong style="color: #3B82F6;">98.5%
+                            accuracy</strong>.
+                        Every product image is automatically analyzed for quality issues before listing.
+                    </p>
+                    <div
+                        style="background: #EFF6FF; padding: 1rem; border-radius: 8px; border-left: 3px solid #3B82F6;">
+                        <p style="margin: 0; font-size: 0.9rem; color: #1E40AF;">
+                            <i class="fas fa-check-circle"></i> Automated defect detection<br>
+                            <i class="fas fa-check-circle"></i> Material verification<br>
+                            <i class="fas fa-check-circle"></i> Craftsmanship assessment
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Manual Verification -->
+                <div
+                    style="background: white; padding: 2rem; border-radius: 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); border-top: 4px solid #F59E0B;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">👨‍🔬</div>
+                    <h3 style="font-size: 1.5rem; margin-bottom: 1rem; color: #1F2937;">New Artisan Verification</h3>
+                    <p style="color: #6B7280; line-height: 1.8; margin-bottom: 1rem;">
+                        First <strong style="color: #F59E0B;">3 orders</strong> from new artisans go through manual
+                        verification
+                        by our quality experts. After building a track record, they're trusted for automated processing.
+                    </p>
+                    <div
+                        style="background: #FEF3C7; padding: 1rem; border-radius: 8px; border-left: 3px solid #F59E0B;">
+                        <p style="margin: 0; font-size: 0.9rem; color: #92400E;">
+                            <i class="fas fa-user-check"></i> Expert manual review<br>
+                            <i class="fas fa-user-check"></i> Quality track record building<br>
+                            <i class="fas fa-user-check"></i> Continuous monitoring
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Buyer Protection -->
+                <div
+                    style="background: white; padding: 2rem; border-radius: 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); border-top: 4px solid #10B981;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🛡️</div>
+                    <h3 style="font-size: 1.5rem; margin-bottom: 1rem; color: #1F2937;">Buyer Protection</h3>
+                    <p style="color: #6B7280; line-height: 1.8; margin-bottom: 1rem;">
+                        If the quality doesn't match the listing, buyers can return products with
+                        <strong style="color: #10B981;">full refund guarantee</strong>. We stand behind every artisan on
+                        our platform.
+                    </p>
+                    <div
+                        style="background: #D1FAE5; padding: 1rem; border-radius: 8px; border-left: 3px solid #10B981;">
+                        <p style="margin: 0; font-size: 0.9rem; color: #065F46;">
+                            <i class="fas fa-undo"></i> Easy returns process<br>
+                            <i class="fas fa-undo"></i> Full refund guarantee<br>
+                            <i class="fas fa-undo"></i> Dispute resolution support
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trust Metrics -->
+            <div
+                style="margin-top: 3rem; text-align: center; background: white; padding: 2rem; border-radius: 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                <h3 style="font-size: 1.5rem; margin-bottom: 2rem; color: #1F2937;">Our Quality Commitment</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem;">
+                    <div>
+                        <div style="font-size: 2.5rem; font-weight: 900; color: #3B82F6; margin-bottom: 0.5rem;">98.5%
+                        </div>
+                        <div style="color: #6B7280;">AI Accuracy Rate</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 2.5rem; font-weight: 900; color: #F59E0B; margin-bottom: 0.5rem;">100%
+                        </div>
+                        <div style="color: #6B7280;">Manual Verification<br>(First 3 Orders)</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 2.5rem; font-weight: 900; color: #10B981; margin-bottom: 0.5rem;">30 Days
+                        </div>
+                        <div style="color: #6B7280;">Return Window</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 2.5rem; font-weight: 900; color: #8B5CF6; margin-bottom: 0.5rem;">24/7
+                        </div>
+                        <div style="color: #6B7280;">Quality Support</div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Login Modal -->
-    <div id="loginModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('loginModal')">&times;</span>
-            <h2><i class="fas fa-sign-in-alt"></i> Login</h2>
-            <form id="loginForm">
-                <input type="email" name="email" placeholder="Email" required>
-                <input type="password" name="password" placeholder="Password" required>
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-sign-in-alt"></i> Login
-                </button>
-            </form>
-        </div>
-    </div>
+    <!-- How It Works -->
+    <section class="how-it-works">
+        <div class="container">
+            <h2 class="section-title">How It Works</h2>
 
-    <!-- Register Modal -->
-    <div id="registerModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('registerModal')">&times;</span>
-            <h2>Register</h2>
-            <form id="registerForm">
-                <select name="role" id="registerRole" required>
-                    <option value="">I am a...</option>
-                    <option value="artisan">Artisan (Seller)</option>
-                    <option value="buyer">Buyer</option>
-                </select>
-
-                <input type="text" name="full_name" placeholder="Full Name" required>
-                <input type="email" name="email" placeholder="Email" required>
-                <input type="password" name="password" placeholder="Password (min 6 characters)" required minlength="6">
-                <input type="tel" name="phone" placeholder="Phone Number">
-
-                <select name="language">
-                    <option value="en">Preferred Language</option>
-                    <option value="hi">हिंदी</option>
-                    <option value="te">తెలుగు</option>
-                    <option value="ta">தமிழ்</option>
-                    <option value="kn">ಕನ್ನಡ</option>
-                    <option value="ml">മലയാളം</option>
-                    <option value="bn">বাংলা</option>
-                    <option value="gu">ગુજરાતી</option>
-                    <option value="mr">मराठी</option>
-                    <option value="pa">ਪੰਜਾਬੀ</option>
-                    <option value="od">ଓଡ଼ିଆ</option>
-                    <option value="as">অসমীয়া</option>
-                </select>
-
-                <div id="artisanFields" style="display:none;">
-                    <input type="text" name="craft_type" placeholder="Craft Type (e.g., Pottery, Textiles)">
-                    <input type="text" name="skills" placeholder="Your Skills">
-                    <input type="number" name="experience_years" placeholder="Years of Experience" min="0">
-                    <input type="text" name="address" placeholder="Address">
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">📸</div>
+                    <h3>Artisan Uploads Product</h3>
+                    <p>Upload photos via web or WhatsApp. AI generates professional listings in 15 languages.</p>
                 </div>
 
-                <div id="buyerFields" style="display:none;">
-                    <input type="text" name="company_name" placeholder="Company Name (Optional)">
-                    <input type="text" name="company_address" placeholder="Company Address (Optional)">
-                    <select name="country" required>
-                        <option value="">Select Country</option>
-                        <option value="India">India</option>
-                        <option value="USA">USA</option>
-                        <option value="UK">UK</option>
-                        <option value="Canada">Canada</option>
-                        <option value="Australia">Australia</option>
-                        <option value="Germany">Germany</option>
-                        <option value="France">France</option>
-                        <option value="Japan">Japan</option>
-                        <option value="UAE">UAE</option>
-                        <option value="Singapore">Singapore</option>
-                    </select>
+                <div class="step">
+                    <div class="step-number">⭐</div>
+                    <h3>AI Quality Assessment</h3>
+                    <p>GPT-4 Vision checks quality against international standards. Assigns Premium/Standard/Economy
+                        grade.</p>
                 </div>
 
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-user-plus"></i> Register
-                </button>
-            </form>
+                <div class="step">
+                    <div class="step-number">🌐</div>
+                    <h3>Global Discovery</h3>
+                    <p>Buyers worldwide discover authentic products with verified quality certificates and GI tags.</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">🤝</div>
+                    <h3>Cultural Negotiation</h3>
+                    <p>Real-time chat with context-aware translation. AI suggests culturally appropriate offers.</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">✅</div>
+                    <h3>Order & Payment</h3>
+                    <p>Secure checkout. Auto-generated export docs. Smart escrow releases payment on delivery.</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">🚢</div>
+                    <h3>Pooled Shipping</h3>
+                    <p>Orders from nearby artisans consolidated into bulk shipments. Track globally.</p>
+                </div>
+            </div>
         </div>
-    </div>
+    </section>
+
+    <!-- Impact Section -->
+    <section class="stats"
+        style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 80px 20px;">
+        <div class="container">
+            <h2 class="section-title" style="color: white;">Real Impact</h2>
+
+            <div class="stats-grid">
+                <div class="stat-card"
+                    style="background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2);">
+                    <div class="stat-icon">👨‍🎨</div>
+                    <div class="stat-number">7M</div>
+                    <div class="stat-label">Artisans in India</div>
+                </div>
+
+                <div class="stat-card"
+                    style="background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2);">
+                    <div class="stat-icon">💎</div>
+                    <div class="stat-number">₹3.5B</div>
+                    <div class="stat-label">Annual Handicraft Exports</div>
+                </div>
+
+                <div class="stat-card"
+                    style="background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2);">
+                    <div class="stat-icon">📉</div>
+                    <div class="stat-number">12-18%</div>
+                    <div class="stat-label">Current Artisan Share</div>
+                </div>
+
+                <div class="stat-card"
+                    style="background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2);">
+                    <div class="stat-icon">📈</div>
+                    <div class="stat-number">70-75%</div>
+                    <div class="stat-label">With Bharatcraft</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Include Artisan-Friendly Login/Register Modals -->
+    {% include 'includes/auth-modals.html' %}
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="/static/js/main.js"></script>
+    <script src="/static/js/voice-assistant.js"></script>
 </body>
-
-<!-- Install App Popup -->
-<div id="installPopup" class="install-popup" style="display: none;">
-    <div class="install-content">
-        <span class="close-btn" onclick="closeInstallPopup()">&times;</span>
-        <div class="install-icon">
-            <img src="/static/logo.png" alt="App"
-                onerror="this.src='https://via.placeholder.com/50/FF6B35/FFFFFF?text=BC'">
-        </div>
-        <div class="install-text">
-            <h3>Install Bharatcraft</h3>
-            <p>Get the best experience</p>
-        </div>
-        <button class="install-btn" onclick="installApp()">Install</button>
-    </div>
-</div>
-
-<style>
-    .install-popup {
-        position: fixed;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: white;
-        padding: 15px;
-        border-radius: 12px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-        z-index: 9999;
-        animation: slideUp 0.5s ease-out;
-        min-width: 300px;
-        max-width: 90%;
-    }
-
-    .install-content {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        position: relative;
-    }
-
-    .close-btn {
-        position: absolute;
-        top: -25px;
-        right: -10px;
-        font-size: 24px;
-        cursor: pointer;
-        color: #333;
-        background: white;
-        border-radius: 50%;
-        width: 30px;
-        height: 30px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        line-height: 1;
-    }
-
-    .install-icon img {
-        width: 50px;
-        height: 50px;
-        border-radius: 10px;
-        object-fit: cover;
-    }
-
-    .install-text h3 {
-        margin: 0;
-        font-size: 16px;
-        color: #333;
-        font-weight: 600;
-    }
-
-    .install-text p {
-        margin: 2px 0 0;
-        font-size: 12px;
-        color: #666;
-    }
-
-    .install-btn {
-        background: #FF6B35;
-        color: white;
-        border: none;
-        padding: 8px 20px;
-        border-radius: 20px;
-        cursor: pointer;
-        font-weight: 600;
-        margin-left: auto;
-        white-space: nowrap;
-    }
-
-    @keyframes slideUp {
-        from {
-            bottom: -100px;
-            opacity: 0;
-        }
-
-        to {
-            bottom: 20px;
-            opacity: 1;
-        }
-    }
-</style>
-
-
-<!-- PWA Install Popup -->
-<div id="installPopup"
-    style="display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1.5rem 2rem; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 10000; max-width: 400px; width: 90%; animation: slideUp 0.5s ease-out;">
-    <button onclick="closeInstallPopup()"
-        style="position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.2); border: none; color: white; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center;">×</button>
-    <div style="display: flex; align-items: center; gap: 1rem;">
-        <div style="font-size: 3rem;">📱</div>
-        <div style="flex: 1;">
-            <h3 style="margin: 0 0 0.5rem 0; font-size: 1.25rem;">Install Bharatcraft App</h3>
-            <p style="margin: 0 0 1rem 0; font-size: 0.9rem; opacity: 0.9;">Get the full experience with offline access!
-            </p>
-            <button onclick="installApp()"
-                style="background: white; color: #667eea; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 1rem; width: 100%;">
-                <i class="fas fa-download"></i> Install Now
-                }
-
-                .close-btn {
-                position: absolute;
-                top: -25px;
-                right: -10px;
-                font-size: 24px;
-                cursor: pointer;
-                color: #333;
-                background: white;
-                border-radius: 50%;
-                width: 30px;
-                height: 30px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-                line-height: 1;
-                }
-
-                .install-icon img {
-                width: 50px;
-                height: 50px;
-                border-radius: 10px;
-                object-fit: cover;
-                }
-
-                .install-text h3 {
-                margin: 0;
-                font-size: 16px;
-                color: #333;
-                font-weight: 600;
-                }
-
-                .install-text p {
-                margin: 2px 0 0;
-                font-size: 12px;
-                color: #666;
-                }
-
-                .install-btn {
-                background: #FF6B35;
-                color: white;
-                border: none;
-                padding: 8px 20px;
-                border-radius: 20px;
-                cursor: pointer;
-                font-weight: 600;
-                margin-left: auto;
-                white-space: nowrap;
-                }
-
-                @keyframes slideUp {
-                from {
-                bottom: -100px;
-                opacity: 0;
-                }
-
-                to {
-                bottom: 20px;
-                opacity: 1;
-                }
-                }
-                </style>
-
-
-                <!-- PWA Install Popup -->
-                <div id="installPopup"
-                    style="display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1.5rem 2rem; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 10000; max-width: 400px; width: 90%; animation: slideUp 0.5s ease-out;">
-                    <button onclick="closeInstallPopup()"
-                        style="position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.2); border: none; color: white; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center;">×</button>
-                    <div style="display: flex; align-items: center; gap: 1rem;">
-                        <div style="font-size: 3rem;">📱</div>
-                        <div style="flex: 1;">
-                            <h3 style="margin: 0 0 0.5rem 0; font-size: 1.25rem;">Install Bharatcraft App</h3>
-                            <p style="margin: 0 0 1rem 0; font-size: 0.9rem; opacity: 0.9;">Get the full experience with
-                                offline access!
-                            </p>
-                            <button onclick="installApp()"
-                                style="background: white; color: #667eea; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 1rem; width: 100%;">
-                                <i class="fas fa-download"></i> Install Now
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <style>
-                    @keyframes slideUp {
-                        from {
-                            transform: translateX(-50%) translateY(100px);
-                            opacity: 0;
-                        }
-
-                        to {
-                            transform: translateX(-50%) translateY(0);
-                            opacity: 1;
-                        }
-                    }
-                </style>
-
-                <script>
-                    let deferredPrompt;
-
-                    window.addEventListener('beforeinstallprompt', (e) => {
-                        e.preventDefault();
-                        deferredPrompt = e;
-                    });
-
-                    window.addEventListener('load', () => {
-                        // Show popup immediately
-                        setTimeout(() => {
-                            const popup = document.getElementById('installPopup');
-                            if (popup) {
-                                popup.style.display = 'block';
-
-                                // Auto close after 5 seconds
-                                setTimeout(() => {
-                                    closeInstallPopup();
-                                }, 5000);
-                            }
-                        }, 0); // Show immediately
-                    });
-
-                    function closeInstallPopup() {
-                        const popup = document.getElementById('installPopup');
-                        if (popup) {
-                            popup.style.animation = 'slideUp 0.5s ease-in reverse forwards';
-                            setTimeout(() => {
-                                popup.style.display = 'none';
-                                popup.style.animation = ''; // Reset animation
-                            }, 500);
-                        }
-                    }
-
-                    async function installApp() {
-                        if (deferredPrompt) {
-                            deferredPrompt.prompt();
-                            const { outcome } = await deferredPrompt.userChoice;
-                            console.log(`User response to the install prompt: ${outcome}`);
-                            deferredPrompt = null;
-                        } else {
-                            // Fallback for browsers that don't support beforeinstallprompt
-                            alert('To install, tap "Share" then "Add to Home Screen"');
-                        }
-                        closeInstallPopup();
-                    }
-                </script>
-                </body>
 
 </html>

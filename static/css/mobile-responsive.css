@@ -12,6 +12,14 @@
         font-size: 1.25rem;
     }
 
+    .header .logo img {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        height: 60px !important;
+        width: auto !important;
+    }
+
     .header .nav {
         flex-direction: column;
         gap: 0.5rem;
@@ -65,14 +73,38 @@
         font-size: 1.1rem;
     }
 
-    /* Modals */
+    /* Modals - Full screen on mobile */
+    .modal {
+        padding: 0;
+        align-items: flex-start;
+    }
+
     .modal-content {
-        width: 95%;
-        max-width: 95%;
-        margin: 1rem;
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
         padding: 1rem;
-        max-height: 90vh;
+        max-height: 100vh;
+        height: 100vh;
+        border-radius: 0;
         overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+    }
+
+    /* Modal header - sticky on mobile */
+    .modal-header {
+        position: sticky;
+        top: 0;
+        background: white;
+        z-index: 10;
+        padding: 1rem;
+        border-bottom: 1px solid #E5E7EB;
+        margin: -1rem -1rem 1rem -1rem;
     }
 
     .modal-header {
@@ -398,9 +430,73 @@
     }
 }
 
-/* Touch-Friendly Enhancements */
-@media (hover: none) and (pointer: coarse) {
+/* Touch-Friendly Enhancements - Apply to all mobile devices */
+@media (max-width: 768px) {
+    /* Larger touch targets - minimum 44px for all interactive elements */
+    button,
+    .btn,
+    .action-card,
+    .stat-card,
+    .product-card,
+    a.btn,
+    input[type="button"],
+    input[type="submit"],
+    .icon-btn,
+    .voice-btn-card,
+    .voice-btn-stat,
+    .voice-btn-section {
+        min-height: 44px;
+        min-width: 44px;
+        padding: 0.75rem 1rem;
+        /* Apple's recommended minimum */
+    }
 
+    /* Prevent text selection on buttons */
+    button,
+    .btn,
+    .action-card,
+    .stat-card {
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-tap-highlight-color: rgba(255, 107, 53, 0.2);
+        touch-action: manipulation;
+    }
+
+    /* Better tap feedback */
+    .action-card:active,
+    .stat-card:active,
+    button:active,
+    .btn:active {
+        transform: scale(0.97);
+        transition: transform 0.1s;
+        opacity: 0.9;
+    }
+
+    /* Prevent zoom on input focus - iOS Safari */
+    input[type="text"],
+    input[type="number"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="password"],
+    input[type="search"],
+    textarea,
+    select {
+        font-size: 16px !important; /* Prevents zoom on iOS */
+        padding: 0.75rem;
+        -webkit-appearance: none;
+        border-radius: 8px;
+    }
+
+    /* Ensure all form inputs are touch-friendly */
+    input,
+    textarea,
+    select {
+        min-height: 44px;
+    }
+}
+
+/* Additional touch enhancements for all touch devices */
+@media (hover: none) and (pointer: coarse) {
     /* Larger touch targets */
     button,
     .btn,
@@ -408,7 +504,7 @@
     .stat-card,
     .product-card {
         min-height: 44px;
-        /* Apple's recommended minimum */
+        min-width: 44px;
     }
 
     /* Prevent text selection on buttons */
@@ -416,7 +512,7 @@
     .btn {
         -webkit-user-select: none;
         user-select: none;
-        -webkit-tap-highlight-color: transparent;
+        -webkit-tap-highlight-color: rgba(255, 107, 53, 0.2);
     }
 
     /* Better tap feedback */

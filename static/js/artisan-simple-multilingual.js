@@ -388,8 +388,84 @@
     };
 
     window.showMessages = function () {
-        // Open AI Chat Assistant Modal
-        showAIChatAssistant();
+        playVoice('chat');
+        // Open the messages modal if it exists (centered popup)
+        const messagesModal = document.getElementById('messagesModal');
+        if (messagesModal) {
+            messagesModal.style.display = 'flex';
+            messagesModal.classList.add('active');
+            // Load messages if function exists
+            if (typeof loadMessages === 'function') {
+                loadMessages();
+            } else {
+                // Fallback: show AI chat assistant
+                showAIChatAssistant();
+            }
+        } else {
+            // Fallback: show AI chat assistant
+            showAIChatAssistant();
+        }
+    };
+    
+    // Load messages function
+    async function loadMessages() {
+        const messagesDiv = document.getElementById('allMessages');
+        if (!messagesDiv) return;
+        
+        messagesDiv.innerHTML = '<p style="text-align: center; color: #6B7280;">संदेश लोड हो रहे हैं... / Loading messages...</p>';
+        
+        // Get auth token from localStorage
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+            messagesDiv.innerHTML = '<p style="text-align: center; color: #EF4444;">Please log in to view messages</p>';
+            return;
+        }
+        
+        try {
+            const response = await fetch('/api/messages/conversations', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            if (response.ok) {
+                const conversations = await response.json();
+                
+                if (conversations.length === 0) {
+                    messagesDiv.innerHTML = `
+                        <div style="text-align: center; padding: 2rem;">
+                            <i class="fas fa-comments" style="font-size: 3rem; color: #9CA3AF; margin-bottom: 1rem;"></i>
+                            <p style="color: #6B7280;">कोई संदेश नहीं / No messages yet</p>
+                        </div>
+                    `;
+                } else {
+                    messagesDiv.innerHTML = conversations.map(conv => `
+                        <div style="padding: 1rem; border-bottom: 1px solid #E5E7EB; cursor: pointer;" onclick="openConversation(${conv.id})">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <strong>${conv.other_user_name || 'Buyer'}</strong>
+                                    <p style="margin: 0.5rem 0 0 0; color: #6B7280; font-size: 0.875rem;">${conv.last_message || 'No messages'}</p>
+                                </div>
+                                <span style="color: #9CA3AF; font-size: 0.75rem;">${new Date(conv.last_message_time).toLocaleDateString()}</span>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } else {
+                messagesDiv.innerHTML = '<p style="text-align: center; color: #EF4444;">Error loading messages</p>';
+            }
+        } catch (error) {
+            console.error('Error loading messages:', error);
+            messagesDiv.innerHTML = '<p style="text-align: center; color: #EF4444;">Error loading messages</p>';
+        }
+    }
+    
+    // Open conversation function
+    window.openConversation = function(conversationId) {
+        // This can be implemented to show individual conversation
+        alert('Opening conversation ' + conversationId);
     };
 
     window.showVideoTutorial = function () {
@@ -407,6 +483,12 @@
 
     // AI Chat Assistant
     function showAIChatAssistant() {
+        // Remove any existing modal first
+        const existingModal = document.querySelector('.ai-modal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+        
         const modal = document.createElement('div');
         modal.className = 'ai-modal';
         modal.innerHTML = `
@@ -551,6 +633,12 @@
 
     // Learning Center
     function showLearningCenter() {
+        // Remove any existing modal first
+        const existingModal = document.querySelector('.ai-modal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+        
         const modal = document.createElement('div');
         modal.className = 'ai-modal';
         modal.innerHTML = `
@@ -643,6 +731,79 @@
                     <p>${currentLanguage === 'hi' ? 'ट्यूटोरियल लोड नहीं हो सका। फिर से कोशिश करें।' : 'Could not load tutorial. Please try again.'}</p>
                 </div>
             `;
+        }
+    };
+
+    // Cluster Map function
+    let clusterMapInstance = null;
+    
+    window.viewClusterMap = function () {
+        playVoice('logistics');
+        const modal = document.getElementById('mapModal');
+        if (!modal) {
+            console.error('Map modal not found');
+            return;
+        }
+        
+        modal.style.display = 'flex';
+        modal.classList.add('active');
+        
+        // Initialize map if not already done
+        if (typeof L !== 'undefined' && !clusterMapInstance) {
+            setTimeout(() => {
+                try {
+                    clusterMapInstance = L.map('clusterMap').setView([26.9124, 75.7873], 6);
+                    
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '© OpenStreetMap contributors'
+                    }).addTo(clusterMapInstance);
+                    
+                    const clusters = [
+                        { name: 'Jaipur Textile Pool', lat: 26.9124, lon: 75.7873, members: 42, savings: '40%' },
+                        { name: 'Jodhpur Woodwork', lat: 26.2389, lon: 73.0243, members: 28, savings: '35%' },
+                        { name: 'Udaipur Pottery', lat: 24.5854, lon: 73.7125, members: 15, savings: '25%' },
+                        { name: 'Ajmer Jewelry', lat: 26.4499, lon: 74.6399, members: 31, savings: '38%' }
+                    ];
+                    
+                    clusters.forEach(cluster => {
+                        L.circleMarker([cluster.lat, cluster.lon], {
+                            radius: 15,
+                            fillColor: '#10B981',
+                            color: '#059669',
+                            weight: 2,
+                            opacity: 1,
+                            fillOpacity: 0.7
+                        }).addTo(clusterMapInstance).bindPopup(`
+                            <b>${cluster.name}</b><br>
+                            Members: ${cluster.members}<br>
+                            Savings: ${cluster.savings}
+                        `);
+                    });
+                    
+                    // Trigger resize to ensure map renders correctly
+                    setTimeout(() => {
+                        if (clusterMapInstance) {
+                            clusterMapInstance.invalidateSize();
+                        }
+                    }, 200);
+                } catch (error) {
+                    console.error('Error initializing map:', error);
+                }
+            }, 100);
+        } else if (clusterMapInstance) {
+            // Map already exists, just invalidate size
+            setTimeout(() => {
+                clusterMapInstance.invalidateSize();
+            }, 100);
+        }
+    };
+
+    // Close map modal function
+    window.closeMapModal = function () {
+        const modal = document.getElementById('mapModal');
+        if (modal) {
+            modal.classList.remove('active');
+            modal.style.display = 'none';
         }
     };
 

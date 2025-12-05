@@ -120,7 +120,14 @@ def get_orders():
         'status': o.status.value,
         'payment_status': o.payment_status,
         'created_at': o.created_at.isoformat(),
-        'items_count': len(o.order_items)
+        'items_count': len(o.order_items),
+        'quantity': o.order_items[0].quantity if o.order_items else 1,
+        'product_id': o.order_items[0].product_id if o.order_items else None,
+        'product_title': o.order_items[0].product.title if o.order_items and o.order_items[0].product else None,
+        'artisan_id': o.artisan_id if hasattr(o, 'artisan_id') else (o.order_items[0].product.artisan.user_id if o.order_items and o.order_items[0].product else None),
+        'artisan_location': o.order_items[0].product.artisan.state if o.order_items and o.order_items[0].product and o.order_items[0].product.artisan else None,
+        'shipping_cost': o.shipping_cost or 0,
+        'tracking_number': o.tracking_number
     } for o in orders]), 200
 
 @bp.route('/<int:order_id>', methods=['GET'])

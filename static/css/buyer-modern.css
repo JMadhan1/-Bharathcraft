@@ -887,3 +887,126 @@ body {
 .search-results-grid::-webkit-scrollbar-thumb:hover {
     background: var(--gray-500);
 }
+
+/* === ORDERS & CLUSTERS SECTION === */
+.orders-clusters-section {
+    background: var(--cream);
+    padding: var(--space-lg);
+    border-radius: var(--radius-xl);
+    margin: var(--space-lg) auto;
+    box-shadow: var(--shadow-md);
+    display: block !important; /* Ensure it's always visible */
+    width: 100%;
+    max-width: 1400px;
+}
+
+.section-header {
+    margin-bottom: var(--space-md);
+}
+
+.section-header h2 {
+    font-size: 1.75rem;
+    color: var(--gray-900);
+    margin: 0 0 0.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.section-header p {
+    color: var(--gray-500);
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+.orders-clusters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: var(--space-md);
+}
+
+.order-cluster-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.order-cluster-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.order-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.order-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 1rem;
+}
+
+.order-header h3 {
+    margin: 0 0 0.5rem 0;
+    color: #1F2937;
+    font-size: 1.25rem;
+}
+
+.order-status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.status-pending {
+    background: #FEF3C7;
+    color: #92400E;
+}
+
+.status-confirmed {
+    background: #DBEAFE;
+    color: #1E40AF;
+}
+
+.status-shipped {
+    background: #D1FAE5;
+    color: #065F46;
+}
+
+.status-delivered {
+    background: #D1FAE5;
+    color: #065F46;
+}
+
+.status-cancelled {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+.cluster-info-box {
+    margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+    .orders-clusters-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .orders-clusters-section {
+        padding: var(--space-md);
+    }
+}

@@ -1,15 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>Admin Dashboard - Bharatcraft</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png">
+    <link rel="shortcut icon" href="/static/favicon.ico">
     <link rel="stylesheet" href="/static/css/main.css">
 </head>
+
 <body>
     <header class="header">
         <div class="container">
-            <h1 class="logo">🎨 Bharatcraft</h1>
+            <div class="logo">
+                <img src="/static/logo.png?v=3" alt="Bharatcraft - From Hands to World" style="height: 90px; display: block;">
+            </div>
             <nav class="nav">
                 <button class="btn btn-secondary" onclick="logout()">Logout</button>
             </nav>
@@ -28,4 +36,5 @@
     <script src="/static/js/main.js"></script>
     <script src="/static/js/admin.js"></script>
 </body>
+
 </html>

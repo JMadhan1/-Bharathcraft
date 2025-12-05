@@ -1,0 +1,234 @@
+<!-- AI Assistant Chat Widget - Floating Popup -->
+<link rel="stylesheet" href="/static/css/ai-chat-widget.css">
+
+<!-- Floating Chat Button -->
+<button class="ai-chat-button" onclick="toggleAIChat()" aria-label="Open AI Assistant">
+    <i class="fas fa-robot"></i>
+</button>
+
+<!-- Chat Popup -->
+<div class="ai-chat-popup" id="aiChatPopup">
+    <!-- Header -->
+    <div class="ai-chat-header">
+        <div class="ai-chat-header-content">
+            <div class="ai-chat-avatar">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div class="ai-chat-title">
+                <h3>AI Assistant - Ask Anything!</h3>
+            </div>
+        </div>
+        <button class="ai-chat-close" onclick="toggleAIChat()">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="ai-chat-quick-actions">
+        <p>Quick Actions:</p>
+        <div class="quick-action-buttons">
+            <button class="quick-action-btn" onclick="askAI('How to price?')">
+                <i class="fas fa-tag"></i> How to price?
+            </button>
+            <button class="quick-action-btn" onclick="askAI('How to take photos?')">
+                <i class="fas fa-camera"></i> How to take photos?
+            </button>
+            <button class="quick-action-btn" onclick="askAI('How to package?')">
+                <i class="fas fa-box"></i> How to package?
+            </button>
+        </div>
+    </div>
+
+    <!-- Messages -->
+    <div class="ai-chat-messages" id="aiChatMessages">
+        <!-- Welcome Message -->
+        <div class="ai-message">
+            <div class="message-avatar">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div class="message-content">
+                <p class="message-text">Hello! How can I help you today?</p>
+                <p class="message-time">Just now</p>
+            </div>
+        </div>
+
+        <!-- Typing Indicator -->
+        <div class="typing-indicator" id="typingIndicator">
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+        </div>
+    </div>
+
+    <!-- Input -->
+    <div class="ai-chat-input">
+        <input type="text" id="aiChatInput" placeholder="Type your question here..."
+            onkeypress="handleChatKeypress(event)">
+        <button class="ai-chat-send" onclick="sendAIMessage()" title="Send">
+            <i class="fas fa-paper-plane"></i>
+        </button>
+        <button class="ai-chat-voice" onclick="startVoiceInput()" title="Voice Input">
+            <i class="fas fa-microphone"></i>
+        </button>
+        <button class="ai-chat-attach" onclick="attachFile()" title="Attach File">
+            <i class="fas fa-paperclip"></i>
+        </button>
+    </div>
+</div>
+
+<script>
+    // Toggle chat popup
+    function toggleAIChat() {
+        const popup = document.getElementById('aiChatPopup');
+        popup.classList.toggle('active');
+
+        if (popup.classList.contains('active')) {
+            document.getElementById('aiChatInput').focus();
+        }
+    }
+
+    // Send message
+    function sendAIMessage() {
+        const input = document.getElementById('aiChatInput');
+        const message = input.value.trim();
+
+        if (!message) return;
+
+        // Add user message
+        addMessage(message, 'user');
+
+        // Clear input
+        input.value = '';
+
+        // Show typing indicator
+        showTyping();
+
+        // Send to backend and get response
+        fetch('/api/ai-assistant', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ question: message })
+        })
+            .then(response => response.json())
+            .then(data => {
+                hideTyping();
+                addMessage(data.answer || 'Sorry, I could not understand that.', 'ai');
+            })
+            .catch(error => {
+                hideTyping();
+                addMessage('Sorry, something went wrong. Please try again.', 'ai');
+            });
+    }
+
+    // Add message to chat
+    function addMessage(text, type) {
+        const messagesDiv = document.getElementById('aiChatMessages');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `ai-message ${type}`;
+
+        const now = new Date();
+        const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+        messageDiv.innerHTML = `
+        <div class="message-avatar">
+            <i class="fas fa-${type === 'user' ? 'user' : 'robot'}"></i>
+        </div>
+        <div class="message-content">
+            <p class="message-text">${text}</p>
+            <p class="message-time">${time}</p>
+        </div>
+    `;
+
+        messagesDiv.insertBefore(messageDiv, document.getElementById('typingIndicator'));
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    // Quick action
+    function askAI(question) {
+        document.getElementById('aiChatInput').value = question;
+        sendAIMessage();
+    }
+
+    // Handle enter key
+    function handleChatKeypress(event) {
+        if (event.key === 'Enter') {
+            sendAIMessage();
+        }
+    }
+
+    // Show typing indicator
+    function showTyping() {
+        document.getElementById('typingIndicator').classList.add('active');
+        const messagesDiv = document.getElementById('aiChatMessages');
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    // Hide typing indicator
+    function hideTyping() {
+        document.getElementById('typingIndicator').classList.remove('active');
+    }
+
+    // Voice input function
+    function startVoiceInput() {
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const recognition = new SpeechRecognition();
+            const input = document.getElementById('aiChatInput');
+            const voiceBtn = document.querySelector('.ai-chat-voice');
+
+            recognition.lang = 'en-IN';
+            recognition.continuous = false;
+            recognition.interimResults = false;
+
+            if (voiceBtn) {
+                voiceBtn.style.background = '#667eea';
+                voiceBtn.style.color = 'white';
+            }
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                input.value = transcript;
+                if (voiceBtn) {
+                    voiceBtn.style.background = '#f8f9fa';
+                    voiceBtn.style.color = '#667eea';
+                }
+            };
+
+            recognition.onerror = () => {
+                if (voiceBtn) {
+                    voiceBtn.style.background = '#f8f9fa';
+                    voiceBtn.style.color = '#667eea';
+                }
+                alert('Voice recognition error. Please try again.');
+            };
+
+            recognition.onend = () => {
+                if (voiceBtn) {
+                    voiceBtn.style.background = '#f8f9fa';
+                    voiceBtn.style.color = '#667eea';
+                }
+            };
+
+            recognition.start();
+        } else {
+            alert('Voice input is not supported in your browser.');
+        }
+    }
+
+    // Attach file function
+    function attachFile() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*,application/pdf';
+        input.onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                addMessage(`📎 Attached: ${file.name}`, 'user');
+                // You can handle file upload here
+            }
+        };
+        input.click();
+    }
+</script>

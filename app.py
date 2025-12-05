@@ -39,6 +39,18 @@ app.config['JWT_TOKEN_LOCATION'] = ['headers']
 app.config['JWT_HEADER_NAME'] = 'Authorization'
 app.config['JWT_HEADER_TYPE'] = 'Bearer'
 
+# Session Configuration - 1 week expiry for artisans in villages
+from datetime import timedelta
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)  # 1 week
+app.config['SESSION_PERMANENT'] = True
+app.config['SESSION_COOKIE_SECURE'] = False  # Set to True in production with HTTPS
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+
+# JWT Configuration - 1 week expiry
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days=7)  # 1 week for artisans
+app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(days=30)  # 30 days for refresh
+
 CORS(app, resources={r"/*": {"origins": "*"}})
 jwt = JWTManager(app)
 

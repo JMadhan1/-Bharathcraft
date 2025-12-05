@@ -23,7 +23,7 @@ bp = Blueprint('cluster_pooling', __name__, url_prefix='/api/cluster-pooling')
 @jwt_required()
 def find_pooling_opportunities():
     """
-    Find pooling opportunities for an artisan's order
+    Find pooling opportunities for an order (buyer or artisan)
     
     POST /api/cluster-pooling/find-opportunities
     {
@@ -32,18 +32,38 @@ def find_pooling_opportunities():
     """
     try:
         current_user_id = int(get_jwt_identity())
-        data = request.json
+        from flask_jwt_extended import get_jwt
+        claims = get_jwt()
+        role = claims.get('role')
         
+        data = request.json
         order_id = data.get('order_id')
         if not order_id:
             return jsonify({'error': 'order_id is required'}), 400
         
-        # Get order and artisan location
+        # Get order
         order = Order.query.get(order_id)
-        if not order or order.artisan_id != current_user_id:
-            return jsonify({'error': 'Order not found or unauthorized'}), 404
+        if not order:
+            return jsonify({'error': 'Order not found'}), 404
         
-        artisan_profile = ArtisanProfile.query.filter_by(user_id=current_user_id).first()
+        # Check authorization - buyer can see their own orders, artisan can see their orders
+        if role == 'buyer':
+            buyer = g.db.query(BuyerProfile).filter_by(user_id=current_user_id).first()
+            if not buyer or order.buyer_id != buyer.id:
+                return jsonify({'error': 'Unauthorized'}), 403
+            # Get artisan from order items
+            if not order.order_items:
+                return jsonify({'error': 'Order has no items'}), 400
+            artisan_user_id = order.order_items[0].product.artisan.user_id
+        elif role == 'artisan':
+            if order.artisan_id != current_user_id:
+                return jsonify({'error': 'Unauthorized'}), 403
+            artisan_user_id = current_user_id
+        else:
+            return jsonify({'error': 'Unauthorized role'}), 403
+        
+        # Get artisan profile
+        artisan_profile = ArtisanProfile.query.filter_by(user_id=artisan_user_id).first()
         if not artisan_profile:
             return jsonify({'error': 'Artisan profile not found'}), 404
         
@@ -52,10 +72,26 @@ def find_pooling_opportunities():
             'state': artisan_profile.state
         }
         
+        # Get destination country from buyer profile if buyer, otherwise default to US
+        destination_country = 'US'
+        if role == 'buyer':
+            buyer = g.db.query(BuyerProfile).filter_by(user_id=current_user_id).first()
+            if buyer and buyer.country:
+                # Map country name to country code
+                country_map = {
+                    'United States': 'US', 'USA': 'US', 'US': 'US',
+                    'United Kingdom': 'UK', 'UK': 'UK', 'Britain': 'UK',
+                    'Germany': 'DE', 'Deutschland': 'DE',
+                    'Australia': 'AU',
+                    'Canada': 'CA',
+                    'France': 'FR'
+                }
+                destination_country = country_map.get(buyer.country, 'US')
+        
         # Find poolable orders
         poolable_order_ids = find_poolable_orders(
             artisan_location=artisan_location,
-            destination_country='US',  # Would get from buyer in real system
+            destination_country=destination_country,
             time_window_days=7
         )
         
@@ -81,7 +117,7 @@ def find_pooling_opportunities():
                 })
         
         # Calculate savings
-        savings_data = calculate_shipping_savings(orders_data, 'US')
+        savings_data = calculate_shipping_savings(orders_data, destination_country)
         
         # Get warehouse location
         warehouse = get_micro_warehouse_location(artisan_profile.district, artisan_profile.state)

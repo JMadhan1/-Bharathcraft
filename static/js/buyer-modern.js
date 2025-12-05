@@ -25,7 +25,29 @@
         updateWishlistCount();
         updateCartCount();
         loadProducts();
+        loadBuyerOrdersCount();
+        // Load orders and clusters automatically
+        loadBuyerOrdersAndClusters();
     });
+    
+    // Load buyer orders count
+    async function loadBuyerOrdersCount() {
+        try {
+            const response = await authenticatedFetch('/api/orders/', {
+                method: 'GET'
+            });
+            
+            if (response.ok) {
+                const orders = await response.json();
+                const ordersCountEl = document.getElementById('ordersCount');
+                if (ordersCountEl) {
+                    ordersCountEl.textContent = orders.length || 0;
+                }
+            }
+        } catch (error) {
+            console.error('Error loading orders count:', error);
+        }
+    }
 
     // Load Products
     async function loadProducts() {
@@ -646,9 +668,408 @@
         alert('Load more products feature - for pagination');
     };
 
+    // Toggle orders section
+    window.toggleOrdersSection = function() {
+        const section = document.getElementById('ordersClustersSection');
+        const content = document.getElementById('ordersClustersContent');
+        const toggleIcon = document.getElementById('toggleIcon');
+        
+        if (content.style.display === 'none') {
+            content.style.display = 'grid';
+            if (toggleIcon) toggleIcon.className = 'fas fa-chevron-up';
+            loadBuyerOrdersAndClusters();
+        } else {
+            content.style.display = 'none';
+            if (toggleIcon) toggleIcon.className = 'fas fa-chevron-down';
+        }
+    };
+
+    // My Orders & Clusters Functions
+    window.showMyOrdersAndClusters = async function () {
+        const section = document.getElementById('ordersClustersSection');
+        const content = document.getElementById('ordersClustersContent');
+        
+        // Show section and scroll to it
+        section.style.display = 'block';
+        content.style.display = 'grid';
+        await loadBuyerOrdersAndClusters();
+        // Scroll to section
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+
+    // Load buyer orders and associated clusters
+    async function loadBuyerOrdersAndClusters() {
+        const content = document.getElementById('ordersClustersContent');
+        content.innerHTML = '<p style="text-align: center; padding: 2rem;">Loading your orders...</p>';
+        
+        try {
+            const response = await authenticatedFetch('/api/orders/', {
+                method: 'GET'
+            });
+            
+            if (response.ok) {
+                const orders = await response.json();
+                document.getElementById('ordersCount').textContent = orders.length || 0;
+                
+                if (orders.length === 0) {
+                    content.innerHTML = `
+                        <div style="grid-column: 1/-1; text-align: center; padding: 3rem;">
+                            <i class="fas fa-box-open" style="font-size: 3rem; color: #9CA3AF; margin-bottom: 1rem;"></i>
+                            <p style="font-size: 1.125rem; color: #6B7280;">No orders yet. Start shopping to see clusters!</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Load cluster information for each order
+                const ordersWithClusters = await Promise.all(
+                    orders.map(async (order) => {
+                        try {
+                            const clusterResponse = await authenticatedFetch(`/api/cluster-pooling/find-opportunities`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ order_id: order.id })
+                            });
+                            
+                            if (clusterResponse.ok) {
+                                const clusterData = await clusterResponse.json();
+                                return { ...order, cluster: clusterData };
+                            }
+                        } catch (error) {
+                            console.error('Error loading cluster for order:', order.id, error);
+                        }
+                        return { ...order, cluster: null };
+                    })
+                );
+                
+                displayOrdersWithClusters(ordersWithClusters);
+            } else {
+                content.innerHTML = '<p style="text-align: center; color: #EF4444;">Error loading orders</p>';
+            }
+        } catch (error) {
+            console.error('Error loading orders:', error);
+            content.innerHTML = '<p style="text-align: center; color: #EF4444;">Error loading orders</p>';
+        }
+    }
+
+    // Display orders with cluster information
+    function displayOrdersWithClusters(orders) {
+        const content = document.getElementById('ordersClustersContent');
+        
+        content.innerHTML = orders.map(order => {
+            const cluster = order.cluster;
+            const hasCluster = cluster && cluster.pooling_available;
+            const savings = cluster?.your_order?.savings || 0;
+            const savingsPercent = cluster?.your_order?.savings_percent || 0;
+            
+            return `
+                <div class="order-cluster-card" style="background: white; border-radius: 16px; padding: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                        <div>
+                            <h3 style="margin: 0 0 0.5rem 0; color: #1F2937;">Order #${order.id}</h3>
+                            <p style="margin: 0; color: #6B7280; font-size: 0.875rem;">
+                                ${order.product_title || 'Product'} • ${order.quantity || 1} item(s)
+                            </p>
+                            <p style="margin: 0.5rem 0 0 0; color: #6B7280; font-size: 0.875rem;">
+                                Status: <span style="color: ${getStatusColor(order.status)}; font-weight: 600;">${order.status}</span>
+                            </p>
+                        </div>
+                        <div style="text-align: right;">
+                            <p style="margin: 0; font-size: 1.25rem; font-weight: 700; color: var(--primary);">
+                                ${order.currency || 'USD'} ${order.total_amount?.toFixed(2) || '0.00'}
+                            </p>
+                        </div>
+                    </div>
+                    
+                    ${hasCluster ? `
+                        <div style="background: linear-gradient(135deg, #F0FDF4 0%, #D1FAE5 100%); border-left: 4px solid #10B981; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                <h4 style="margin: 0; color: #166534; display: flex; align-items: center; gap: 0.5rem;">
+                                    <i class="fas fa-users"></i> Cluster Available!
+                                </h4>
+                                <span style="background: #10B981; color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.875rem; font-weight: 600;">
+                                    Save ${savingsPercent}%
+                                </span>
+                            </div>
+                            <p style="margin: 0.5rem 0; color: #166534; font-size: 0.875rem;">
+                                ${cluster.cluster_info?.total_orders || 0} orders in this cluster • 
+                                ${cluster.cluster_info?.total_artisans || 0} artisans
+                            </p>
+                            <p style="margin: 0.5rem 0 0 0; color: #15803d; font-weight: 600;">
+                                <i class="fas fa-piggy-bank"></i> You save: ${order.currency || 'USD'} ${savings.toFixed(2)}
+                            </p>
+                        </div>
+                    ` : `
+                        <div style="background: #FEF3C7; border-left: 4px solid #F59E0B; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                            <p style="margin: 0; color: #92400E; font-size: 0.875rem;">
+                                <i class="fas fa-info-circle"></i> Individual shipping (no cluster available yet)
+                            </p>
+                        </div>
+                    `}
+                    
+                    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                        ${hasCluster ? `
+                            <button onclick="viewBuyerClusterMap(${order.id}, '${order.artisan_location || 'Rajasthan'}')" 
+                                style="flex: 1; min-width: 150px; padding: 0.75rem; background: #10B981; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                                <i class="fas fa-map-marked-alt"></i> View Cluster Map
+                            </button>
+                            <button onclick="viewClusterDetails(${order.id})" 
+                                style="flex: 1; min-width: 150px; padding: 0.75rem; background: white; color: #10B981; border: 2px solid #10B981; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                                <i class="fas fa-info-circle"></i> Cluster Details
+                            </button>
+                        ` : `
+                            <button onclick="checkClusterAvailability(${order.id})" 
+                                style="flex: 1; padding: 0.75rem; background: #3B82F6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                                <i class="fas fa-search"></i> Check for Clusters
+                            </button>
+                        `}
+                        <button onclick="contactArtisan(${order.artisan_id || 0})" 
+                            style="flex: 1; min-width: 150px; padding: 0.75rem; background: white; color: #FF6B35; border: 2px solid #FF6B35; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                            <i class="fas fa-comments"></i> Contact Artisan
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function getStatusColor(status) {
+        const colors = {
+            'PENDING': '#F59E0B',
+            'APPROVED': '#3B82F6',
+            'SHIPPED': '#10B981',
+            'DELIVERED': '#059669',
+            'CANCELLED': '#EF4444'
+        };
+        return colors[status] || '#6B7280';
+    }
+
+    // View cluster map for buyer
+    window.viewBuyerClusterMap = function(orderId, artisanLocation) {
+        const modal = document.getElementById('buyerClusterMapModal');
+        const mapDiv = document.getElementById('buyerClusterMap');
+        const infoDiv = document.getElementById('clusterInfo');
+        
+        modal.style.display = 'flex';
+        
+        // Initialize map
+        setTimeout(() => {
+            if (typeof L !== 'undefined') {
+                // Clear existing map if any
+                if (window.buyerClusterMap) {
+                    window.buyerClusterMap.remove();
+                }
+                
+                // Create new map centered on artisan location
+                const locationCoords = getLocationCoordinates(artisanLocation);
+                window.buyerClusterMap = L.map('buyerClusterMap').setView(locationCoords, 7);
+                
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(window.buyerClusterMap);
+                
+                // Add cluster markers
+                const clusters = [
+                    { name: 'Jaipur Textile Pool', lat: 26.9124, lon: 75.7873, members: 42, savings: '40%', destination: 'USA' },
+                    { name: 'Jodhpur Woodwork', lat: 26.2389, lon: 73.0243, members: 28, savings: '35%', destination: 'UK' },
+                    { name: 'Udaipur Pottery', lat: 24.5854, lon: 73.7125, members: 15, savings: '25%', destination: 'Germany' },
+                    { name: 'Ajmer Jewelry', lat: 26.4499, lon: 74.6399, members: 31, savings: '38%', destination: 'USA' }
+                ];
+                
+                clusters.forEach(cluster => {
+                    L.circleMarker([cluster.lat, cluster.lon], {
+                        radius: 15,
+                        fillColor: '#10B981',
+                        color: '#059669',
+                        weight: 2,
+                        opacity: 1,
+                        fillOpacity: 0.7
+                    }).addTo(window.buyerClusterMap).bindPopup(`
+                        <div style="text-align: center; min-width: 200px;">
+                            <h4 style="margin: 0 0 0.5rem 0; color: #166534;">${cluster.name}</h4>
+                            <p style="margin: 0.25rem 0;"><strong>${cluster.members}</strong> Artisans</p>
+                            <p style="margin: 0.25rem 0; color: #15803d; font-weight: bold;">${cluster.savings} Savings</p>
+                            <p style="margin: 0.25rem 0; font-size: 0.875rem; color: #6B7280;">To: ${cluster.destination}</p>
+                            <button onclick="joinBuyerCluster('${cluster.name}', ${orderId})" 
+                                style="margin-top: 0.5rem; padding: 0.5rem 1rem; background: #10B981; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                                Join This Cluster
+                            </button>
+                        </div>
+                    `);
+                });
+                
+                // Show cluster info
+                infoDiv.innerHTML = `
+                    <div style="background: #F0FDF4; padding: 1rem; border-radius: 8px; border-left: 4px solid #10B981;">
+                        <h4 style="margin: 0 0 0.5rem 0; color: #166534;">
+                            <i class="fas fa-info-circle"></i> About Shipping Clusters
+                        </h4>
+                        <p style="margin: 0; color: #15803d; font-size: 0.875rem; line-height: 1.6;">
+                            Clusters combine multiple orders from nearby artisans for consolidated shipping. 
+                            This reduces shipping costs by up to 60%! Click on a cluster marker to see details and join.
+                        </p>
+                    </div>
+                `;
+            }
+        }, 100);
+    };
+
+    window.closeBuyerClusterMap = function() {
+        const modal = document.getElementById('buyerClusterMapModal');
+        modal.style.display = 'none';
+        if (window.buyerClusterMap) {
+            window.buyerClusterMap.remove();
+            window.buyerClusterMap = null;
+        }
+    };
+
+    function getLocationCoordinates(location) {
+        const locations = {
+            'Rajasthan': [26.9124, 75.7873],
+            'Gujarat': [23.0225, 72.5714],
+            'Kashmir': [34.0837, 74.7973],
+            'West Bengal': [22.9868, 87.8550],
+            'Tamil Nadu': [13.0827, 80.2707],
+            'Kerala': [10.8505, 76.2711]
+        };
+        return locations[location] || [20.5937, 78.9629]; // Default to India center
+    }
+
+    window.viewClusterDetails = async function(orderId) {
+        try {
+            const response = await authenticatedFetch(`/api/cluster-pooling/find-opportunities`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ order_id: orderId })
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                const content = `
+                    <div style="padding: 2rem;">
+                        <h3 style="margin: 0 0 1rem 0; color: #1F2937;">
+                            <i class="fas fa-users"></i> Cluster Details
+                        </h3>
+                        ${data.pooling_available ? `
+                            <div style="background: #F0FDF4; padding: 1.5rem; border-radius: 12px; margin-bottom: 1rem;">
+                                <h4 style="margin: 0 0 1rem 0; color: #166534;">Your Savings</h4>
+                                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+                                    <div>
+                                        <p style="margin: 0; color: #6B7280; font-size: 0.875rem;">Individual Shipping</p>
+                                        <p style="margin: 0.25rem 0 0 0; font-size: 1.5rem; font-weight: 700; color: #1F2937;">
+                                            $${data.your_order?.individual_cost?.toFixed(2) || '0.00'}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p style="margin: 0; color: #6B7280; font-size: 0.875rem;">Pooled Shipping</p>
+                                        <p style="margin: 0.25rem 0 0 0; font-size: 1.5rem; font-weight: 700; color: #10B981;">
+                                            $${data.your_order?.pooled_cost?.toFixed(2) || '0.00'}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div style="margin-top: 1rem; padding-top: 1rem; border-top: 2px solid #D1FAE5;">
+                                    <p style="margin: 0; font-size: 1.25rem; font-weight: 700; color: #166534;">
+                                        <i class="fas fa-piggy-bank"></i> You Save: $${data.your_order?.savings?.toFixed(2) || '0.00'} (${data.your_order?.savings_percent || 0}%)
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div style="background: white; padding: 1.5rem; border-radius: 12px; border: 2px solid #E5E7EB; margin-bottom: 1rem;">
+                                <h4 style="margin: 0 0 1rem 0; color: #1F2937;">Cluster Information</h4>
+                                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+                                    <div>
+                                        <p style="margin: 0; color: #6B7280; font-size: 0.875rem;">Total Orders</p>
+                                        <p style="margin: 0.25rem 0 0 0; font-size: 1.25rem; font-weight: 700; color: #1F2937;">
+                                            ${data.cluster_info?.total_orders || 0}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p style="margin: 0; color: #6B7280; font-size: 0.875rem;">Total Artisans</p>
+                                        <p style="margin: 0.25rem 0 0 0; font-size: 1.25rem; font-weight: 700; color: #1F2937;">
+                                            ${data.cluster_info?.total_artisans || 0}
+                                        </p>
+                                    </div>
+                                </div>
+                                ${data.cluster_info?.warehouse_location ? `
+                                    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #E5E7EB;">
+                                        <p style="margin: 0; color: #6B7280; font-size: 0.875rem;">Warehouse Location</p>
+                                        <p style="margin: 0.25rem 0 0 0; color: #1F2937; font-weight: 600;">
+                                            <i class="fas fa-warehouse"></i> ${data.cluster_info.warehouse_location.city || 'N/A'}, ${data.cluster_info.warehouse_location.state || 'N/A'}
+                                        </p>
+                                    </div>
+                                ` : ''}
+                            </div>
+                            
+                            ${data.schedule ? `
+                                <div style="background: #EFF6FF; padding: 1.5rem; border-radius: 12px; border-left: 4px solid #3B82F6;">
+                                    <h4 style="margin: 0 0 1rem 0; color: #1E40AF;">
+                                        <i class="fas fa-calendar-alt"></i> Estimated Schedule
+                                    </h4>
+                                    <p style="margin: 0; color: #1E3A8A; font-size: 0.875rem;">
+                                        <strong>Pickup:</strong> ${data.schedule.estimated_pickup || 'TBD'}<br>
+                                        <strong>Shipment:</strong> ${data.schedule.estimated_shipment || 'TBD'}<br>
+                                        <strong>Delivery:</strong> ${data.schedule.estimated_delivery || 'TBD'}
+                                    </p>
+                                </div>
+                            ` : ''}
+                        ` : `
+                            <div style="background: #FEF3C7; padding: 1.5rem; border-radius: 12px; border-left: 4px solid #F59E0B;">
+                                <p style="margin: 0; color: #92400E;">
+                                    <i class="fas fa-info-circle"></i> ${data.message || 'No cluster available at this time.'}
+                                </p>
+                            </div>
+                        `}
+                    </div>
+                `;
+                
+                createModal('Cluster Details', content);
+            }
+        } catch (error) {
+            console.error('Error loading cluster details:', error);
+            alert('Error loading cluster details');
+        }
+    };
+
+    window.joinBuyerCluster = async function(clusterName, orderId) {
+        if (confirm(`Join "${clusterName}" for this order? This will enable pooled shipping and save you money!`)) {
+            try {
+                const response = await authenticatedFetch(`/api/cluster-pooling/opt-in/${orderId}`, {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    alert('Successfully joined cluster! You will be notified when the shipment is ready.');
+                    loadBuyerOrdersAndClusters();
+                    closeBuyerClusterMap();
+                } else {
+                    const error = await response.json();
+                    alert('Error: ' + (error.error || 'Failed to join cluster'));
+                }
+            } catch (error) {
+                console.error('Error joining cluster:', error);
+                alert('Error joining cluster');
+            }
+        }
+    };
+
+    window.checkClusterAvailability = async function(orderId) {
+        alert('Checking for available clusters...');
+        await loadBuyerOrdersAndClusters();
+    };
+
+    window.contactArtisan = function(artisanId) {
+        if (artisanId) {
+            // Open chat with artisan
+            alert('Opening chat with artisan...');
+            // This would open the chat interface
+        } else {
+            alert('Artisan information not available');
+        }
+    };
+
     // Other Functions
     window.showOrders = function () {
-        alert('My Orders page coming soon!');
+        showMyOrdersAndClusters();
     };
 
     window.showProfile = function () {

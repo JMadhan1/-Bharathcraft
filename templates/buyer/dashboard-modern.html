@@ -3,8 +3,13 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>Discover Authentic Indian Crafts - Bharatcraft</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png">
+    <link rel="shortcut icon" href="/static/favicon.ico">
+
     <link rel="stylesheet" href="/static/css/buyer-modern.css">
     <link rel="stylesheet" href="/static/css/chat.css">
     <link rel="stylesheet" href="/static/css/chat-enhanced.css">
@@ -31,8 +36,7 @@
     <header class="modern-header">
         <div class="header-container">
             <div class="logo-section">
-                <img src="/static/logo.png" alt="Bharatcraft" onerror="this.style.display='none'">
-                <h1>Bharatcraft</h1>
+                <img src="/static/logo.png?v=3" alt="Bharatcraft - From Hands to World" style="height: 90px; display: block;">
             </div>
 
             <div class="search-bar-header">
@@ -50,6 +54,10 @@
                     <i class="fas fa-shopping-cart"></i>
                     <span class="badge" id="cartCount">0</span>
                 </button>
+                <button class="icon-btn" onclick="showMyOrdersAndClusters()" title="My Orders & Clusters">
+                    <i class="fas fa-truck"></i>
+                    <span class="badge" id="ordersCount">0</span>
+                </button>
                 <div class="user-menu">
                     <button class="user-btn" onclick="toggleUserMenu()">
                         <i class="fas fa-user-circle"></i>
@@ -57,7 +65,7 @@
                         <i class="fas fa-chevron-down"></i>
                     </button>
                     <div class="user-dropdown" id="userDropdown">
-                        <a href="#" onclick="showOrders()"><i class="fas fa-box"></i> My Orders</a>
+                        <a href="#" onclick="showMyOrdersAndClusters()"><i class="fas fa-box"></i> My Orders & Clusters</a>
                         <a href="#" onclick="showProfile()"><i class="fas fa-user"></i> Profile</a>
                         <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
                     </div>
@@ -88,6 +96,22 @@
                     <span class="stat-label">Authentic</span>
                 </div>
             </div>
+        </div>
+    </section>
+
+    <!-- My Orders & Clusters Section (for products connected with artisans) - Moved to top for visibility -->
+    <section class="orders-clusters-section" id="ordersClustersSection" style="margin: 2rem auto; max-width: 1400px; padding: 0 1rem;">
+        <div class="section-header">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <h2><i class="fas fa-truck"></i> My Orders & Shipping Clusters</h2>
+                <button onclick="toggleOrdersSection()" style="background: #F3F4F6; border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 600; color: #6B7280;">
+                    <i class="fas fa-chevron-up" id="toggleIcon"></i>
+                </button>
+            </div>
+            <p>View and manage shipping clusters for products you've ordered</p>
+        </div>
+        <div id="ordersClustersContent" class="orders-clusters-grid">
+            <p style="text-align: center; padding: 2rem; color: #6B7280;">Loading your orders...</p>
         </div>
     </section>
 
@@ -289,6 +313,28 @@
         </div>
     </div>
 
+    <!-- Cluster Map Modal for Buyers -->
+    <div id="buyerClusterMapModal" class="modal">
+        <div class="modal-content" style="max-width: 900px; width: 95%; max-height: 90vh; overflow-y: auto;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: white; padding: 1.5rem; border-radius: 16px 16px 0 0;">
+                <h3 style="color: white; margin: 0;">
+                    <i class="fas fa-map-marked-alt"></i> Shipping Cluster Map
+                </h3>
+                <button class="modal-close" onclick="closeBuyerClusterMap()" style="color: white;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div style="padding: 1.5rem;">
+                <div id="buyerClusterMap" style="height: 400px; width: 100%; border-radius: 8px; margin-bottom: 1rem;"></div>
+                <div id="clusterInfo" class="cluster-info-box">
+                    <!-- Cluster information will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="/static/js/auth-helper.js"></script>
     <script src="/static/js/chat.js"></script>
     <script src="/static/js/chat-enhanced.js"></script>

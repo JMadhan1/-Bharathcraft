@@ -3,8 +3,13 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>Artisan Dashboard - Bharatcraft</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png">
+    <link rel="shortcut icon" href="/static/favicon.ico">
+
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -15,8 +20,7 @@
 
     <header class="modern-header">
         <div class="logo">
-            <img src="/static/logo.png" alt="Bharatcraft" onerror="this.style.display='none'">
-            <span>Bharatcraft</span>
+            <img src="/static/logo.png?v=3" alt="Bharatcraft - From Hands to World" style="height: 90px; display: block;">
         </div>
         <div class="header-actions">
             <select id="languageSelector" class="language-selector" onchange="changeLanguage(this.value)">
@@ -160,14 +164,15 @@
             </div>
 
             <!-- Logistics Cluster -->
-            <div class="action-card cluster-card" onclick="viewClusterMap()">
+            <div class="action-card cluster-card" onclick="viewClusterMap()" data-card="logistics">
                 <div class="card-icon-large">
                     <i class="fas fa-truck"></i>
                 </div>
-                <h3>शिपिंग बचाएं<br><span class="en-text">Save on Shipping</span></h3>
-                <p>60% तक बचत - समूह में शामिल हों</p>
+                <h3><span class="card-primary">शिपिंग बचाएं</span><br><span class="card-secondary en-text">Save on
+                        Shipping</span></h3>
+                <p class="card-subtitle-text">60% तक बचत - समूह में शामिल हों</p>
                 <div class="savings-badge">40% बचत</div>
-                <button class="voice-btn-card" onclick="playVoice('logistics'); event.stopPropagation();">
+                <button class="voice-btn-card" onclick="playVoice('logistics', null, this); event.stopPropagation();">
                     <i class="fas fa-volume-up"></i>
                 </button>
             </div>
@@ -362,6 +367,35 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <script src="/static/js/auth-helper.js"></script>
     <script src="/static/js/artisan-simple-multilingual.js"></script>
+    <!-- Voice-over for buttons -->
+    <script src="/static/js/dashboard-voice.js"></script>
+
+    <!-- AI Chat Popup -->
+    {% include 'includes/ai-chat-widget.html' %}
+
+    <!-- Hide old AI assistant and Fix showAllOrders -->
+    <style>
+        section:last-of-type,
+        .ai-assistant-section,
+        #ai-assistant {
+            display: none !important;
+        }
+    </style>
+
+    <script>
+        // Fix for missing showAllOrders function
+        function showAllOrders() {
+            // Open the orders modal
+            const modal = document.getElementById('ordersModal');
+            if (modal) {
+                modal.style.display = 'block';
+                // Trigger loading orders if function exists
+                if (typeof loadOrders === 'function') {
+                    loadOrders();
+                }
+            }
+        }
+    </script>
 </body>
 
 </html>

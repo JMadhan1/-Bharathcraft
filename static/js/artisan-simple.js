@@ -430,12 +430,13 @@
         }
     };
 
-    // Messages
+    // Messages - Use centered popup modal
     window.showMessages = function () {
         playVoice('chat');
-        // Open the messages modal if it exists
+        // Open the messages modal if it exists (centered popup)
         const messagesModal = document.getElementById('messagesModal');
         if (messagesModal) {
+            messagesModal.style.display = 'flex';
             messagesModal.classList.add('active');
             loadMessages();
         } else {
@@ -454,6 +455,7 @@
         const modal = document.getElementById('messagesModal');
         if (modal) {
             modal.classList.remove('active');
+            modal.style.display = 'none';
         }
     };
 
