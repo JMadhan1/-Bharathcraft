@@ -1,148 +1,484 @@
-<!-- Common Footer for All Pages -->
-<footer
-    style="background: linear-gradient(135deg, #1F2937 0%, #111827 100%); color: white; padding: 3rem 0 1.5rem; margin-top: 4rem;">
-    <div class="container">
-        <div
-            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
-            <!-- About Section -->
-            <div>
-                <img src="/static/logo.png?v=3" alt="Bharatcraft"
-                    style="height: 50px; margin-bottom: 1rem; filter: brightness(0) invert(1); display: block;">
-                <p style="color: #9CA3AF; line-height: 1.6; margin-bottom: 1rem;">
-                    Empowering 7 million Indian artisans to connect with global buyers through AI-powered tools and
-                    direct trade.
+<!-- Attractive Modern Footer -->
+<footer class="modern-footer">
+    <div class="footer-container">
+        <!-- Main Footer Content -->
+        <div class="footer-grid">
+            <!-- Brand Section -->
+            <div class="footer-brand">
+                <div class="footer-logo">
+                    <img src="/static/logo.png?v=3" alt="Bharatcraft" class="logo-img">
+                    <span class="brand-name">Bharatcraft</span>
+                </div>
+                <p class="brand-tagline">
+                    Empowering 7 million Indian artisans to connect with global buyers through AI-powered tools and direct trade.
                 </p>
-                <div style="display: flex; gap: 1rem;">
-                    <a href="#" style="color: #9CA3AF; font-size: 1.5rem; transition: color 0.3s;"
-                        onmouseover="this.style.color='#FF6B35'" onmouseout="this.style.color='#9CA3AF'">
-                        <i class="fab fa-facebook"></i>
+                <div class="social-links">
+                    <a href="#" class="social-icon" aria-label="Facebook">
+                        <i class="fab fa-facebook-f"></i>
                     </a>
-                    <a href="#" style="color: #9CA3AF; font-size: 1.5rem; transition: color 0.3s;"
-                        onmouseover="this.style.color='#FF6B35'" onmouseout="this.style.color='#9CA3AF'">
+                    <a href="#" class="social-icon" aria-label="Twitter">
                         <i class="fab fa-twitter"></i>
                     </a>
-                    <a href="#" style="color: #9CA3AF; font-size: 1.5rem; transition: color 0.3s;"
-                        onmouseover="this.style.color='#FF6B35'" onmouseout="this.style.color='#9CA3AF'">
+                    <a href="#" class="social-icon" aria-label="Instagram">
                         <i class="fab fa-instagram"></i>
                     </a>
-                    <a href="#" style="color: #9CA3AF; font-size: 1.5rem; transition: color 0.3s;"
-                        onmouseover="this.style.color='#FF6B35'" onmouseout="this.style.color='#9CA3AF'">
-                        <i class="fab fa-linkedin"></i>
+                    <a href="#" class="social-icon" aria-label="LinkedIn">
+                        <i class="fab fa-linkedin-in"></i>
                     </a>
+                    <a href="#" class="social-icon" aria-label="YouTube">
+                        <i class="fab fa-youtube"></i>
+                    </a>
+                </div>
+                <div class="offline-badge-footer">
+                    <i class="fas fa-wifi"></i>
+                    <span>Works Offline</span>
                 </div>
             </div>
 
             <!-- Quick Links -->
-            <div>
-                <h4 style="color: white; margin-bottom: 1rem; font-size: 1.125rem;">Quick Links</h4>
-                <ul style="list-style: none; padding: 0;">
-                    <li style="margin-bottom: 0.5rem;">
-                        <a href="/" style="color: #9CA3AF; text-decoration: none; transition: color 0.3s;"
-                            onmouseover="this.style.color='#FF6B35'" onmouseout="this.style.color='#9CA3AF'">
-                            <i class="fas fa-home"></i> Home
-                        </a>
-                    </li>
-                    <li style="margin-bottom: 0.5rem;">
-                        <a href="/success-stories"
-                            style="color: #9CA3AF; text-decoration: none; transition: color 0.3s;"
-                            onmouseover="this.style.color='#FF6B35'" onmouseout="this.style.color='#9CA3AF'">
-                            <i class="fas fa-star"></i> Success Stories
-                        </a>
-                    </li>
-                    <li style="margin-bottom: 0.5rem;">
-                        <a href="/all-features" style="color: #9CA3AF; text-decoration: none; transition: color 0.3s;"
-                            onmouseover="this.style.color='#FF6B35'" onmouseout="this.style.color='#9CA3AF'">
-                            <i class="fas fa-magic"></i> All Features
-                        </a>
-                    </li>
-                    <li style="margin-bottom: 0.5rem;">
-                        <a href="/artisan" style="color: #9CA3AF; text-decoration: none; transition: color 0.3s;"
-                            onmouseover="this.style.color='#FF6B35'" onmouseout="this.style.color='#9CA3AF'">
-                            <i class="fas fa-user-tie"></i> For Artisans
-                        </a>
-                    </li>
-                    <li style="margin-bottom: 0.5rem;">
-                        <a href="/buyer" style="color: #9CA3AF; text-decoration: none; transition: color 0.3s;"
-                            onmouseover="this.style.color='#FF6B35'" onmouseout="this.style.color='#9CA3AF'">
-                            <i class="fas fa-shopping-bag"></i> For Buyers
-                        </a>
-                    </li>
+            <div class="footer-column">
+                <h4 class="footer-title">Quick Links</h4>
+                <ul class="footer-links">
+                    <li><a href="/"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="/success-stories"><i class="fas fa-star"></i> Success Stories</a></li>
+                    <li><a href="/all-features"><i class="fas fa-magic"></i> All Features</a></li>
+                    <li><a href="/artisan"><i class="fas fa-user-tie"></i> For Artisans</a></li>
+                    <li><a href="/buyer"><i class="fas fa-shopping-bag"></i> For Buyers</a></li>
                 </ul>
             </div>
 
             <!-- AI Features -->
-            <div>
-                <h4 style="color: white; margin-bottom: 1rem; font-size: 1.125rem;">AI Features</h4>
-                <ul style="list-style: none; padding: 0;">
-                    <li style="margin-bottom: 0.5rem;">
-                        <a href="/features/translation-demo"
-                            style="color: #9CA3AF; text-decoration: none; transition: color 0.3s;"
-                            onmouseover="this.style.color='#FF6B35'" onmouseout="this.style.color='#9CA3AF'">
-                            <i class="fas fa-language"></i> AI Translation
-                        </a>
-                    </li>
-                    <li style="margin-bottom: 0.5rem;">
-                        <a href="/features/quality-grading"
-                            style="color: #9CA3AF; text-decoration: none; transition: color 0.3s;"
-                            onmouseover="this.style.color='#FF6B35'" onmouseout="this.style.color='#9CA3AF'">
-                            <i class="fas fa-camera"></i> Quality Grading
-                        </a>
-                    </li>
-                    <li style="margin-bottom: 0.5rem;">
-                        <a href="/features/blockchain-trace"
-                            style="color: #9CA3AF; text-decoration: none; transition: color 0.3s;"
-                            onmouseover="this.style.color='#FF6B35'" onmouseout="this.style.color='#9CA3AF'">
-                            <i class="fas fa-link"></i> Blockchain Trace
-                        </a>
-                    </li>
-                    <li style="margin-bottom: 0.5rem;">
-                        <a href="/features/analytics"
-                            style="color: #9CA3AF; text-decoration: none; transition: color 0.3s;"
-                            onmouseover="this.style.color='#FF6B35'" onmouseout="this.style.color='#9CA3AF'">
-                            <i class="fas fa-chart-line"></i> Analytics
-                        </a>
-                    </li>
+            <div class="footer-column">
+                <h4 class="footer-title">AI Features</h4>
+                <ul class="footer-links">
+                    <li><a href="/features/translation-demo"><i class="fas fa-language"></i> AI Translation</a></li>
+                    <li><a href="/features/quality-grading"><i class="fas fa-camera"></i> Quality Grading</a></li>
+                    <li><a href="/features/blockchain-trace"><i class="fas fa-link"></i> Blockchain Trace</a></li>
+                    <li><a href="/features/analytics"><i class="fas fa-chart-line"></i> Analytics</a></li>
+                    <li><a href="/features/currency-converter"><i class="fas fa-exchange-alt"></i> Currency Converter</a></li>
                 </ul>
             </div>
 
-            <!-- Contact -->
-            <div>
-                <h4 style="color: white; margin-bottom: 1rem; font-size: 1.125rem;">Contact Us</h4>
-                <ul style="list-style: none; padding: 0;">
-                    <li style="margin-bottom: 0.5rem; color: #9CA3AF;">
-                        <i class="fas fa-envelope"></i> support@bharatcraft.in
+            <!-- Contact & Support -->
+            <div class="footer-column">
+                <h4 class="footer-title">Contact Us</h4>
+                <ul class="footer-contact">
+                    <li>
+                        <i class="fas fa-envelope"></i>
+                        <a href="mailto:support@bharatcraft.in">support@bharatcraft.in</a>
                     </li>
-                    <li style="margin-bottom: 0.5rem; color: #9CA3AF;">
-                        <i class="fas fa-phone"></i> +91 1800-123-4567
+                    <li>
+                        <i class="fas fa-phone"></i>
+                        <a href="tel:+9118001234567">+91 1800-123-4567</a>
                     </li>
-                    <li style="margin-bottom: 0.5rem; color: #9CA3AF;">
-                        <i class="fas fa-map-marker-alt"></i> India
+                    <li>
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>India</span>
                     </li>
                 </ul>
-                <div style="margin-top: 1rem;">
-                    <span
-                        style="display: inline-block; background: linear-gradient(90deg, #FF6B35 0%, #F59E0B 100%); color: white; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.875rem; font-weight: 600;">
-                        <i class="fas fa-wifi"></i> Works Offline
-                    </span>
+                <div class="newsletter-signup">
+                    <p class="newsletter-text">Stay Updated</p>
+                    <div class="newsletter-form">
+                        <input type="email" placeholder="Your email" class="newsletter-input">
+                        <button class="newsletter-btn" type="button">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
 
+        <!-- Impact Stats Bar -->
+        <div class="footer-stats">
+            <div class="stat-item">
+                <div class="stat-number">7M+</div>
+                <div class="stat-label">Artisans</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">340%</div>
+                <div class="stat-label">Income Increase</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">50+</div>
+                <div class="stat-label">Countries</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">98.5%</div>
+                <div class="stat-label">AI Accuracy</div>
+            </div>
+        </div>
+
         <!-- Bottom Bar -->
-        <div style="border-top: 1px solid #374151; padding-top: 1.5rem; text-align: center;">
-            <p style="color: #9CA3AF; margin: 0;">
-                © 2024 Bharatcraft. Made with <span style="color: #FF6B35;">❤️</span> for Indian Artisans.
-            </p>
-            <p style="color: #6B7280; margin: 0.5rem 0 0; font-size: 0.875rem;">
-                <a href="#" style="color: #6B7280; text-decoration: none; margin: 0 0.5rem;"
-                    onmouseover="this.style.color='#FF6B35'" onmouseout="this.style.color='#6B7280'">Privacy Policy</a>
-                |
-                <a href="#" style="color: #6B7280; text-decoration: none; margin: 0 0.5rem;"
-                    onmouseover="this.style.color='#FF6B35'" onmouseout="this.style.color='#6B7280'">Terms of
-                    Service</a> |
-                <a href="#" style="color: #6B7280; text-decoration: none; margin: 0 0.5rem;"
-                    onmouseover="this.style.color='#FF6B35'" onmouseout="this.style.color='#6B7280'">Help Center</a>
-            </p>
+        <div class="footer-bottom">
+            <div class="footer-copyright">
+                <p>&copy; 2024 Bharatcraft. Made with <span class="heart">❤️</span> for Indian Artisans.</p>
+            </div>
+            <div class="footer-legal">
+                <a href="#">Privacy Policy</a>
+                <span class="divider">|</span>
+                <a href="#">Terms of Service</a>
+                <span class="divider">|</span>
+                <a href="#">Help Center</a>
+                <span class="divider">|</span>
+                <a href="#">About Us</a>
+            </div>
         </div>
     </div>
+
+    <style>
+        .modern-footer {
+            background: linear-gradient(135deg, #1F2937 0%, #111827 100%);
+            color: white;
+            padding: 4rem 0 0;
+            margin-top: 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .modern-footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #FF6B35, transparent);
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1.5fr;
+            gap: 3rem;
+            padding-bottom: 3rem;
+        }
+
+        /* Brand Section */
+        .footer-brand {
+            max-width: 350px;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .logo-img {
+            height: 50px;
+            width: auto;
+            filter: brightness(0) invert(1);
+        }
+
+        .brand-name {
+            font-size: 1.75rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #FF6B35 0%, #F59E0B 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .brand-tagline {
+            color: #9CA3AF;
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .social-icon {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #9CA3AF;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .social-icon:hover {
+            background: linear-gradient(135deg, #FF6B35 0%, #F59E0B 100%);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 107, 53, 0.3);
+        }
+
+        .offline-badge-footer {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(90deg, #10B981 0%, #34D399 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        /* Footer Columns */
+        .footer-column {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .footer-title {
+            color: white;
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 0.75rem;
+        }
+
+        .footer-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: linear-gradient(90deg, #FF6B35 0%, #F59E0B 100%);
+            border-radius: 2px;
+        }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-links a {
+            color: #9CA3AF;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .footer-links a:hover {
+            color: #FF6B35;
+            transform: translateX(5px);
+        }
+
+        .footer-links a i {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Contact Section */
+        .footer-contact {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 1.5rem 0;
+        }
+
+        .footer-contact li {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #9CA3AF;
+        }
+
+        .footer-contact li i {
+            width: 20px;
+            color: #FF6B35;
+        }
+
+        .footer-contact a {
+            color: #9CA3AF;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-contact a:hover {
+            color: #FF6B35;
+        }
+
+        /* Newsletter */
+        .newsletter-signup {
+            margin-top: 1rem;
+        }
+
+        .newsletter-text {
+            color: #9CA3AF;
+            font-size: 0.875rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .newsletter-form {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .newsletter-input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .newsletter-input::placeholder {
+            color: #6B7280;
+        }
+
+        .newsletter-input:focus {
+            outline: none;
+            border-color: #FF6B35;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .newsletter-btn {
+            padding: 0.75rem 1.25rem;
+            background: linear-gradient(135deg, #FF6B35 0%, #F59E0B 100%);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+
+        .newsletter-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 107, 53, 0.4);
+        }
+
+        /* Stats Bar */
+        .footer-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            padding: 2.5rem 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin: 2rem 0;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #FF6B35 0%, #F59E0B 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #9CA3AF;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Bottom Bar */
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2rem 0;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer-copyright {
+            color: #9CA3AF;
+            font-size: 0.9rem;
+        }
+
+        .heart {
+            color: #FF6B35;
+            animation: heartbeat 1.5s ease-in-out infinite;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        .footer-legal {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-legal a {
+            color: #6B7280;
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.3s;
+        }
+
+        .footer-legal a:hover {
+            color: #FF6B35;
+        }
+
+        .divider {
+            color: #374151;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 968px) {
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 2rem;
+            }
+
+            .footer-brand {
+                max-width: 100%;
+                grid-column: 1 / -1;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.5rem;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .footer-legal {
+                justify-content: center;
+            }
+        }
+    </style>
 </footer>

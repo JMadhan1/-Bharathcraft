@@ -293,13 +293,69 @@
 
         const formData = new FormData(this);
 
-        if (!formData.get('title')) {
-            const description = formData.get('description') || 'Handmade Product';
-            formData.set('title', description.substring(0, 50));
+        // Validate required fields
+        const price = formData.get('price');
+        const images = formData.getAll('images');
+        const description = formData.get('description') || '';
+
+        // Check if price is provided
+        if (!price || parseFloat(price) <= 0) {
+            const priceError = translations.alerts?.priceRequired || 'Please enter a valid price';
+            alert(priceError);
+            document.getElementById('step2').classList.add('active');
+            return;
         }
 
+        // Check if images are provided - get from input element directly
+        const photoInput = document.getElementById('photoInput');
+        const imageFiles = photoInput ? Array.from(photoInput.files || []) : [];
+        
+        if (imageFiles.length === 0) {
+            const imageError = translations.alerts?.imageRequired || 'Please add at least one photo';
+            alert(imageError);
+            document.getElementById('step1').classList.add('active');
+            return;
+        }
+
+        // Clear any existing images in formData and add fresh ones
+        formData.delete('images');
+        imageFiles.forEach(file => {
+            if (file && file.size > 0) {
+                formData.append('images', file);
+            }
+        });
+
+        // Double check we have images
+        if (formData.getAll('images').length === 0) {
+            const imageError = translations.alerts?.imageRequired || 'Please add at least one photo';
+            alert(imageError);
+            document.getElementById('step1').classList.add('active');
+            document.getElementById('uploadingState').style.display = 'none';
+            return;
+        }
+
+        // Set title from description or default
+        if (!formData.get('title')) {
+            const titleText = description.trim() || 'Handmade Product';
+            formData.set('title', titleText.substring(0, 50));
+        }
+
+        // Ensure description exists
+        if (!formData.get('description') || formData.get('description').trim() === '') {
+            formData.set('description', 'Handmade craft product');
+        }
+
+        // Set craft type if not provided
         if (!formData.get('craft_type')) {
             formData.set('craft_type', userData.craft_type || 'handicraft');
+        }
+
+        // Set default values
+        if (!formData.get('stock_quantity')) {
+            formData.set('stock_quantity', '1');
+        }
+        if (!formData.get('production_time_days')) {
+            formData.set('production_time_days', '7');
         }
 
         document.querySelectorAll('.upload-step').forEach(step => step.classList.remove('active'));
@@ -322,15 +378,27 @@
                     loadStats();
                 }, 2000);
             } else {
-                const error = await response.json();
-                alert('Error: ' + (error.error || 'Upload failed'));
+                let errorMessage = translations.alerts?.uploadProblem || 'Upload problem. Try again';
+                try {
+                    const errorData = await response.json();
+                    if (errorData.error) {
+                        errorMessage = errorData.error;
+                    }
+                } catch (parseError) {
+                    console.error('Error parsing response:', parseError);
+                    errorMessage = `Server error: ${response.status} ${response.statusText}`;
+                }
+                alert(errorMessage);
                 document.getElementById('uploadingState').style.display = 'none';
                 document.getElementById('step1').classList.add('active');
             }
         } catch (error) {
             console.error('Upload error:', error);
-            const msg = translations.alerts?.uploadProblem || 'Upload problem. Try again';
-            alert(msg);
+            let errorMessage = translations.alerts?.uploadProblem || 'Upload problem. Try again';
+            if (error.message) {
+                errorMessage += ': ' + error.message;
+            }
+            alert(errorMessage);
             document.getElementById('uploadingState').style.display = 'none';
             document.getElementById('step1').classList.add('active');
         }
@@ -378,8 +446,55 @@
     };
 
     window.showOrders = function () {
-        const msg = `${translations.alerts?.noOrders || 'You have no orders yet.'} (${translations.alerts?.noOrdersEn || 'Check back later'})`;
-        alert(msg);
+        const ordersModal = document.getElementById('ordersModal');
+        if (ordersModal) {
+            ordersModal.style.display = 'flex';
+            ordersModal.style.position = 'fixed';
+            ordersModal.style.top = '0';
+            ordersModal.style.left = '0';
+            ordersModal.style.width = '100%';
+            ordersModal.style.height = '100%';
+            ordersModal.style.zIndex = '9999';
+            ordersModal.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+            ordersModal.style.backdropFilter = 'blur(4px)';
+            ordersModal.style.alignItems = 'center';
+            ordersModal.style.justifyContent = 'center';
+            ordersModal.classList.add('active');
+            
+            // Prevent body scroll
+            document.body.style.overflow = 'hidden';
+            
+            // Close on background click
+            ordersModal.addEventListener('click', function(e) {
+                if (e.target === ordersModal) {
+                    closeOrdersModal();
+                }
+            });
+            
+            // Load orders if function exists
+            if (typeof loadOrders === 'function') {
+                loadOrders();
+            } else {
+                // Show message if no orders
+                const ordersDiv = document.getElementById('allOrders');
+                if (ordersDiv) {
+                    const msg = translations.alerts?.noOrders || 'You have no orders yet.';
+                    ordersDiv.innerHTML = `<p style="text-align: center; color: #6B7280; padding: 2rem;">${msg}</p>`;
+                }
+            }
+        } else {
+            const msg = `${translations.alerts?.noOrders || 'You have no orders yet.'} (${translations.alerts?.noOrdersEn || 'Check back later'})`;
+            alert(msg);
+        }
+    };
+    
+    window.closeOrdersModal = function () {
+        const ordersModal = document.getElementById('ordersModal');
+        if (ordersModal) {
+            ordersModal.style.display = 'none';
+            ordersModal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
     };
 
     window.showEarnings = function () {
@@ -393,7 +508,28 @@
         const messagesModal = document.getElementById('messagesModal');
         if (messagesModal) {
             messagesModal.style.display = 'flex';
+            messagesModal.style.position = 'fixed';
+            messagesModal.style.top = '0';
+            messagesModal.style.left = '0';
+            messagesModal.style.width = '100%';
+            messagesModal.style.height = '100%';
+            messagesModal.style.zIndex = '9999';
+            messagesModal.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+            messagesModal.style.backdropFilter = 'blur(4px)';
+            messagesModal.style.alignItems = 'center';
+            messagesModal.style.justifyContent = 'center';
             messagesModal.classList.add('active');
+            
+            // Prevent body scroll
+            document.body.style.overflow = 'hidden';
+            
+            // Close on background click
+            messagesModal.addEventListener('click', function(e) {
+                if (e.target === messagesModal) {
+                    closeMessagesModal();
+                }
+            });
+            
             // Load messages if function exists
             if (typeof loadMessages === 'function') {
                 loadMessages();
@@ -404,6 +540,15 @@
         } else {
             // Fallback: show AI chat assistant
             showAIChatAssistant();
+        }
+    };
+    
+    window.closeMessagesModal = function () {
+        const messagesModal = document.getElementById('messagesModal');
+        if (messagesModal) {
+            messagesModal.style.display = 'none';
+            messagesModal.classList.remove('active');
+            document.body.style.overflow = 'auto';
         }
     };
     
@@ -639,51 +784,84 @@
             existingModal.remove();
         }
         
+        // Hide any tutorial sections at bottom of page
+        const bottomSections = document.querySelectorAll('.ai-learning-container, .learning-section, [class*="tutorial"]');
+        bottomSections.forEach(section => {
+            if (section.closest('.modal') === null) {
+                section.style.display = 'none';
+            }
+        });
+        
         const modal = document.createElement('div');
         modal.className = 'ai-modal';
+        modal.style.display = 'flex';
+        modal.style.position = 'fixed';
+        modal.style.top = '0';
+        modal.style.left = '0';
+        modal.style.width = '100%';
+        modal.style.height = '100%';
+        modal.style.zIndex = '2000';
+        modal.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+        modal.style.backdropFilter = 'blur(4px)';
+        modal.style.alignItems = 'center';
+        modal.style.justifyContent = 'center';
+        modal.style.padding = '1rem';
+        
         modal.innerHTML = `
-            <div class="ai-modal-content">
-                <div class="ai-modal-header">
-                    <h2>
+            <div class="ai-modal-content" style="background: white; border-radius: 24px; max-width: 800px; width: 100%; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 24px 60px rgba(0,0,0,0.3);">
+                <div class="ai-modal-header" style="padding: 1.5rem 2rem; border-bottom: 2px solid #E7DFD5; display: flex; justify-content: space-between; align-items: center;">
+                    <h2 style="font-size: 1.5rem; color: #1F2937; display: flex; align-items: center; gap: 0.75rem; margin: 0;">
                         <i class="fas fa-graduation-cap"></i>
                         ${currentLanguage === 'hi' ? 'सीखें - AI ट्यूटोरियल' : 'Learn - AI Tutorials'}
                     </h2>
-                    <button class="ai-close-btn" onclick="this.closest('.ai-modal').remove()">
+                    <button class="ai-close-btn" onclick="this.closest('.ai-modal').remove(); document.body.style.overflow = 'auto';" style="background: #EF4444; border: none; color: white; width: 44px; height: 44px; border-radius: 50%; font-size: 1.25rem; cursor: pointer; transition: all 0.3s ease;">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
-                <div class="ai-learning-container">
-                    <div class="learning-topics">
-                        <button onclick="loadTutorial('upload_product')" class="learning-topic-btn">
-                            <i class="fas fa-upload"></i>
-                            ${currentLanguage === 'hi' ? 'उत्पाद अपलोड करें' : 'Upload Products'}
+                <div class="ai-learning-container" style="flex: 1; overflow-y: auto; padding: 2rem; background: #FFF8F0;">
+                    <div class="learning-topics" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                        <button onclick="loadTutorial('upload_product')" class="learning-topic-btn" style="background: white; border: 2px solid #E7DFD5; border-radius: 16px; padding: 1.5rem; text-align: center; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; gap: 0.75rem;">
+                            <i class="fas fa-upload" style="font-size: 2rem; color: #FF6B35;"></i>
+                            <span style="font-weight: 600; color: #1F2937;">${currentLanguage === 'hi' ? 'उत्पाद अपलोड करें' : 'Upload Products'}</span>
                         </button>
-                        <button onclick="loadTutorial('pricing')" class="learning-topic-btn">
-                            <i class="fas fa-tag"></i>
-                            ${currentLanguage === 'hi' ? 'कीमत लगाना' : 'Pricing'}
+                        <button onclick="loadTutorial('pricing')" class="learning-topic-btn" style="background: white; border: 2px solid #E7DFD5; border-radius: 16px; padding: 1.5rem; text-align: center; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; gap: 0.75rem;">
+                            <i class="fas fa-tag" style="font-size: 2rem; color: #FF6B35;"></i>
+                            <span style="font-weight: 600; color: #1F2937;">${currentLanguage === 'hi' ? 'कीमत लगाना' : 'Pricing'}</span>
                         </button>
-                        <button onclick="loadTutorial('quality_photos')" class="learning-topic-btn">
-                            <i class="fas fa-camera"></i>
-                            ${currentLanguage === 'hi' ? 'फोटो लेना' : 'Taking Photos'}
+                        <button onclick="loadTutorial('quality_photos')" class="learning-topic-btn" style="background: white; border: 2px solid #E7DFD5; border-radius: 16px; padding: 1.5rem; text-align: center; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; gap: 0.75rem;">
+                            <i class="fas fa-camera" style="font-size: 2rem; color: #FF6B35;"></i>
+                            <span style="font-weight: 600; color: #1F2937;">${currentLanguage === 'hi' ? 'फोटो लेना' : 'Taking Photos'}</span>
                         </button>
-                        <button onclick="loadTutorial('buyer_communication')" class="learning-topic-btn">
-                            <i class="fas fa-comments"></i>
-                            ${currentLanguage === 'hi' ? 'खरीदार से बात' : 'Buyer Communication'}
+                        <button onclick="loadTutorial('buyer_communication')" class="learning-topic-btn" style="background: white; border: 2px solid #E7DFD5; border-radius: 16px; padding: 1.5rem; text-align: center; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; gap: 0.75rem;">
+                            <i class="fas fa-comments" style="font-size: 2rem; color: #FF6B35;"></i>
+                            <span style="font-weight: 600; color: #1F2937;">${currentLanguage === 'hi' ? 'खरीदार से बात' : 'Buyer Communication'}</span>
                         </button>
-                        <button onclick="loadTutorial('shipping')" class="learning-topic-btn">
-                            <i class="fas fa-box"></i>
-                            ${currentLanguage === 'hi' ? 'शिपिंग/पैकेजिंग' : 'Shipping/Packaging'}
+                        <button onclick="loadTutorial('shipping')" class="learning-topic-btn" style="background: white; border: 2px solid #E7DFD5; border-radius: 16px; padding: 1.5rem; text-align: center; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; gap: 0.75rem;">
+                            <i class="fas fa-box" style="font-size: 2rem; color: #FF6B35;"></i>
+                            <span style="font-weight: 600; color: #1F2937;">${currentLanguage === 'hi' ? 'शिपिंग/पैकेजिंग' : 'Shipping/Packaging'}</span>
                         </button>
                     </div>
-                    <div class="learning-content" id="learningContent">
+                    <div class="learning-content" id="learningContent" style="text-align: center; padding: 2rem;">
                         <div class="learning-welcome">
                             <i class="fas fa-graduation-cap" style="font-size: 3rem; color: #FF6B35;"></i>
-                            <p>${currentLanguage === 'hi' ? 'एक विषय चुनें और सीखना शुरू करें!' : 'Choose a topic to start learning!'}</p>
+                            <p style="font-size: 1.25rem; color: #1F2937; margin-top: 1rem;">${currentLanguage === 'hi' ? 'एक विषय चुनें और सीखना शुरू करें!' : 'Choose a topic to start learning!'}</p>
                         </div>
                     </div>
                 </div>
             </div>
         `;
+        
+        // Prevent body scroll when modal is open
+        document.body.style.overflow = 'hidden';
+        
+        // Close on background click
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.remove();
+                document.body.style.overflow = 'auto';
+            }
+        });
+        
         document.body.appendChild(modal);
     }
 
@@ -804,6 +982,17 @@
         if (modal) {
             modal.classList.remove('active');
             modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    };
+    
+    // Close products modal function
+    window.closeProductsModal = function () {
+        const modal = document.getElementById('productsModal');
+        if (modal) {
+            modal.style.display = 'none';
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
         }
     };
 
