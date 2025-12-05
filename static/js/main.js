@@ -288,9 +288,9 @@ function loadTranslations(lang = 'en') {
     fetch(`/static/translations/${lang}.json`)
         .then(res => res.json())
         .then(translations => {
-            // Update logo
-            const logo = document.querySelector('.logo');
-            if (logo) logo.innerHTML = `🪔 ${translations.header.logo}`;
+            // Logo is now an image, don't replace it with text
+            // const logo = document.querySelector('.logo');
+            // if (logo) logo.innerHTML = `🪔 ${translations.header.logo}`;
 
             // Update header buttons
             const loginBtn = document.querySelector('.btn-secondary');
