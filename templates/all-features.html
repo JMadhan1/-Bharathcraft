@@ -3,67 +3,54 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>All Features - Bharatcraft</title>
-    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png">
-    <link rel="shortcut icon" href="/static/favicon.ico">
-
     <link rel="stylesheet" href="/static/css/main.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         body {
-            background: #F9FAFB;
-        }
-
-        .features-hero {
+            font-family: 'Inter', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 80px 20px;
-            text-align: center;
+            min-height: 100vh;
+            padding: 2rem 0;
         }
 
-        .features-hero h1 {
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .page-header {
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+        }
+
+        .page-header h1 {
             font-size: 3rem;
             margin-bottom: 1rem;
         }
 
-        .feature-category {
-            padding: 60px 20px;
-        }
-
-        .feature-category:nth-child(even) {
-            background: white;
-        }
-
-        .category-title {
-            text-align: center;
-            font-size: 2.5rem;
-            margin-bottom: 3rem;
-            color: #1F2937;
-        }
-
         .features-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
+            margin-bottom: 3rem;
         }
 
         .feature-card {
             background: white;
-            padding: 2rem;
             border-radius: 16px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             transition: all 0.3s;
-            border-top: 4px solid #FF6B35;
+            cursor: pointer;
         }
 
         .feature-card:hover {
             transform: translateY(-8px);
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
         }
 
         .feature-icon {
@@ -79,340 +66,196 @@
 
         .feature-card p {
             color: #6B7280;
-            line-height: 1.6;
+            line-height: 1.8;
+            margin-bottom: 1rem;
         }
 
-        .feature-badge {
+        .demo-badge {
             display: inline-block;
-            margin-top: 1rem;
             padding: 0.5rem 1rem;
-            background: #FFF7ED;
-            color: #C2410C;
+            background: #10B981;
+            color: white;
             border-radius: 20px;
+            font-size: 0.9rem;
             font-weight: 600;
-            font-size: 0.875rem;
+        }
+
+        .stat-badge {
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+
+        .back-btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: white;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-bottom: 2rem;
         }
     </style>
 </head>
 
 <body>
-    <header class="header">
-        <div class="container">
-            <div class="logo" onclick="window.location.href='/'">
-                <img src="/static/logo.png?v=3" alt="Bharatcraft - From Hands to World"
-                    style="height: 90px; cursor: pointer; display: block;">
-            </div>
-            <nav class="nav">
-                <a href="/" style="color: white; text-decoration: none; margin-right: 1rem;">Home</a>
-                <button class="btn btn-primary" onclick="window.location.href='/'">Get Started</button>
-            </nav>
+    <div class="container">
+        <a href="/" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Home</a>
+
+        <div class="page-header">
+            <h1><i class="fas fa-rocket"></i> Complete Feature Showcase</h1>
+            <p style="font-size: 1.2rem;">Explore all the powerful tools that make Bharatcraft the #1 platform for
+                artisan exports</p>
         </div>
-    </header>
 
-    <div class="features-hero">
-        <h1>🚀 Complete Platform Features</h1>
-        <p style="font-size: 1.25rem; opacity: 0.9;">Everything you need to succeed in global handicraft exports</p>
-    </div>
-
-    <!-- AI Features -->
-    <div class="feature-category">
-        <div class="container">
-            <h2 class="category-title"><i class="fas fa-brain"></i> AI-Powered Features</h2>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">🔍</div>
-                    <h3>AI Quality Grading</h3>
-                    <p>Gemini AI analyzes craftsmanship, materials, and finishing with 98.5% accuracy. Automatic export
-                        compliance for 50+ countries.</p>
-                    <div class="feature-badge">98.5% Accuracy</div>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">📸</div>
-                    <h3>Image Recognition</h3>
-                    <p>Upload photos and AI generates titles, descriptions, tags, and pricing. Detects craft type and
-                        quality instantly.</p>
-                    <div class="feature-badge">Auto-Tagging</div>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">🤝</div>
-                    <h3>Negotiation Assistant</h3>
-                    <p>Real-time negotiation support with culturally-aware suggestions. Increases deal closure by 3x.
-                    </p>
-                    <div class="feature-badge">3x Success</div>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">💬</div>
-                    <h3>Multilingual Translation</h3>
-                    <p>Real-time translation with cultural context for 15+ Indian languages plus English, German,
-                        French, Spanish.</p>
-                    <div class="feature-badge">15+ Languages</div>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">🎖️</div>
-                    <h3>Quality Certificates</h3>
-                    <p>AI-verified certificates with unique IDs. Buyers verify authenticity before purchase.</p>
-                    <div class="feature-badge">AI-Verified</div>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">📊</div>
-                    <h3>Business Analytics</h3>
-                    <p>AI-powered insights for optimal pricing, trending crafts, and buyer demographics.</p>
-                    <div class="feature-badge">Smart Insights</div>
+        <div class="features-grid">
+            <!-- AI Quality Grading -->
+            <div class="feature-card" onclick="window.location.href='/features/quality-grading'">
+                <div class="feature-icon">🔍</div>
+                <h3>AI Quality Grading</h3>
+                <span class="demo-badge"><i class="fas fa-mouse-pointer"></i> Try Live Demo</span>
+                <p>Gemini AI analyzes craftsmanship, materials, and finishing quality with 98.5% accuracy. Automatic
+                    export compliance checking for 50+ countries.</p>
+                <div class="stat-badge" style="background: #EFF6FF; color: #1E40AF;">
+                    <i class="fas fa-check-circle"></i> 98.5% accuracy rate
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- Blockchain Features -->
-    <div class="feature-category">
-        <div class="container">
-            <h2 class="category-title"><i class="fas fa-link"></i> Blockchain & Security</h2>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">🔗</div>
-                    <h3>Blockchain Traceability</h3>
-                    <p>Digital passport for every product with blockchain verification. Complete supply chain
-                        transparency.</p>
-                    <div class="feature-badge">Blockchain-Verified</div>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">💳</div>
-                    <h3>Smart Escrow</h3>
-                    <p>Blockchain-based escrow holds payment securely. Auto-releases upon delivery confirmation.</p>
-                    <div class="feature-badge">100% Secure</div>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">🔐</div>
-                    <h3>Smart Contracts</h3>
-                    <p>Automated payment release, dispute resolution, and quality guarantees via blockchain.</p>
-                    <div class="feature-badge">Trustless</div>
+            <!-- Translation -->
+            <div class="feature-card" onclick="window.location.href='/features/translation-demo'">
+                <div class="feature-icon">💬</div>
+                <h3>Multilingual Translation</h3>
+                <span class="demo-badge"><i class="fas fa-mouse-pointer"></i> Try Live Demo</span>
+                <p>Real-time translation with cultural context for 15+ languages including all major Indian languages
+                    and international languages.</p>
+                <div class="stat-badge" style="background: #F3E8FF; color: #6B21A8;">
+                    <i class="fas fa-language"></i> 15+ languages supported
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- Logistics Features -->
-    <div class="feature-category">
-        <div class="container">
-            <h2 class="category-title"><i class="fas fa-truck"></i> Logistics & Shipping</h2>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">📦</div>
-                    <h3>Cluster Pooling</h3>
-                    <p>AI groups nearby artisans for consolidated shipping. 60-75% cost reduction on international
-                        deliveries.</p>
-                    <div class="feature-badge">60% Savings</div>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">🗺️</div>
-                    <h3>Interactive Cluster Map</h3>
-                    <p>Real-time map showing active logistics clusters. Join shipping pools with one click.</p>
-                    <div class="feature-badge">Live Tracking</div>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">📄</div>
-                    <h3>Export Documentation</h3>
-                    <p>Auto-generates invoices, packing lists, certificates of origin, and customs forms.</p>
-                    <div class="feature-badge">Auto-Generated</div>
+            <!-- Currency Converter -->
+            <div class="feature-card" onclick="window.location.href='/features/currency-converter'">
+                <div class="feature-icon">💱</div>
+                <h3>Real-Time Currency Converter</h3>
+                <span class="demo-badge"><i class="fas fa-mouse-pointer"></i> Try Live Demo</span>
+                <p>Live exchange rates for 15+ currencies. Automatic price conversion with transparent fee breakdown for
+                    artisans and buyers.</p>
+                <div class="stat-badge" style="background: #D1FAE5; color: #065F46;">
+                    <i class="fas fa-coins"></i> 15+ currencies, live rates
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- PWA Features -->
-    <div class="feature-category" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-        <div class="container">
-            <h2 class="category-title" style="color: white;"><i class="fas fa-mobile-alt"></i> Progressive Web App</h2>
-            <div class="features-grid">
-                <div class="feature-card"
-                    style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border: 2px solid rgba(255,255,255,0.2); color: white;">
-                    <div class="feature-icon">📱</div>
-                    <h3 style="color: white;">Install on Any Device</h3>
-                    <p style="color: rgba(255,255,255,0.9);">Works on Android, iOS, Windows, Mac. No app store needed.
-                        One-click install.</p>
-                    <div class="feature-badge" style="background: rgba(255,255,255,0.2); color: white;">Cross-Platform
-                    </div>
+            <!-- Shipping Calculator -->
+            <div class="feature-card" onclick="window.location.href='/features/shipping-calculator'">
+                <div class="feature-icon">📦</div>
+                <h3>Smart Shipping Calculator</h3>
+                <span class="demo-badge"><i class="fas fa-mouse-pointer"></i> Try Live Demo</span>
+                <p>Calculate shipping costs to 50+ countries with customs, duties, and insurance. Compare standard vs
+                    express delivery.</p>
+                <div class="stat-badge" style="background: #FEF3C7; color: #92400E;">
+                    <i class="fas fa-shipping-fast"></i> 50+ countries coverage
                 </div>
+            </div>
 
-                <div class="feature-card"
-                    style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border: 2px solid rgba(255,255,255,0.2); color: white;">
-                    <div class="feature-icon">🔌</div>
-                    <h3 style="color: white;">Offline Mode</h3>
-                    <p style="color: rgba(255,255,255,0.9);">Upload products, manage orders without internet. Auto-syncs
-                        when online.</p>
-                    <div class="feature-badge" style="background: rgba(255,255,255,0.2); color: white;">Offline-First
-                    </div>
+            <!-- Blockchain -->
+            <div class="feature-card" onclick="window.location.href='/features/blockchain-trace'">
+                <div class="feature-icon">🔗</div>
+                <h3>Blockchain Traceability</h3>
+                <span class="demo-badge"><i class="fas fa-mouse-pointer"></i> Try Live Demo</span>
+                <p>Every product gets a unique digital passport on blockchain. Track authenticity, origin, and journey
+                    with immutable proof.</p>
+                <div class="stat-badge" style="background: #DBEAFE; color: #1E40AF;">
+                    <i class="fas fa-fingerprint"></i> 100% tamper-proof
                 </div>
+            </div>
 
-                <div class="feature-card"
-                    style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border: 2px solid rgba(255,255,255,0.2); color: white;">
-                    <div class="feature-icon">🔔</div>
-                    <h3 style="color: white;">Push Notifications</h3>
-                    <p style="color: rgba(255,255,255,0.9);">Instant alerts for orders, messages, and shipping - even
-                        when app is closed.</p>
-                    <div class="feature-badge" style="background: rgba(255,255,255,0.2); color: white;">Real-Time</div>
+            <!-- Analytics -->
+            <div class="feature-card" onclick="window.location.href='/features/analytics'">
+                <div class="feature-icon">📊</div>
+                <h3>Analytics Dashboard</h3>
+                <span class="demo-badge"><i class="fas fa-mouse-pointer"></i> View Demo</span>
+                <p>Comprehensive insights on sales trends, buyer demographics, popular products, and revenue analytics
+                    with real-time visualization.</p>
+                <div class="stat-badge" style="background: #E0F2FE; color: #075985;">
+                    <i class="fas fa-chart-line"></i> Real-time insights
                 </div>
+            </div>
 
-                <div class="feature-card"
-                    style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border: 2px solid rgba(255,255,255,0.2); color: white;">
-                    <div class="feature-icon">⚡</div>
-                    <h3 style="color: white;">Lightning Fast</h3>
-                    <p style="color: rgba(255,255,255,0.9);">Loads in under 2 seconds. Smart caching for instant
-                        navigation.</p>
-                    <div class="feature-badge" style="background: rgba(255,255,255,0.2); color: white;">&lt;2s Load
-                    </div>
+            <!-- Cluster Logistics -->
+            <div class="feature-card">
+                <div class="feature-icon">🚚</div>
+                <h3>Cluster Logistics Optimization</h3>
+                <p>AI-powered logistics pooling aggregates orders from artisan clusters for consolidated shipping,
+                    achieving massive cost reductions.</p>
+                <div class="stat-badge" style="background: #D1FAE5; color: #065F46;">
+                    <i class="fas fa-piggy-bank"></i> Save up to 75% on shipping
+                </div>
+            </div>
+
+            <!-- Export Docs -->
+            <div class="feature-card">
+                <div class="feature-icon">📄</div>
+                <h3>Export Documentation Automation</h3>
+                <p>Automatically generates commercial invoices, packing lists, certificates of origin, and
+                    country-specific customs forms.</p>
+                <div class="stat-badge" style="background: #FEF3C7; color: #92400E;">
+                    <i class="fas fa-file-invoice"></i> 50+ document templates
+                </div>
+            </div>
+
+            <!-- Payments -->
+            <div class="feature-card">
+                <div class="feature-icon">💳</div>
+                <h3>Secure Payment Processing</h3>
+                <p>Integrated with Stripe and Razorpay. Smart escrow system ensures artisans receive payment upon
+                    shipment confirmation.</p>
+                <div class="stat-badge" style="background: #DBEAFE; color: #1E40AF;">
+                    <i class="fas fa-shield-alt"></i> 100% payment protection
+                </div>
+            </div>
+
+            <!-- GI Tags -->
+            <div class="feature-card">
+                <div class="feature-icon">🏅</div>
+                <h3>GI Tag Authentication</h3>
+                <p>Verify Geographical Indication products including Kanjivaram silk, Kashmir Pashmina, and 400+
+                    registered Indian handicrafts.</p>
+                <div class="stat-badge" style="background: #FEE2E2; color: #991B1B;">
+                    <i class="fas fa-certificate"></i> 400+ GI products verified
+                </div>
+            </div>
+
+            <!-- AI Negotiation -->
+            <div class="feature-card">
+                <div class="feature-icon">🤝</div>
+                <h3>AI Negotiation Assistant</h3>
+                <p>Cultural context-aware negotiation suggestions in artisan's native language. Smart counter-offer
+                    recommendations.</p>
+                <div class="stat-badge" style="background: #F3E8FF; color: #6B21A8;">
+                    <i class="fas fa-brain"></i> 3x better success rate
+                </div>
+            </div>
+
+            <!-- Voice Assistant -->
+            <div class="feature-card">
+                <div class="feature-icon">🎤</div>
+                <h3>Voice-Enabled Interface</h3>
+                <p>Complete voice navigation in 12 Indian languages. Perfect for artisans with limited literacy - upload
+                    products using voice.</p>
+                <div class="stat-badge" style="background: #E0F2FE; color: #075985;">
+                    <i class="fas fa-microphone"></i> 12 language voice support
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Accessibility Features -->
-    <div class="feature-category">
-        <div class="container">
-            <h2 class="category-title"><i class="fas fa-universal-access"></i> Accessibility & Ease of Use</h2>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">🎤</div>
-                    <h3>Voice-Enabled Interface</h3>
-                    <p>Complete voice support in 12 Indian languages. Upload products and navigate using voice commands.
-                    </p>
-                    <div class="feature-badge">Voice-First</div>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">📲</div>
-                    <h3>Mobile-First Design</h3>
-                    <p>Large buttons, simple workflows, minimal data usage. Works on 2G/3G networks.</p>
-                    <div class="feature-badge">2G Compatible</div>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">🌐</div>
-                    <h3>Simple Mode</h3>
-                    <p>Simplified dashboard for low-literacy users. Icon-based navigation with voice guidance.</p>
-                    <div class="feature-badge">Easy to Use</div>
-                </div>
-            </div>
+        <div style="text-align: center; margin-top: 3rem;">
+            <a href="/" class="back-btn" style="font-size: 1.1rem; padding: 1rem 2rem;">
+                <i class="fas fa-home"></i> Return to Homepage
+            </a>
         </div>
     </div>
-
-    <!-- Additional Features -->
-    <div class="feature-category">
-        <div class="container">
-            <h2 class="category-title"><i class="fas fa-plus-circle"></i> Additional Features</h2>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">🏅</div>
-                    <h3>GI Tag Authentication</h3>
-                    <p>Verify 400+ Geographical Indication products including Kanjivaram silk, Kashmir Pashmina, Jaipur
-                        prints.</p>
-                    <div class="feature-badge">400+ GI Tags</div>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">💬</div>
-                    <h3>Real-time Chat</h3>
-                    <p>Instant messaging with automatic translation. AI provides context and cultural insights.</p>
-                    <div class="feature-badge">Live Translation</div>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">📈</div>
-                    <h3>Sales Dashboard</h3>
-                    <p>Track earnings, popular products, buyer demographics, and market trends in real-time.</p>
-                    <div class="feature-badge">Real-Time Data</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div
-        style="text-align: center; padding: 60px 20px; background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%); color: white;">
-        <h2 style="font-size: 2.5rem; margin-bottom: 1rem;">Ready to Get Started?</h2>
-        <p style="font-size: 1.25rem; margin-bottom: 2rem;">Join 7 million Indian artisans accessing global markets</p>
-        <button onclick="window.location.href='/'"
-            style="padding: 1rem 3rem; font-size: 1.25rem; background: white; color: #FF6B35; border: none; border-radius: 50px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-            <i class="fas fa-rocket"></i> Start Now
-        </button>
-    </div>
-
-    <!-- Back to Home Button -->
-    <button id="backToHomeBtn" class="back-to-home-btn" onclick="window.location.href='/'" title="Back to Home">
-        <i class="fas fa-home"></i>
-        <span>Home</span>
-    </button>
-
-    <style>
-        .back-to-home-btn {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            background: linear-gradient(135deg, #FF6B35 0%, #FF8C42 100%);
-            color: white;
-            border: none;
-            border-radius: 50px;
-            padding: 1rem 1.5rem;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 4px 20px rgba(255, 107, 53, 0.4);
-            z-index: 999;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            font-family: 'Inter', sans-serif;
-        }
-
-        .back-to-home-btn:hover {
-            transform: translateY(-4px) scale(1.05);
-            box-shadow: 0 8px 30px rgba(255, 107, 53, 0.5);
-        }
-
-        .back-to-home-btn:active {
-            transform: translateY(-2px) scale(1.02);
-        }
-
-        .back-to-home-btn i {
-            font-size: 1.25rem;
-            animation: bounce 2s ease-in-out infinite;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-4px); }
-        }
-
-        @media (max-width: 768px) {
-            .back-to-home-btn {
-                bottom: 1rem;
-                right: 1rem;
-                padding: 0.875rem 1.25rem;
-                font-size: 0.9375rem;
-            }
-
-            .back-to-home-btn span {
-                display: none;
-            }
-
-            .back-to-home-btn {
-                width: 56px;
-                height: 56px;
-                border-radius: 50%;
-                justify-content: center;
-                padding: 0;
-            }
-        }
-    </style>
 </body>
 
 </html>
