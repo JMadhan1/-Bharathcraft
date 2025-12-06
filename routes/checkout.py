@@ -7,6 +7,17 @@ import json
 
 bp = Blueprint('checkout', __name__, url_prefix='/checkout')
 
+@bp.route('/', methods=['GET'])
+def checkout_cart():
+    """Checkout page for cart items"""
+    # This will render a checkout page that loads cart from localStorage via JavaScript
+    return render_template('buyer/checkout.html', 
+                          product=None,  # Cart checkout, not single product
+                          images=[],
+                          buyer=None, 
+                          artisan=None,
+                          is_cart_checkout=True)
+
 @bp.route('/<int:product_id>', methods=['GET'])
 def checkout_page(product_id):
     # Get product
@@ -34,7 +45,8 @@ def checkout_page(product_id):
                           product=product, 
                           images=images,
                           buyer=None, 
-                          artisan=artisan)
+                          artisan=artisan,
+                          is_cart_checkout=False)
 
 @bp.route('/api/init', methods=['GET'])
 @jwt_required()

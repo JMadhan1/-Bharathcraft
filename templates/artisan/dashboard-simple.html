@@ -20,7 +20,8 @@
 
     <header class="modern-header">
         <div class="logo">
-            <img src="/static/logo.png?v=3" alt="Bharatcraft - From Hands to World" style="height: 90px; display: block;">
+            <img src="/static/logo.png?v=3" alt="Bharatcraft - From Hands to World"
+                style="height: 90px; display: block;">
         </div>
         <div class="header-actions">
             <select id="languageSelector" class="language-selector" onchange="changeLanguage(this.value)">
@@ -385,7 +386,7 @@
         [class*="learning"]:not(.ai-modal [class*="learning"]):not(.learning-topic-btn) {
             display: none !important;
         }
-        
+
         /* Ensure modals are proper popups */
         .modal {
             position: fixed !important;
@@ -396,11 +397,15 @@
             z-index: 9999 !important;
             background: rgba(0, 0, 0, 0.7) !important;
             backdrop-filter: blur(4px) !important;
-            display: flex !important;
+            display: none;
             align-items: center !important;
             justify-content: center !important;
         }
-        
+
+        .modal.active {
+            display: flex !important;
+        }
+
         .modal-content {
             position: relative !important;
             max-height: 90vh !important;
@@ -414,7 +419,7 @@
             // Open the orders modal
             const modal = document.getElementById('ordersModal');
             if (modal) {
-                modal.style.display = 'block';
+                modal.classList.add('active');
                 // Trigger loading orders if function exists
                 if (typeof loadOrders === 'function') {
                     loadOrders();

@@ -174,9 +174,9 @@
                         alt="{{ product.title }}" class="product-image"
                         onerror="this.src='/static/uploads/placeholder.jpg'">
                     <div>
-                        <h3>{{ product.title }}</h3>
-                        <p style="color: var(--gray-600);">by {{ artisan.user.full_name }}</p>
-                        <p class="badge-tag">{{ product.craft_type }}</p>
+                        {% if product %}<h3>{{ product.title }}</h3>{% else %}<h3>Cart Checkout</h3>{% endif %}
+                        {% if artisan and artisan.user %}<p style="color: var(--gray-600);">by {{ artisan.user.full_name }}</p>{% endif %}
+                        {% if product %}<p class="badge-tag">{{ product.craft_type }}</p>{% endif %}
                         <div style="margin-top: 10px;">
                             <label for="quantityInput" style="font-weight: 500; margin-right: 10px;">Quantity:</label>
                             <input type="number" id="quantityInput" value="1" min="1" max="{{ product.stock_quantity }}"
@@ -293,10 +293,10 @@
     </div>
 
     <!-- Hidden inputs for JS -->
-    <input type="hidden" id="basePriceINR" value="{{ product.price }}">
+    <input type="hidden" id="basePriceINR" value="{{ product.price if product else 0 }}">
     <input type="hidden" id="productWeight" value="0.5"> <!-- Placeholder -->
-    <input type="hidden" id="productCategory" value="{{ product.craft_type }}">
-    <input type="hidden" id="productId" value="{{ product.id }}">
+    <input type="hidden" id="productCategory" value="{{ product.craft_type if product else 'handicrafts' }}">
+    <input type="hidden" id="productId" value="{{ product.id if product else '' }}">
 
     <script src="/static/js/checkout.js"></script>
 </body>

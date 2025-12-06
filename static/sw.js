@@ -1,5 +1,5 @@
-const CACHE_NAME = 'bharatcraft-v4-offline';
-const DYNAMIC_CACHE = 'bharatcraft-dynamic-v4';
+const CACHE_NAME = 'bharatcraft-v6-offline';
+const DYNAMIC_CACHE = 'bharatcraft-dynamic-v6';
 const OFFLINE_PAGE = '/offline.html';
 
 // Critical assets for offline functionality

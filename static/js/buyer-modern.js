@@ -29,14 +29,14 @@
         // Load orders and clusters automatically
         loadBuyerOrdersAndClusters();
     });
-    
+
     // Load buyer orders count
     async function loadBuyerOrdersCount() {
         try {
             const response = await authenticatedFetch('/api/orders/', {
                 method: 'GET'
             });
-            
+
             if (response.ok) {
                 const orders = await response.json();
                 const ordersCountEl = document.getElementById('ordersCount');
@@ -391,7 +391,12 @@
             alert('Your cart is empty!');
             return;
         }
-        alert('Checkout feature coming soon! Total: ' + document.getElementById('cartTotal').textContent);
+
+        // Store cart in localStorage for checkout page
+        localStorage.setItem('checkoutCart', JSON.stringify(cart));
+
+        // Redirect to checkout page
+        window.location.href = '/checkout';
     };
 
     // Quick View
@@ -669,11 +674,11 @@
     };
 
     // Toggle orders section
-    window.toggleOrdersSection = function() {
+    window.toggleOrdersSection = function () {
         const section = document.getElementById('ordersClustersSection');
         const content = document.getElementById('ordersClustersContent');
         const toggleIcon = document.getElementById('toggleIcon');
-        
+
         if (content.style.display === 'none') {
             content.style.display = 'grid';
             if (toggleIcon) toggleIcon.className = 'fas fa-chevron-up';
@@ -688,7 +693,7 @@
     window.showMyOrdersAndClusters = async function () {
         const section = document.getElementById('ordersClustersSection');
         const content = document.getElementById('ordersClustersContent');
-        
+
         // Show section and scroll to it
         section.style.display = 'block';
         content.style.display = 'grid';
@@ -701,16 +706,16 @@
     async function loadBuyerOrdersAndClusters() {
         const content = document.getElementById('ordersClustersContent');
         content.innerHTML = '<p style="text-align: center; padding: 2rem;">Loading your orders...</p>';
-        
+
         try {
             const response = await authenticatedFetch('/api/orders/', {
                 method: 'GET'
             });
-            
+
             if (response.ok) {
                 const orders = await response.json();
                 document.getElementById('ordersCount').textContent = orders.length || 0;
-                
+
                 if (orders.length === 0) {
                     content.innerHTML = `
                         <div style="grid-column: 1/-1; text-align: center; padding: 3rem;">
@@ -720,7 +725,7 @@
                     `;
                     return;
                 }
-                
+
                 // Load cluster information for each order
                 const ordersWithClusters = await Promise.all(
                     orders.map(async (order) => {
@@ -730,7 +735,7 @@
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ order_id: order.id })
                             });
-                            
+
                             if (clusterResponse.ok) {
                                 const clusterData = await clusterResponse.json();
                                 return { ...order, cluster: clusterData };
@@ -741,7 +746,7 @@
                         return { ...order, cluster: null };
                     })
                 );
-                
+
                 displayOrdersWithClusters(ordersWithClusters);
             } else {
                 content.innerHTML = '<p style="text-align: center; color: #EF4444;">Error loading orders</p>';
@@ -755,13 +760,13 @@
     // Display orders with cluster information
     function displayOrdersWithClusters(orders) {
         const content = document.getElementById('ordersClustersContent');
-        
+
         content.innerHTML = orders.map(order => {
             const cluster = order.cluster;
             const hasCluster = cluster && cluster.pooling_available;
             const savings = cluster?.your_order?.savings || 0;
             const savingsPercent = cluster?.your_order?.savings_percent || 0;
-            
+
             return `
                 <div class="order-cluster-card" style="background: white; border-radius: 16px; padding: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                     <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
@@ -845,13 +850,13 @@
     }
 
     // View cluster map for buyer
-    window.viewBuyerClusterMap = function(orderId, artisanLocation) {
+    window.viewBuyerClusterMap = function (orderId, artisanLocation) {
         const modal = document.getElementById('buyerClusterMapModal');
         const mapDiv = document.getElementById('buyerClusterMap');
         const infoDiv = document.getElementById('clusterInfo');
-        
+
         modal.style.display = 'flex';
-        
+
         // Initialize map
         setTimeout(() => {
             if (typeof L !== 'undefined') {
@@ -859,15 +864,15 @@
                 if (window.buyerClusterMap) {
                     window.buyerClusterMap.remove();
                 }
-                
+
                 // Create new map centered on artisan location
                 const locationCoords = getLocationCoordinates(artisanLocation);
                 window.buyerClusterMap = L.map('buyerClusterMap').setView(locationCoords, 7);
-                
+
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     attribution: '© OpenStreetMap contributors'
                 }).addTo(window.buyerClusterMap);
-                
+
                 // Add cluster markers
                 const clusters = [
                     { name: 'Jaipur Textile Pool', lat: 26.9124, lon: 75.7873, members: 42, savings: '40%', destination: 'USA' },
@@ -875,7 +880,7 @@
                     { name: 'Udaipur Pottery', lat: 24.5854, lon: 73.7125, members: 15, savings: '25%', destination: 'Germany' },
                     { name: 'Ajmer Jewelry', lat: 26.4499, lon: 74.6399, members: 31, savings: '38%', destination: 'USA' }
                 ];
-                
+
                 clusters.forEach(cluster => {
                     L.circleMarker([cluster.lat, cluster.lon], {
                         radius: 15,
@@ -897,7 +902,7 @@
                         </div>
                     `);
                 });
-                
+
                 // Show cluster info
                 infoDiv.innerHTML = `
                     <div style="background: #F0FDF4; padding: 1rem; border-radius: 8px; border-left: 4px solid #10B981;">
@@ -914,7 +919,7 @@
         }, 100);
     };
 
-    window.closeBuyerClusterMap = function() {
+    window.closeBuyerClusterMap = function () {
         const modal = document.getElementById('buyerClusterMapModal');
         modal.style.display = 'none';
         if (window.buyerClusterMap) {
@@ -935,14 +940,14 @@
         return locations[location] || [20.5937, 78.9629]; // Default to India center
     }
 
-    window.viewClusterDetails = async function(orderId) {
+    window.viewClusterDetails = async function (orderId) {
         try {
             const response = await authenticatedFetch(`/api/cluster-pooling/find-opportunities`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ order_id: orderId })
             });
-            
+
             if (response.ok) {
                 const data = await response.json();
                 const content = `
@@ -1021,7 +1026,7 @@
                         `}
                     </div>
                 `;
-                
+
                 createModal('Cluster Details', content);
             }
         } catch (error) {
@@ -1030,13 +1035,13 @@
         }
     };
 
-    window.joinBuyerCluster = async function(clusterName, orderId) {
+    window.joinBuyerCluster = async function (clusterName, orderId) {
         if (confirm(`Join "${clusterName}" for this order? This will enable pooled shipping and save you money!`)) {
             try {
                 const response = await authenticatedFetch(`/api/cluster-pooling/opt-in/${orderId}`, {
                     method: 'POST'
                 });
-                
+
                 if (response.ok) {
                     alert('Successfully joined cluster! You will be notified when the shipment is ready.');
                     loadBuyerOrdersAndClusters();
@@ -1052,12 +1057,12 @@
         }
     };
 
-    window.checkClusterAvailability = async function(orderId) {
+    window.checkClusterAvailability = async function (orderId) {
         alert('Checking for available clusters...');
         await loadBuyerOrdersAndClusters();
     };
 
-    window.contactArtisan = function(artisanId) {
+    window.contactArtisan = function (artisanId) {
         if (artisanId) {
             // Open chat with artisan
             alert('Opening chat with artisan...');
