@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Bharatcraft - AI-Powered Export Marketplace for Artisan Clusters</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png">
+    <link rel="shortcut icon" href="/static/favicon.ico">
+    <link rel="stylesheet" href="/static/css/main.css">`n    <link rel="stylesheet" href="/static/css/professional-design-system.css">
+    <link rel="stylesheet" href="/static/css/homepage-vibrant.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="manifest" href="/static/manifest.json">
+    <link rel="preload" href="/static/logo.png?v=3" as="image">
+    <meta name="theme-color" content="#FF6B35">
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    </script>
+</head>
+
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <img src="/static/logo.png?v=3" alt="Bharatcraft - From Hands to World"
+                    style="height: 90px; cursor: pointer; display: block;" onclick="window.location.href='/'">
+            </div>
+            <nav class="nav">
+                <a href="/success-stories"
+                    style="color: #1F2937; text-decoration: none; margin-right: 1rem; font-weight: 500;">Success
+                    Stories</a>
+                <div class="dropdown" style="display: inline-block; position: relative; margin-right: 1rem;">
+                    <button
+                        style="background: none; border: none; color: #1F2937; font-weight: 500; cursor: pointer; font-family: inherit; font-size: 1rem;"
+                        onmouseover="document.getElementById('demoDropdown').style.display='block'"
+                        onmouseout="document.getElementById('demoDropdown').style.display='none'">
+                        AI Demos <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div id="demoDropdown"
+                        style="display: none; position: absolute; background: white; min-width: 200px; box-shadow: 0 8px 16px rgba(0,0,0,0.2); border-radius: 8px; z-index: 1000; top: 100%;"
+                        onmouseover="this.style.display='block'" onmouseout="this.style.display='none'">
+                        <a href="/features/translation-demo"
+                            style="color: #333; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #eee;">🗣️
+                            AI Translation</a>
+                        <a href="/features/quality-grading"
+                            style="color: #333; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #eee;">📸
+                            Quality Grading</a>
+                        <a href="/features/currency-converter"
+                            style="color: #333; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #eee;">💱
+                            Currency Converter</a>
+                        <a href="/features/shipping-calculator"
+                            style="color: #333; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #eee;">📦
+                            Shipping Calc</a>
+                        <a href="/features/blockchain-trace"
+                            style="color: #333; padding: 12px 16px; text-decoration: none; display: block;">🔗
+                            Blockchain Trace</a>
+                    </div>
+                </div>
+                <select id="languageSelector" class="language-selector">
+                    <option value="te">తెలుగు</option>
+                    <option value="en">English</option>
+                    <option value="hi">हिंदी</option>
+                    <option value="ta">தமிழ்</option>
+                    <option value="kn">ಕನ್ನಡ</option>
+                    <option value="ml">മലയാളം</option>
+                    <option value="bn">বাংলা</option>
+                    <option value="gu">ગુજરાતી</option>
+                    <option value="mr">मराठી</option>
+                    <option value="pa">ਪੰਜਾਬੀ</option>
+                    <option value="od">ଓଡ଼ିଆ</option>
+                    <option value="as">অসমীয়া</option>
+                </select>
+                <button class="btn btn-secondary" onclick="showLogin()">Login</button>
+                <button class="btn btn-primary" onclick="showRegister()">Get Started</button>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="hero-background-pattern"></div>
+        <div class="container">
+            <div class="hero-badge">
+                <i class="fas fa-lightbulb"></i> Ideas for India: INNOVATION CHALLENGE
+            </div>
+            <div class="hero-sub-badge">
+                <i class="fas fa-chart-line"></i> Economic Resilience
+            </div>
+            <h2 class="hero-title" data-i18n="hero.title">
+                Empowering <span class="highlight-text">7 Million</span> Indian Artisans<br>
+                Connecting <span class="highlight-text-gold">Global Buyers</span>
+            </h2>
+            <p class="hero-subtitle" data-i18n="hero.subtitle">
+                <i class="fas fa-handshake"></i> Direct trade platform that increases artisan earnings by
+                <strong>3-5x</strong> through AI-powered tools and eliminating middlemen
+            </p>
+
+            <!-- Impact Metrics -->
+            <div class="impact-metrics">
+                <div class="metric-card">
+                    <div class="metric-icon">💰</div>
+                    <div class="metric-value">4x</div>
+                    <div class="metric-label">Income Increase</div>
+                    <p>From ₹15,000 to ₹60,000 monthly</p>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon">🚚</div>
+                    <div class="metric-value">70%</div>
+                    <div class="metric-label">Cost Reduction</div>
+                    <p>Through AI-powered cluster logistics</p>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon">🤖</div>
+                    <div class="metric-value">98.5%</div>
+                    <div class="metric-label">AI Accuracy</div>
+                    <p>Quality assessment by Gemini AI</p>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon">🌏</div>
+                    <div class="metric-value">15+</div>
+                    <div class="metric-label">Languages</div>
+                    <p>Real-time multilingual translation</p>
+                </div>
+            </div>
+
+            <div class="hero-actions">
+                <div class="portal-card">
+                    <div class="portal-icon">👨‍🎨</div>
+                    <h3>For Artisans</h3>
+                    <p>Sell your GI-tagged crafts directly to global buyers with AI-powered quality certification</p>
+                    <div class="gi-badge"><i class="fas fa-certificate"></i> GI Tagged</div>
+                    <div class="gi-badge"><i class="fas fa-robot"></i> AI Certified</div>
+                    <button class="btn btn-primary" onclick="registerAs('artisan')">
+                        <i class="fas fa-user-plus"></i> Register as Artisan
+                    </button>
+                </div>
+                <div class="portal-card">
+                    <div class="portal-icon">🛍️</div>
+                    <h3>For Buyers</h3>
+                    <p>Source authentic Indian handicrafts with verified quality and ESG compliance</p>
+                    <div class="gi-badge"><i class="fas fa-leaf"></i> ESG Compliant</div>
+                    <div class="gi-badge"><i class="fas fa-handshake"></i> Fair Trade</div>
+                    <button class="btn btn-primary" onclick="registerAs('buyer')">
+                        <i class="fas fa-shopping-bag"></i> Register as Buyer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Feature Highlight -->
+    <div class="feature-highlight">
+        <div class="container">
+            <h2><i class="fas fa-brain"></i> AI-Powered Cultural Negotiation Engine</h2>
+            <p>
+                Our Gemini AI engine doesn't just translate - it <strong>understands cultural context</strong>.
+                When a German buyer requests a price reduction, we suggest appropriate counter-offers
+                in the artisan's regional language, dramatically increasing deal closure rates.
+                <br><br>
+                <strong>🎯 Result:</strong> 3x higher negotiation success rate compared to generic translation tools
+            </p>
+        </div>
+    </div>
+
+    <!-- Technology Features -->
+    <section class="features">
+        <div class="container">
+            <h2 class="section-title">Platform Features</h2><p style="text-align: center; font-size: 1.1rem; color: #6B7280; max-width: 700px; margin: 0 auto 2rem;">Click on any feature card to try our interactive demos! <a href="/all-features" style="color: #FF6B35; font-weight: 600;"><i class="fas fa-external-link-alt"></i> View Complete Feature List</a></p>
+
+            <div class="features-grid">
+                <div class="feature-card"><style>.feature-card { transition: transform 0.3s, box-shadow 0.3s; } .feature-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.15); }</style>
+                    <div class="feature-icon">🔍</div>
+                    <h3>AI Quality Grading</h3>
+                    <p>Gemini AI analyzes craftsmanship, materials, and finishing quality with 98.5% accuracy. Automatic
+                        export compliance checking for 50+ countries with Premium, Standard, and Economy grade
+                        classification.</p>
+                </div>
+
+                <div class="feature-card"><style>.feature-card { transition: transform 0.3s, box-shadow 0.3s; } .feature-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.15); }</style>
+                    <div class="feature-icon">💬</div>
+                    <h3>Multilingual Translation</h3>
+                    <p>Real-time translation with cultural context for 15+ languages including Hindi, Telugu, Tamil,
+                        Kannada, Malayalam, Bengali, Gujarati, Marathi, Punjabi, Odia, and Assamese.</p>
+                </div>
+
+                <div class="feature-card"><style>.feature-card { transition: transform 0.3s, box-shadow 0.3s; } .feature-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.15); }</style>
+                    <div class="feature-icon">📦</div>
+                    <h3>Cluster Logistics Optimization</h3>
+                    <p>AI-powered logistics pooling aggregates orders from artisan clusters for consolidated shipping,
+                        achieving 60-75% cost reduction on international deliveries.</p>
+                </div>
+
+                <div class="feature-card"><style>.feature-card { transition: transform 0.3s, box-shadow 0.3s; } .feature-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.15); }</style>
+                    <div class="feature-icon">📄</div>
+                    <h3>Export Documentation Automation</h3>
+                    <p>Automatically generates commercial invoices, packing lists, certificates of origin, and
+                        country-specific customs forms for seamless international trade.</p>
+                </div>
+
+                <div class="feature-card"><style>.feature-card { transition: transform 0.3s, box-shadow 0.3s; } .feature-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.15); }</style>
+                    <div class="feature-icon">💳</div>
+                    <h3>Secure Payment Processing</h3>
+                    <p>Integrated with Stripe and Razorpay for international payments. Smart escrow system ensures
+                        artisans receive payment upon shipment confirmation.</p>
+                </div>
+
+                <div class="feature-card"><style>.feature-card { transition: transform 0.3s, box-shadow 0.3s; } .feature-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.15); }</style>
+                    <div class="feature-icon">🏅</div>
+                    <h3>GI Tag Authentication</h3>
+                    <p>Verify Geographical Indication products including Kanjivaram silk, Kashmir Pashmina, Jaipur block
+                        prints, Channapatna toys, and 400+ registered Indian handicrafts.</p>
+                </div>
+    <section class="how-it-works">
+        <div class="container">
+            <h2 class="section-title">How It Works</h2>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">📸</div>
+                    <h3>Artisan Uploads Product</h3>
+                    <p>Upload photos via web or WhatsApp. AI generates professional listings in 15 languages.</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">⭐</div>
+                    <h3>AI Quality Assessment</h3>
+                    <p>GPT-4 Vision checks quality against international standards. Assigns Premium/Standard/Economy
+                        grade.</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">🌐</div>
+                    <h3>Global Discovery</h3>
+                    <p>Buyers worldwide discover authentic products with verified quality certificates and GI tags.</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">🤝</div>
+                    <h3>Cultural Negotiation</h3>
+                    <p>Real-time chat with context-aware translation. AI suggests culturally appropriate offers.</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">✅</div>
+                    <h3>Order & Payment</h3>
+                    <p>Secure checkout. Auto-generated export docs. Smart escrow releases payment on delivery.</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">🚢</div>
+                    <h3>Pooled Shipping</h3>
+                    <p>Orders from nearby artisans consolidated into bulk shipments. Track globally.</p>
+                </div>
+            </div>
+        </div>
+    </section>`n`n    <!-- Impact Section -->
+    <section class="stats"
+        style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 80px 20px;">
+        <div class="container">
+            <h2 class="section-title" style="color: white;">Real Impact</h2>
+
+            <div class="stats-grid">
+                <div class="stat-card"
+                    style="background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2);">
+                    <div class="stat-icon">👨‍🎨</div>
+                    <div class="stat-number">7M</div>
+                    <div class="stat-label">Artisans in India</div>
+                </div>
+
+                <div class="stat-card"
+                    style="background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2);">
+                    <div class="stat-icon">💎</div>
+                    <div class="stat-number">₹3.5B</div>
+                    <div class="stat-label">Annual Handicraft Exports</div>
+                </div>
+
+                <div class="stat-card"
+                    style="background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2);">
+                    <div class="stat-icon">📉</div>
+                    <div class="stat-number">12-18%</div>
+                    <div class="stat-label">Current Artisan Share</div>
+                </div>
+
+                <div class="stat-card"
+                    style="background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2);">
+                    <div class="stat-icon">📈</div>
+                    <div class="stat-number">70-75%</div>
+                    <div class="stat-label">With Bharatcraft</div>
+                    </div>
+        </div>
+    </section>`n`n    <!-- Impact Section -->
+    <section class="stats"
+        style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 80px 20px;">
+        <div class="container">
+            <h2 class="section-title" style="color: white;">Real Impact</h2>
+
+            <div class="stats-grid">
+                <div class="stat-card"
+                    style="background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2);">
+                    <div class="stat-icon">👨‍🎨</div>
+                    <div class="stat-number">7M</div>
+                    <div class="stat-label">Artisans in India</div>
+                </div>
+
+                <div class="stat-card"
+                    style="background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2);">
+                    <div class="stat-icon">💎</div>
+                    <div class="stat-number">₹3.5B</div>
+                    <div class="stat-label">Annual Handicraft Exports</div>
+                </div>
+
+                <div class="stat-card"
+                    style="background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2);">
+                    <div class="stat-icon">📉</div>
+                    <div class="stat-number">12-18%</div>
+                    <div class="stat-label">Current Artisan Share</div>
+                </div>
+
+                <div class="stat-card"
+                    style="background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2);">
+                    <div class="stat-icon">📈</div>
+                    <div class="stat-number">70-75%</div>
+                    <div class="stat-label">With Bharatcraft</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Include Artisan-Friendly Login/Register Modals -->
+    {% include 'includes/auth-modals.html' %}
+
+    <!-- Back to Home Button (hidden on homepage) -->
+    <button id="backToHomeBtn" class="back-to-home-btn" onclick="window.location.href='/'" title="Back to Home" style="display: none;">
+        <i class="fas fa-home"></i>
+        <span>Home</span>
+    </button>
+
+    <style>
+        .back-to-home-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: linear-gradient(135deg, #FF6B35 0%, #FF8C42 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 1rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(255, 107, 53, 0.4);
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .back-to-home-btn:hover {
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 8px 30px rgba(255, 107, 53, 0.5);
+        }
+
+        .back-to-home-btn:active {
+            transform: translateY(-2px) scale(1.02);
+        }
+
+        .back-to-home-btn i {
+            font-size: 1.25rem;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+
+        /* Hide on homepage */
+        body.homepage .back-to-home-btn,
+        .back-to-home-btn[style*="display: none"] {
+            display: none !important;
+        }
+
+        @media (max-width: 768px) {
+            .back-to-home-btn {
+                bottom: 1rem;
+                right: 1rem;
+                padding: 0.875rem 1.25rem;
+                font-size: 0.9375rem;
+            }
+
+            .back-to-home-btn span {
+                display: none;
+            }
+
+            .back-to-home-btn {
+                width: 56px;
+                height: 56px;
+                border-radius: 50%;
+                justify-content: center;
+                padding: 0;
+            }
+        }
+    </style>
+
+    <!-- Footer -->
+    {% include 'includes/footer.html' %}
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="/static/js/main.js"></script>
+    <script src="/static/js/voice-assistant.js"></script>
+</body>
+
+</html>
