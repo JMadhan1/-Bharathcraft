@@ -20,6 +20,32 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
         <link rel="manifest" href="/static/manifest.json">
+        <style>
+            .modal-close-btn {
+                position: absolute;
+                right: 1rem;
+                top: 1rem;
+                width: 40px;
+                height: 40px;
+                background: #F3F4F6;
+                border: none;
+                border-radius: 50%;
+                font-size: 1.25rem;
+                color: #6B7280;
+                cursor: pointer;
+                z-index: 10;
+                transition: all 0.3s;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .modal-close-btn:hover {
+                background: #EF4444;
+                color: white;
+                transform: rotate(90deg);
+            }
+        </style>
     </head>
 
 <body>
@@ -27,7 +53,8 @@
     <header class="modern-header">
         <div class="header-container">
             <div class="logo">
-                <img src="/static/logo.png?v=3" alt="Bharatcraft - From Hands to World" style="height: 90px; display: block;">
+                <img src="/static/logo.png?v=3" alt="Bharatcraft - From Hands to World"
+                    style="height: 90px; display: block;">
             </div>
             <div class="header-actions">
                 <button class="btn-messages" onclick="showMessages()">
@@ -159,7 +186,9 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3>Upload New Product</h3>
-                <span class="close" onclick="closeUploadModal()">&times;</span>
+                <button class="modal-close-btn" onclick="closeUploadModal()">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <form id="productUploadForm" enctype="multipart/form-data">
                 <div class="form-group">
@@ -217,7 +246,9 @@
         <div class="modal-content modal-large">
             <div class="modal-header">
                 <h3><i class="fas fa-map-marked-alt"></i> Logistics Clusters</h3>
-                <span class="close" onclick="closeMapModal()">&times;</span>
+                <button class="modal-close-btn" onclick="closeMapModal()">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <div id="clusterMap" style="height: 400px; width: 100%; border-radius: 8px;"></div>
             <div class="map-info">

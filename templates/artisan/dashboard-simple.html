@@ -217,7 +217,7 @@
     <!-- Simplified Upload Modal -->
     <div id="uploadModal" class="modal">
         <div class="modal-content upload-modal">
-            <button class="close-btn" onclick="closeUploadModal()">
+            <button class="modal-close-btn" onclick="closeUploadModal()">
                 <i class="fas fa-times"></i>
             </button>
 
@@ -315,7 +315,9 @@
         <div class="modal-content map-modal">
             <div class="modal-header">
                 <h3><i class="fas fa-map-marked-alt"></i> शिपिंग समूह / Logistics Clusters</h3>
-                <span class="close" onclick="closeMapModal()">&times;</span>
+                <button class="modal-close-btn" onclick="closeMapModal()">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <div id="clusterMap" style="height: 400px; width: 100%; border-radius: 8px;"></div>
             <div class="map-info">
@@ -332,7 +334,9 @@
         <div class="modal-content products-modal">
             <div class="modal-header">
                 <h3><i class="fas fa-box-open"></i> मेरा सामान / My Products</h3>
-                <span class="close" onclick="closeProductsModal()">&times;</span>
+                <button class="modal-close-btn" onclick="closeProductsModal()">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <div id="allProducts" class="products-list"></div>
         </div>
@@ -343,7 +347,9 @@
         <div class="modal-content products-modal">
             <div class="modal-header">
                 <h3><i class="fas fa-comments"></i> संदेश / Messages</h3>
-                <span class="close" onclick="closeMessagesModal()">&times;</span>
+                <button class="modal-close-btn" onclick="closeMessagesModal()">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <div id="allMessages" class="messages-list" style="padding: 1.5rem;">
                 <p style="text-align: center; color: #6B7280;">संदेश लोड हो रहे हैं... / Loading messages...</p>
@@ -356,7 +362,9 @@
         <div class="modal-content orders-modal">
             <div class="modal-header">
                 <h3><i class="fas fa-shopping-cart"></i> ऑर्डर / Orders</h3>
-                <span class="close" onclick="closeOrdersModal()">&times;</span>
+                <button class="modal-close-btn" onclick="closeOrdersModal()">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <div id="allOrders" class="orders-list" style="padding: 1.5rem;">
                 <p style="text-align: center; color: #6B7280;">ऑर्डर लोड हो रहे हैं... / Loading orders...</p>
@@ -385,6 +393,31 @@
         [class*="tutorial"]:not(.ai-modal [class*="tutorial"]):not(.learning-topic-btn),
         [class*="learning"]:not(.ai-modal [class*="learning"]):not(.learning-topic-btn) {
             display: none !important;
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            right: 1rem;
+            top: 1rem;
+            width: 40px;
+            height: 40px;
+            background: #F3F4F6;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.25rem;
+            color: #6B7280;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close-btn:hover {
+            background: #EF4444;
+            color: white;
+            transform: rotate(90deg);
         }
 
         /* Ensure modals are proper popups */

@@ -287,6 +287,64 @@
         }
     };
 
+    // Helper to compress image
+    async function compressImage(file) {
+        if (!file.type.match(/image.*/)) return file;
+
+        return new Promise((resolve) => {
+            try {
+                // Aggressive compression for live demo speed
+                const maxWidth = 800;
+                const maxHeight = 800;
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = function (event) {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = function () {
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > height) {
+                            if (width > maxWidth) {
+                                height *= maxWidth / width;
+                                width = maxWidth;
+                            }
+                        } else {
+                            if (height > maxHeight) {
+                                width *= maxHeight / height;
+                                height = maxHeight;
+                            }
+                        }
+
+                        const canvas = document.createElement('canvas');
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        canvas.toBlob((blob) => {
+                            if (!blob) {
+                                resolve(file); // Fallback
+                                return;
+                            }
+                            const newFile = new File([blob], file.name, {
+                                type: 'image/jpeg',
+                                lastModified: Date.now()
+                            });
+                            resolve(newFile);
+                        }, 'image/jpeg', 0.6); // Lower quality for speed
+                    };
+                    img.onerror = () => resolve(file);
+                };
+                reader.onerror = () => resolve(file);
+            } catch (e) {
+                console.error("Compression error", e);
+                resolve(file);
+            }
+        });
+    }
+
     // Handle form submission
     document.getElementById('simpleUploadForm').addEventListener('submit', async function (e) {
         e.preventDefault();
@@ -295,7 +353,6 @@
 
         // Validate required fields
         const price = formData.get('price');
-        const images = formData.getAll('images');
         const description = formData.get('description') || '';
 
         // Check if price is provided
@@ -309,7 +366,7 @@
         // Check if images are provided - get from input element directly
         const photoInput = document.getElementById('photoInput');
         const imageFiles = photoInput ? Array.from(photoInput.files || []) : [];
-        
+
         if (imageFiles.length === 0) {
             const imageError = translations.alerts?.imageRequired || 'Please add at least one photo';
             alert(imageError);
@@ -317,9 +374,15 @@
             return;
         }
 
+        document.getElementById('uploadingState').style.display = 'block';
+        document.querySelectorAll('.upload-step').forEach(step => step.classList.remove('active'));
+
+        // Compress images
+        const compressedImages = await Promise.all(imageFiles.map(file => compressImage(file)));
+
         // Clear any existing images in formData and add fresh ones
         formData.delete('images');
-        imageFiles.forEach(file => {
+        compressedImages.forEach(file => {
             if (file && file.size > 0) {
                 formData.append('images', file);
             }
@@ -442,7 +505,116 @@
 
     // Navigation functions
     window.showMyProducts = function () {
-        window.location.href = '/artisan/dashboard';
+        const productsModal = document.getElementById('productsModal');
+        if (productsModal) {
+            productsModal.style.display = 'flex';
+            productsModal.style.position = 'fixed';
+            productsModal.style.top = '0';
+            productsModal.style.left = '0';
+            productsModal.style.width = '100%';
+            productsModal.style.height = '100%';
+            productsModal.style.zIndex = '9999';
+            productsModal.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+            productsModal.style.backdropFilter = 'blur(4px)';
+            productsModal.style.alignItems = 'center';
+            productsModal.style.justifyContent = 'center';
+            productsModal.classList.add('active');
+
+            // Prevent body scroll
+            document.body.style.overflow = 'hidden';
+
+            // Close on background click
+            productsModal.addEventListener('click', function (e) {
+                if (e.target === productsModal) {
+                    closeProductsModal();
+                }
+            });
+
+            loadMyProducts();
+        } else {
+            // Fallback to advanced dashboard if modal not found
+            window.location.href = '/artisan/dashboard';
+        }
+    };
+
+    // Load products for the modal
+    async function loadMyProducts() {
+        const container = document.getElementById('allProducts');
+        if (!container) return;
+
+        container.innerHTML = '<div style="text-align: center; padding: 2rem;"><i class="fas fa-circle-notch fa-spin" style="font-size: 2rem; color: #FF6B35;"></i><p>Loading...</p></div>';
+
+        try {
+            const response = await fetch('/api/products/my-products', {
+                headers: { 'Authorization': `Bearer ${authToken}` }
+            });
+
+            if (response.ok) {
+                const products = await response.json();
+                if (products.length === 0) {
+                    const msg = translations.alerts?.noProducts || 'No products found.';
+                    container.innerHTML = `<p style="text-align: center; padding: 2rem; color: #6B7280;">${msg}</p>`;
+                    return;
+                }
+
+                container.innerHTML = products.map(p => {
+                    const imageUrl = p.images && p.images.length > 0 ? p.images[0] : '/static/placeholder.jpg';
+                    // Ensure image path is correct (handle relative paths if needed)
+                    const finalImageUrl = imageUrl.startsWith('http') || imageUrl.startsWith('/') ? imageUrl : '/' + imageUrl;
+
+                    return `
+                    <div class="product-item" style="display: flex; gap: 1rem; padding: 1rem; border-bottom: 1px solid #E5E7EB; align-items: center; background: white; border-radius: 8px; margin-bottom: 0.5rem;">
+                        <img src="${finalImageUrl}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid #E5E7EB;">
+                        <div style="flex: 1;">
+                            <h4 style="margin: 0 0 0.25rem 0; font-size: 1.1rem; color: #1F2937;">${p.title}</h4>
+                            <p style="margin: 0; color: #FF6B35; font-weight: 600;">₹${p.price}</p>
+                            <span style="font-size: 0.8rem; color: #6B7280;">Stock: ${p.stock_quantity}</span>
+                        </div>
+                        <button onclick="deleteProduct(${p.id})" style="background: #EF4444; color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                `}).join('');
+            } else {
+                container.innerHTML = '<p style="text-align: center; color: #EF4444; padding: 2rem;">Error loading products</p>';
+            }
+        } catch (e) {
+            console.error(e);
+            container.innerHTML = '<p style="text-align: center; color: #EF4444; padding: 2rem;">Error loading products</p>';
+        }
+    }
+
+    // Delete product function
+    window.deleteProduct = async function (id) {
+        const confirmMsg = translations.alerts?.deleteConfirm || 'Are you sure you want to delete this product?';
+        if (!confirm(confirmMsg)) return;
+
+        // Show deleting state on the button if possible, or just global loader
+        // For simplicity, we'll just proceed
+
+        try {
+            const response = await fetch(`/api/products/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${authToken}` }
+            });
+
+            if (response.ok) {
+                // Play success sound/voice
+                const successMsg = translations.alerts?.deleteSuccess || 'Product deleted successfully';
+                playVoice('delete-success', successMsg);
+
+                // Reload list
+                loadMyProducts();
+                // Update stats
+                loadStats();
+            } else {
+                const errorMsg = translations.alerts?.deleteError || 'Failed to delete product';
+                alert(errorMsg);
+            }
+        } catch (e) {
+            console.error(e);
+            alert('Error deleting product');
+        }
     };
 
     window.showOrders = function () {
@@ -460,17 +632,17 @@
             ordersModal.style.alignItems = 'center';
             ordersModal.style.justifyContent = 'center';
             ordersModal.classList.add('active');
-            
+
             // Prevent body scroll
             document.body.style.overflow = 'hidden';
-            
+
             // Close on background click
-            ordersModal.addEventListener('click', function(e) {
+            ordersModal.addEventListener('click', function (e) {
                 if (e.target === ordersModal) {
                     closeOrdersModal();
                 }
             });
-            
+
             // Load orders if function exists
             if (typeof loadOrders === 'function') {
                 loadOrders();
@@ -487,7 +659,7 @@
             alert(msg);
         }
     };
-    
+
     window.closeOrdersModal = function () {
         const ordersModal = document.getElementById('ordersModal');
         if (ordersModal) {
@@ -519,17 +691,17 @@
             messagesModal.style.alignItems = 'center';
             messagesModal.style.justifyContent = 'center';
             messagesModal.classList.add('active');
-            
+
             // Prevent body scroll
             document.body.style.overflow = 'hidden';
-            
+
             // Close on background click
-            messagesModal.addEventListener('click', function(e) {
+            messagesModal.addEventListener('click', function (e) {
                 if (e.target === messagesModal) {
                     closeMessagesModal();
                 }
             });
-            
+
             // Load messages if function exists
             if (typeof loadMessages === 'function') {
                 loadMessages();
@@ -542,7 +714,7 @@
             showAIChatAssistant();
         }
     };
-    
+
     window.closeMessagesModal = function () {
         const messagesModal = document.getElementById('messagesModal');
         if (messagesModal) {
@@ -551,21 +723,21 @@
             document.body.style.overflow = 'auto';
         }
     };
-    
+
     // Load messages function
     async function loadMessages() {
         const messagesDiv = document.getElementById('allMessages');
         if (!messagesDiv) return;
-        
+
         messagesDiv.innerHTML = '<p style="text-align: center; color: #6B7280;">संदेश लोड हो रहे हैं... / Loading messages...</p>';
-        
+
         // Get auth token from localStorage
         const token = localStorage.getItem('authToken');
         if (!token) {
             messagesDiv.innerHTML = '<p style="text-align: center; color: #EF4444;">Please log in to view messages</p>';
             return;
         }
-        
+
         try {
             const response = await fetch('/api/messages/conversations', {
                 method: 'GET',
@@ -574,10 +746,10 @@
                     'Content-Type': 'application/json'
                 }
             });
-            
+
             if (response.ok) {
                 const conversations = await response.json();
-                
+
                 if (conversations.length === 0) {
                     messagesDiv.innerHTML = `
                         <div style="text-align: center; padding: 2rem;">
@@ -606,9 +778,9 @@
             messagesDiv.innerHTML = '<p style="text-align: center; color: #EF4444;">Error loading messages</p>';
         }
     }
-    
+
     // Open conversation function
-    window.openConversation = function(conversationId) {
+    window.openConversation = function (conversationId) {
         // This can be implemented to show individual conversation
         alert('Opening conversation ' + conversationId);
     };
@@ -633,7 +805,7 @@
         if (existingModal) {
             existingModal.remove();
         }
-        
+
         const modal = document.createElement('div');
         modal.className = 'ai-modal';
         modal.innerHTML = `
@@ -783,7 +955,7 @@
         if (existingModal) {
             existingModal.remove();
         }
-        
+
         // Hide any tutorial sections at bottom of page
         const bottomSections = document.querySelectorAll('.ai-learning-container, .learning-section, [class*="tutorial"]');
         bottomSections.forEach(section => {
@@ -791,7 +963,7 @@
                 section.style.display = 'none';
             }
         });
-        
+
         const modal = document.createElement('div');
         modal.className = 'ai-modal';
         modal.style.display = 'flex';
@@ -806,7 +978,7 @@
         modal.style.alignItems = 'center';
         modal.style.justifyContent = 'center';
         modal.style.padding = '1rem';
-        
+
         modal.innerHTML = `
             <div class="ai-modal-content" style="background: white; border-radius: 24px; max-width: 800px; width: 100%; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 24px 60px rgba(0,0,0,0.3);">
                 <div class="ai-modal-header" style="padding: 1.5rem 2rem; border-bottom: 2px solid #E7DFD5; display: flex; justify-content: space-between; align-items: center;">
@@ -850,18 +1022,18 @@
                 </div>
             </div>
         `;
-        
+
         // Prevent body scroll when modal is open
         document.body.style.overflow = 'hidden';
-        
+
         // Close on background click
-        modal.addEventListener('click', function(e) {
+        modal.addEventListener('click', function (e) {
             if (e.target === modal) {
                 modal.remove();
                 document.body.style.overflow = 'auto';
             }
         });
-        
+
         document.body.appendChild(modal);
     }
 
@@ -914,7 +1086,7 @@
 
     // Cluster Map function
     let clusterMapInstance = null;
-    
+
     window.viewClusterMap = function () {
         playVoice('logistics');
         const modal = document.getElementById('mapModal');
@@ -922,27 +1094,27 @@
             console.error('Map modal not found');
             return;
         }
-        
+
         modal.style.display = 'flex';
         modal.classList.add('active');
-        
+
         // Initialize map if not already done
         if (typeof L !== 'undefined' && !clusterMapInstance) {
             setTimeout(() => {
                 try {
                     clusterMapInstance = L.map('clusterMap').setView([26.9124, 75.7873], 6);
-                    
+
                     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                         attribution: '© OpenStreetMap contributors'
                     }).addTo(clusterMapInstance);
-                    
+
                     const clusters = [
                         { name: 'Jaipur Textile Pool', lat: 26.9124, lon: 75.7873, members: 42, savings: '40%' },
                         { name: 'Jodhpur Woodwork', lat: 26.2389, lon: 73.0243, members: 28, savings: '35%' },
                         { name: 'Udaipur Pottery', lat: 24.5854, lon: 73.7125, members: 15, savings: '25%' },
                         { name: 'Ajmer Jewelry', lat: 26.4499, lon: 74.6399, members: 31, savings: '38%' }
                     ];
-                    
+
                     clusters.forEach(cluster => {
                         L.circleMarker([cluster.lat, cluster.lon], {
                             radius: 15,
@@ -957,7 +1129,7 @@
                             Savings: ${cluster.savings}
                         `);
                     });
-                    
+
                     // Trigger resize to ensure map renders correctly
                     setTimeout(() => {
                         if (clusterMapInstance) {
@@ -985,7 +1157,7 @@
             document.body.style.overflow = 'auto';
         }
     };
-    
+
     // Close products modal function
     window.closeProductsModal = function () {
         const modal = document.getElementById('productsModal');

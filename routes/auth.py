@@ -38,7 +38,7 @@ def register():
     if existing_user:
         return jsonify({'error': 'Already registered'}), 400
     
-    password_hash = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+    password_hash = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt(rounds=10)).decode('utf-8')
     
     user = User(
         email=email,

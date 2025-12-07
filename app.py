@@ -84,6 +84,7 @@ socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
 engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
 Base.metadata.create_all(engine)
 Session = scoped_session(sessionmaker(bind=engine))
+app.session_factory = Session
 
 @app.before_request
 def before_request():

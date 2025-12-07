@@ -176,12 +176,39 @@
     .close:hover {
         color: #FF6B35;
     }
+
+    .modal-close-btn {
+        position: absolute;
+        right: 1rem;
+        top: 1rem;
+        width: 40px;
+        height: 40px;
+        background: #F3F4F6;
+        border: none;
+        border-radius: 50%;
+        font-size: 1.25rem;
+        color: #6B7280;
+        cursor: pointer;
+        z-index: 10;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-close-btn:hover {
+        background: #EF4444;
+        color: white;
+        transform: rotate(90deg);
+    }
 </style>
 
 <!-- Simple Login Modal for Artisans -->
 <div id="loginModal" class="modal">
     <div class="modal-content artisan-modal">
-        <span class="close" onclick="closeModal('loginModal')">&times;</span>
+        <button class="modal-close-btn" onclick="closeModal('loginModal')">
+            <i class="fas fa-times"></i>
+        </button>
 
         <div class="icon-header">🔐</div>
         <h2>Welcome Back</h2>
@@ -200,8 +227,7 @@
             <input type="tel" name="phone" id="loginPhone" class="simple-input"
                 placeholder="📱 Phone Number (10 digits)" pattern="[0-9]{10}" maxlength="10">
 
-            <input type="email" name="email" class="simple-input"
-                placeholder="📧 Email (optional)">
+            <input type="email" name="email" class="simple-input" placeholder="📧 Email (optional)">
 
             <input type="password" name="password" class="simple-input" placeholder="🔒 Password" required>
 
@@ -227,7 +253,9 @@
 <!-- Simple Register Modal for Artisans -->
 <div id="registerModal" class="modal">
     <div class="modal-content artisan-modal">
-        <span class="close" onclick="closeModal('registerModal')">&times;</span>
+        <button class="modal-close-btn" onclick="closeModal('registerModal')">
+            <i class="fas fa-times"></i>
+        </button>
 
         <div class="icon-header">✨</div>
         <h2>Join Bharatcraft</h2>
@@ -302,8 +330,7 @@
             <p style="color: #6B7280; margin-bottom: 1rem; font-size: 0.9375rem;">
                 Already have an account?
             </p>
-            <button type="button" onclick="closeModal('registerModal'); showLogin();" 
-                class="btn btn-secondary" 
+            <button type="button" onclick="closeModal('registerModal'); showLogin();" class="btn btn-secondary"
                 style="width: 100%; padding: 0.875rem; font-size: 1rem; font-weight: 600;">
                 <i class="fas fa-sign-in-alt"></i> Login Instead
             </button>

@@ -270,16 +270,13 @@ function updateAuthUI() {
     const getStartedBtn = document.querySelector('.header .btn-primary');
 
     if (loginBtn) {
-        loginBtn.textContent = 'Logout';
-        // Override the onclick attribute
-        loginBtn.onclick = function (e) {
-            e.preventDefault();
-            logout();
-        };
+        // Hide the login/logout button when logged in, as requested
+        loginBtn.style.display = 'none';
     }
 
     if (getStartedBtn) {
-        getStartedBtn.textContent = 'Dashboard';
+        // User requested "Get Star" (Get Started) instead of Logout/Dashboard
+        getStartedBtn.textContent = 'Get Started';
         // Override the onclick attribute
         getStartedBtn.onclick = function (e) {
             e.preventDefault();

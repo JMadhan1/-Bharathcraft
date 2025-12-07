@@ -19,6 +19,8 @@ def allowed_file(filename):
 def create_product():
     try:
         from flask_jwt_extended import get_jwt
+        import threading
+        from flask import current_app
         
         user_id = int(get_jwt_identity())
         claims = get_jwt()
@@ -43,17 +45,30 @@ def create_product():
             os.makedirs(upload_dir, exist_ok=True)
         
         image_paths = []
-        for file in files:
+        ai_check_image_path = None
+        
+        for i, file in enumerate(files):
             if file and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
                 filepath = os.path.join(upload_dir, f"{user_id}_{filename}")
                 file.save(filepath)
                 
-                # Resize image
+                # Resize image for display
                 try:
                     img = Image.open(filepath)
+                    # Convert to RGB if necessary
+                    if img.mode in ('RGBA', 'P'):
+                        img = img.convert('RGB')
+                        
                     img.thumbnail((1200, 1200))
                     img.save(filepath, optimize=True, quality=85)
+                    
+                    # Create a smaller version for AI check from the first image
+                    if i == 0:
+                        ai_check_image_path = os.path.join(upload_dir, f"temp_ai_{user_id}_{filename}")
+                        img_small = img.copy()
+                        img_small.thumbnail((512, 512))
+                        img_small.save(ai_check_image_path, optimize=True, quality=60)
                 except Exception as img_error:
                     print(f"Image processing error: {img_error}")
                 
@@ -62,31 +77,16 @@ def create_product():
         if not image_paths:
             return jsonify({'error': 'At least one valid image is required'}), 400
         
-        # AI quality assessment
-        ai_score = None
-        try:
-            if image_paths:
-                ai_score = assess_quality(image_paths[0])
-        except Exception as ai_error:
-            print(f"AI quality assessment error: {ai_error}")
-            ai_score = 0.75  # Default score if AI fails
-        
-        # Determine quality grade
-        quality_grade = QualityGrade.STANDARD
-        if ai_score and ai_score >= 0.8:
-            quality_grade = QualityGrade.PREMIUM
-        elif ai_score and ai_score < 0.5:
-            quality_grade = QualityGrade.BASIC
-        
-        # Create product
+        # Create product immediately with default values
+        # We will update quality asynchronously
         product = Product(
             artisan_id=artisan.id,
             title=data['title'],
             description=data['description'],
             craft_type=data.get('craft_type', artisan.craft_type),
             price=float(data['price']),
-            quality_grade=quality_grade,
-            ai_quality_score=ai_score,
+            quality_grade=QualityGrade.STANDARD, # Default
+            ai_quality_score=0.75, # Default
             images=json.dumps(image_paths),
             stock_quantity=int(data.get('stock_quantity', 1)),
             production_time_days=int(data.get('production_time_days', 7))
@@ -94,6 +94,51 @@ def create_product():
         
         g.db.add(product)
         g.db.commit()
+        
+        # Capture session factory for the thread
+        session_factory = current_app.session_factory
+        
+        # Define background task for AI assessment
+        def update_product_quality(product_id, image_path, Session):
+            try:
+                # Create new session for background thread
+                db_session = Session()
+                
+                # Run AI assessment
+                ai_score = assess_quality(image_path)
+                
+                # Determine grade
+                quality_grade = QualityGrade.STANDARD
+                if ai_score >= 0.8:
+                    quality_grade = QualityGrade.PREMIUM
+                elif ai_score < 0.5:
+                    quality_grade = QualityGrade.BASIC
+                
+                # Update product
+                prod = db_session.query(Product).get(product_id)
+                if prod:
+                    prod.ai_quality_score = ai_score
+                    prod.quality_grade = quality_grade
+                    db_session.commit()
+                    print(f"Background AI update for product {product_id}: Score {ai_score}")
+                
+                db_session.close()
+                
+                # Clean up temp file
+                if os.path.exists(image_path):
+                    try:
+                        os.remove(image_path)
+                    except:
+                        pass
+                        
+            except Exception as e:
+                print(f"Background AI task error: {e}")
+        
+        # Start background thread if we have an image to check
+        if ai_check_image_path:
+            thread = threading.Thread(target=update_product_quality, args=(product.id, ai_check_image_path, session_factory))
+            thread.daemon = True
+            thread.start()
         
         return jsonify({
             'message': 'Product created successfully',
@@ -287,3 +332,38 @@ def get_my_products():
         'production_time_days': p.production_time_days,
         'created_at': p.created_at.isoformat()
     } for p in products]), 200
+
+@bp.route('/<int:product_id>', methods=['DELETE'])
+@jwt_required()
+def delete_product(product_id):
+    from flask_jwt_extended import get_jwt
+    
+    user_id = int(get_jwt_identity())
+    claims = get_jwt()
+    role = claims.get('role')
+    
+    if role != 'artisan':
+        return jsonify({'error': 'Only artisans can delete products'}), 403
+    
+    product = g.db.query(Product).filter_by(id=product_id).first()
+    
+    if not product:
+        return jsonify({'error': 'Product not found'}), 404
+    
+    if product.artisan.user_id != user_id:
+        return jsonify({'error': 'Unauthorized'}), 403
+    
+    # Delete associated images
+    try:
+        if product.images:
+            image_paths = json.loads(product.images)
+            for path in image_paths:
+                if os.path.exists(path):
+                    os.remove(path)
+    except Exception as e:
+        print(f"Error deleting product images: {e}")
+
+    g.db.delete(product)
+    g.db.commit()
+    
+    return jsonify({'message': 'Product deleted successfully'}), 200
